@@ -1,0 +1,13 @@
+{
+  "name": "Biblioteca 5ª Avenida - Rolagem",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "author": "Seu Nome",
+  "action": {
+    "title": "Rolar D12",
+    "icon": "/icon.svg",
+    "popover": "/",
+    "height": 500,
+    "width": 350
+  }
+}
