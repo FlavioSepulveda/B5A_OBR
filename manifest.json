@@ -4,11 +4,10 @@
   "manifest_version": 1,
   "author": "Seu Nome",
   "action": {
-    "title": "Abrir Mesa B5A",
+    "title": "Abrir Rolagem B5A",
     "icon": "/icon.svg",
     "popover": "/",
     "height": 600,
-    "width": 800,
-    "fullscreen": true 
+    "width": 800
   }
 }
