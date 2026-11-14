@@ -23,7 +23,6 @@
             <p id="status-login" style="font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center;">Faça login para salvar</p>
         </div>
         <div class="sidebar-links">
-            <!-- Botões que trocam de Aba -->
             <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
             <button class="nav-btn" onclick="mudarAba('aba-regras')">📖 Regras de Rolagem</button>
             <button class="nav-btn" onclick="mudarAba('aba-espectros')">🔥 Espectros</button>
@@ -33,13 +32,12 @@
 
     <div id="overlay" class="overlay"></div>
 
-    <!-- CONTAINER DAS ABAS -->
     <div class="conteudo-abas">
         
         <!-- ABA 1: A FICHA E AS ROLAGENS -->
         <div id="aba-ficha" class="aba active">
             <div class="mesa-container">
-                <!-- Coluna 1: Ficha -->
+                <!-- Coluna 1: Ficha e Atributos -->
                 <div class="coluna-ficha">
                     <div class="cabecalho-ficha">
                         <h2>Ficha do Arquivista</h2>
@@ -138,7 +136,6 @@
                     <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
                         <h3>Perícias (d6)</h3>
                         <div class="lista-rolagens">
-                            <!-- (Todas as 12 perícias com botões + e -) -->
                             <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button><span id="val-barganha" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button></div>
                             <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button><span id="val-combate" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button></div>
                             <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button><span id="val-tecnologia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button></div>
@@ -154,18 +151,20 @@
                         </div>
                     </div>
 
-                    <button id="btn-desafiar" class="btn-primario" style="background: #a83232; margin-bottom: 15px;">Desafiar o Destino (2d12)</button>
-                    
+                    <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
+                </div>
+
+                <!-- Coluna 3: Resultado e Histórico -->
+                <div class="coluna-historico">
+                    <!-- RESULTADO EM CIMA DO HISTÓRICO -->
                     <div id="resultado-container">
                         <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
                         <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
                         <div id="total-box"><span id="total-visual">Aguardando...</span></div>
                     </div>
-                </div>
 
-                <!-- Coluna 3: Histórico -->
-                <div class="coluna-historico">
-                    <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
+                    <!-- HISTÓRICO EMBAIXO -->
+                    <h3 style="margin-top: 25px;">Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
                     <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
                         <label style="color: #c7a86b;">ID da Sala</label>
                         <input type="text" id="sala-id" value="sala-padrao">
@@ -201,22 +200,16 @@
             <div class="conteudo-texto">
                 <h1>🔥 Os Espectros do Ímpeto</h1>
                 <p>O Espectro não define sua profissão, sua personalidade ou a forma como você luta. Ele representa a razão pela qual seu Arquivista continua caminhando, mesmo quando tudo parece perdido.</p>
-                
                 <h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3>
                 <p>Ofensiva, sacrifício e ambição. O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece. Ele consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo. <em>"O que você está disposto a sacrificar?"</em></p>
-                
                 <h3 style="color:#8eb1d9">Celeste (Azul)</h3>
                 <p>Controle, ordem e precisão. O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Para eles, uma mente disciplinada sempre supera uma espada desembainhada. <em>"Como você pretende alcançar seu objetivo?"</em></p>
-                
                 <h3 style="color:#4caf50">Viridiano (Verde)</h3>
                 <p>Vida, perseverança e crescimento. O Ímpeto Verde é a essência da Vida. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo. <em>"Por que continuar mesmo após cair?"</em></p>
-                
                 <h3 style="color:#fbc02d">Solar (Amarelo)</h3>
                 <p>Liberdade, mobilidade e adaptação. O Ímpeto Solar é a manifestação da Liberdade. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar. <em>"O que existe além do horizonte?"</em></p>
-                
                 <h3 style="color:#b285c9">Índigo (Roxo)</h3>
                 <p>Criatividade, conhecimento e imaginação. O Ímpeto Violeta é a manifestação do Conhecimento. Pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem o impossível. <em>"E se tudo pudesse ser diferente?"</em></p>
-                
                 <h3 style="color:#e0e0e0">Alabastro (Branco)</h3>
                 <p>Equilíbrio, proteção e união. O Ímpeto Alabastro é a manifestação da Ordem e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição. <em>"Como impedir que um extremo destrua todos os outros?"</em></p>
             </div>
@@ -227,19 +220,14 @@
             <div class="conteudo-texto">
                 <h1>⚔️ Caminhos (Combate)</h1>
                 <p>Todo Arquivista atravessa as portas da Biblioteca movido por um propósito, mas é o Caminho que define como ele enfrentará os desafios dessa jornada.</p>
-                
                 <h3>Guerreiro</h3>
                 <p>Os Guerreiros enfrentam os perigos da Biblioteca na linha de frente. Sua força não vem apenas das armas, mas da determinação de continuar lutando quando qualquer outro já teria recuado.</p>
-                
                 <h3>Mago</h3>
                 <p>Os Magos dedicam suas vidas ao estudo do Ímpeto, tratando cada Palavra de Afirmação como parte da linguagem que sustenta a realidade. Buscam compreendê-lo e, por alguns instantes, reescrever as regras do mundo.</p>
-                
                 <h3>Suporte</h3>
                 <p>Os Suportes sabem que nenhuma grande história é escrita sozinho. Fortalecem, protegem e criam oportunidades para que o grupo supere qualquer desafio. Sua maior força está em garantir que ninguém fique para trás.</p>
-                
                 <h3>Assassino</h3>
                 <p>Vencem batalhas antes mesmo do primeiro golpe. Especialistas em furtividade e precisão, aguardam o momento perfeito para atacar, transformando cada descuido em uma oportunidade fatal.</p>
-                
                 <h3>Atirador</h3>
                 <p>Transformam distância em vantagem. Especialistas em precisão e paciência, aguardam o momento ideal para agir, fazendo de cada disparo uma oportunidade decisiva.</p>
             </div>
@@ -247,10 +235,8 @@
 
     </div>
 
-    <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Lógica do Menu Lateral
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const btnMenu = document.getElementById('btn-menu');
@@ -261,16 +247,11 @@
         btnFecharMenu.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
 
-        // Lógica de Trocar de Aba
         function mudarAba(idAba) {
-            // Esconde todas as abas
             document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('active'));
-            // Mostra a aba escolhida
             document.getElementById(idAba).classList.add('active');
-            // Fecha o menu lateral
             sidebar.classList.remove('active'); 
             overlay.classList.remove('active');
-            // Sobe para o topo da página
             window.scrollTo(0, 0); 
         }
     </script>

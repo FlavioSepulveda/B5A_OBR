@@ -1,14 +1,13 @@
 {
-  "name": "B5A - Rolagem",
+  "name": "Biblioteca 5ª Avenida - Ficha",
   "version": "1.0.0",
   "manifest_version": 1,
   "author": "Seu Nome",
-  "background_url": "/",
   "action": {
-    "title": "Abrir Rolagem",
-    "icon": "/icon.svg",
-    "popover": "/",
-    "height": 600,
-    "width": 400
+    "title": "Abrir Ficha B5A",
+    "icon": "/public/icon.svg",
+    "popover": "/public/index.html",
+    "height": 800,
+    "width": 1000
   }
 }

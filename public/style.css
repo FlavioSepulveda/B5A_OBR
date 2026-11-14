@@ -129,7 +129,7 @@ input:focus, select:focus { border-color: var(--gold); }
 .btn-primario { padding: 15px; font-size: 1.3rem; background-color: var(--gold); color: var(--bg-main); border: none; cursor: pointer; width: 100%; border-radius: 4px; }
 .btn-primario:hover { background-color: #dfc28c; }
 
-#resultado-container { padding: 15px; text-align: center; background: #111; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 15px; }
+#resultado-container { padding: 15px; text-align: center; background: #111; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 0px; margin-bottom: 15px; }
 .dice-box { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: 6px; width: 70px; background: #1a1a1a; }
 .principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #141a22, #1a1a1a); }
 .secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #1c141f, #1a1a1a); }
