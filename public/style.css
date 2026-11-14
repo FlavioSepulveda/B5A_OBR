@@ -90,6 +90,7 @@ h1, h2, h3, .nav-brand, .btn-primario, .nav-btn, .btn-login-nav {
     width: 100%;
     max-width: 380px; /* Aumentado para ficar em destaque */
     height: auto;
+    margin-top: -100px; /* Puxa o texto para cima, sobrepondo o vazio da imagem */
     margin-bottom: 0px;
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
 }
