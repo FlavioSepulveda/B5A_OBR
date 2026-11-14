@@ -11,6 +11,8 @@ const container = document.getElementById('resultado-container');
 const toggles = document.querySelectorAll('.toggle');
 
 let tipoRolagem = 'atributo'; 
+
+// 1. Constante unificada para o canal (evita erros de digitação)
 const CANAL = "com.biblioteca5a.rolagens.global";
 
 function atualizarLabel() {
@@ -37,7 +39,6 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função para exibir o alerta visual (Notificação do Owlbear)
 function exibirNotificacao(nome, d12, total) {
     let msg = `${nome} rolou ${total} (d12: ${d12})`;
     let tipo = "INFO";
@@ -53,26 +54,28 @@ function exibirNotificacao(nome, d12, total) {
         tipo = "SUCCESS";
     }
 
-    // Dispara a notificação nativa do Owlbear (aparece no topo para todos)
     if (typeof OBR !== 'undefined') {
         OBR.notification.show(msg, tipo);
     } else {
-        alert(msg); // Fallback para teste fora do Owlbear
+        alert(msg);
     }
 }
 
-// Configura a escuta de mensagens da rede
+// 2. Configuração da escuta com logs de depuração
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
-        console.log("Extensão pronta. Escutando o canal:", CANAL);
+        console.log("✅ Extensão pronta. Escutando o canal:", CANAL);
         
         OBR.broadcast.onMessage(CANAL, (event) => {
             const dados = event.data;
             
-            // Se a mensagem não for de mim mesmo, exibe
+            // 3. Log crucial para saber se a mensagem chegou de outra pessoa
+            console.log("📩 Mensagem recebida do canal!", dados);
+            
             if (dados.senderId !== OBR.player.id) {
-                console.log("Recebi rolagem de outro jogador:", dados);
                 exibirNotificacao(dados.nome, dados.d12, dados.total);
+            } else {
+                console.log("(Ignorando minha própria rolagem)");
             }
         });
     });
@@ -93,7 +96,6 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // Atualiza a interface local
     dadoD12.textContent = rolagemD12;
     dadosOutros.textContent = somaDados;
     totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
@@ -112,16 +114,16 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // Envia a mensagem para a rede
     if (typeof OBR !== 'undefined') {
         const pacoteRolagem = {
-            senderId: OBR.player.id, // Identificador de quem enviou
+            senderId: OBR.player.id, 
             nome: nome,
             d12: rolagemD12,
             total: total
         };
         
-        console.log("Enviando pacote:", pacoteRolagem);
-        OBR.broadcast.sendMessage(CANAL, pacoteRolagem, { destination: 'ALL' });
+        // 4. Log antes do envio + destination REMOTE
+        console.log("🚀 Enviando rolagem para a rede:", pacoteRolagem);
+        OBR.broadcast.sendMessage(CANAL, pacoteRolagem, { destination: 'REMOTE' });
     }
 });
