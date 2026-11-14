@@ -12,9 +12,6 @@ const toggles = document.querySelectorAll('.toggle');
 
 let tipoRolagem = 'atributo'; 
 
-// 1. Constante unificada para o canal (evita erros de digitação)
-const CANAL = "com.biblioteca5a.rolagens.global";
-
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
@@ -39,49 +36,8 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-function exibirNotificacao(nome, d12, total) {
-    let msg = `${nome} rolou ${total} (d12: ${d12})`;
-    let tipo = "INFO";
-    
-    if (d12 === 1) {
-        msg = `💀 CATÁSTROFE! ${nome} rolou ${total}`;
-        tipo = "ERROR";
-    } else if (d12 === 6) {
-        msg = `⚠️ FALHA ABSOLUTA! ${nome} rolou ${total}`;
-        tipo = "WARNING";
-    } else if (d12 === 12) {
-        msg = `🌟 MOMENTO LENDÁRIO! ${nome} rolou ${total}`;
-        tipo = "SUCCESS";
-    }
-
-    if (typeof OBR !== 'undefined') {
-        OBR.notification.show(msg, tipo);
-    } else {
-        alert(msg);
-    }
-}
-
-// 2. Configuração da escuta com logs de depuração
-if (typeof OBR !== 'undefined') {
-    OBR.onReady(() => {
-        console.log("✅ Extensão pronta. Escutando o canal:", CANAL);
-        
-        OBR.broadcast.onMessage(CANAL, (event) => {
-            const dados = event.data;
-            
-            // 3. Log crucial para saber se a mensagem chegou de outra pessoa
-            console.log("📩 Mensagem recebida do canal!", dados);
-            
-            if (dados.senderId !== OBR.player.id) {
-                exibirNotificacao(dados.nome, dados.d12, dados.total);
-            } else {
-                console.log("(Ignorando minha própria rolagem)");
-            }
-        });
-    });
-}
-
 btnRolar.addEventListener('click', () => {
+    // Limpa UI
     container.className = '';
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
@@ -90,15 +46,27 @@ btnRolar.addEventListener('click', () => {
     const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
     const volume = Math.max(1, Math.min(8, parseInt(inputVolume.value) || 1));
     const faces = tipoRolagem === 'atributo' ? 4 : 6;
+    const nomeDado = tipoRolagem === 'atributo' ? 'd4' : 'd6';
 
     const rolagemD12 = Math.floor(Math.random() * 12) + 1;
     const resultadosDados = rolarDados(qtdDados, faces);
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
+    // Atualiza a sua Interface Local
     dadoD12.textContent = rolagemD12;
-    dadosOutros.textContent = somaDados;
-    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
+    if (qtdDados > 0) {
+        dadosOutros.textContent = somaDados;
+        dadosOutros.title = `Dados: [${resultadosDados.join(', ')}]`;
+    } else {
+        dadosOutros.textContent = '0';
+        dadosOutros.title = "Desafiar o Destino";
+    }
+
+    totalVisual.innerHTML = `
+        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
+        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
+    `;
 
     const REGRAS = {
         1: "Catástrofe Definitiva!",
@@ -114,16 +82,27 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
+    // --- INTEGRAÇÃO COM O CHAT DO WITCHDICE ---
     if (typeof OBR !== 'undefined') {
-        const pacoteRolagem = {
-            senderId: OBR.player.id, 
-            nome: nome,
-            d12: rolagemD12,
-            total: total
-        };
+        // Monta a notação que o Witchdice entende (ex: "1d12 + 2d4 + 3")
+        let notacao = `1d12`;
+        if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
+        if (volume > 0) notacao += ` + ${volume}`;
+
+        let tituloRolagem = `${nome} (B5A)`;
         
-        // 4. Log antes do envio + destination REMOTE
-        console.log("🚀 Enviando rolagem para a rede:", pacoteRolagem);
-        OBR.broadcast.sendMessage(CANAL, pacoteRolagem, { destination: 'REMOTE' });
+        // Adiciona um emoji para os resultados absolutos no chat
+        if (rolagemD12 === 1) tituloRolagem = `💀 CATÁSTROFE - ${nome}`;
+        if (rolagemD12 === 6) tituloRolagem = `⚠️ FALHA ABSOLUTA - ${nome}`;
+        if (rolagemD12 === 12) tituloRolagem = `🌟 MOMENTO LENDÁRIO - ${nome}`;
+
+        // O "segredo" do Witchdice: ele escuta requisições no canal "witchdice/roll-request"
+        // e exibe no histórico dele para todos na sala, sem precisar do painel aberto!
+        OBR.broadcast.sendMessage("witchdice/roll-request", {
+            id: crypto.randomUUID(),
+            playerName: tituloRolagem,
+            roll: notacao,
+            timestamp: Date.now()
+        }, { destination: 'ALL' }).catch(e => console.log("Witchdice não encontrado, mas a rolagem local funcionou."));
     }
 });
