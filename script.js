@@ -11,7 +11,7 @@ const container = document.getElementById('resultado-container');
 const toggles = document.querySelectorAll('.toggle');
 
 let tipoRolagem = 'atributo'; 
-const CANAL = "com.biblioteca5a.rolagens.global";
+const MY_EXTENSION_ID = "com.biblioteca5a.rolagens";
 
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
@@ -37,43 +37,6 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função que dispara a notificação no topo da tela e no sininho para TODOS
-function enviarNotificacaoGlobal(nome, d12, total) {
-    let titulo = "Rolagem de Mesa";
-    let msg = `${nome} rolou um total de ${total}. (D12 tirou ${d12})`;
-    let tipo = "INFO";
-    
-    if (d12 === 1) {
-        titulo = "💀 Catástrofe Definitiva!";
-        tipo = "ERROR";
-    } else if (d12 === 6) {
-        titulo = "⚠️ Falha Absoluta!";
-        tipo = "WARNING";
-    } else if (d12 === 12) {
-        titulo = "🌟 Momento Lendário!";
-        tipo = "SUCCESS";
-    }
-
-    if (typeof OBR !== 'undefined') {
-        // 1. Mostra o alerta no topo da tela de todo mundo
-        OBR.notification.show(`${titulo} ${msg}`, tipo);
-    }
-}
-
-// Escuta as mensagens de outras telas
-if (typeof OBR !== 'undefined') {
-    OBR.onReady(() => {
-        console.log("Escutando a mesa no canal:", CANAL);
-        OBR.broadcast.onMessage(CANAL, (event) => {
-            const dados = event.data;
-            // Se a notificação for de outro jogador, exibe na minha tela
-            if (dados.senderId !== OBR.player.id) {
-                enviarNotificacaoGlobal(dados.nome, dados.d12, dados.total);
-            }
-        });
-    });
-}
-
 btnRolar.addEventListener('click', () => {
     container.className = '';
     regraTexto.style.display = 'none';
@@ -90,7 +53,7 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // 1. Atualiza a SUA tela
+    // Atualiza a sua Interface
     dadoD12.textContent = rolagemD12;
     if (qtdDados > 0) {
         dadosOutros.textContent = somaDados;
@@ -119,19 +82,24 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // 2. Envia para os outros jogadores
+    // --- ENVIO PARA A DICE+ (HISTÓRICO GLOBAL) ---
     if (typeof OBR !== 'undefined') {
-        const pacoteRolagem = {
-            senderId: OBR.player.id, 
-            nome: nome,
-            d12: rolagemD12,
-            total: total
-        };
-        
-        // Envia a mensagem de rede
-        OBR.broadcast.sendMessage(CANAL, pacoteRolagem, { destination: 'REMOTE' });
-        
-        // Mostra a notificação para VOCÊ também (já que o REMOTE não envia pra si mesmo)
-        enviarNotificacaoGlobal(nome, rolagemD12, total);
+        let notacao = `1d12`;
+        if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
+        if (volume > 0) notacao += ` + ${volume}`;
+
+        // O Dice+ vai rolar essa notação (ex: "1d12 + 2d4 + 1") e exibir no chat.
+        OBR.broadcast.sendMessage("dice-plus/roll-request", {
+            rollId: `roll_${Date.now()}`,
+            playerId: OBR.player.id,
+            playerName: nome,
+            rollTarget: 'everyone',
+            diceNotation: notacao,
+            showResults: true,
+            timestamp: Date.now(),
+            source: MY_EXTENSION_ID
+        }, { destination: 'ALL' }).catch(err => {
+            console.log("Dice+ não encontrada. Verifique se está ativada na sala.");
+        });
     }
 });
