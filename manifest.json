@@ -1,13 +1,11 @@
 {
-  "name": "B5A - Mesa de Rolagem",
+  "name": "B5A - Rolagem",
   "version": "1.0.0",
   "manifest_version": 1,
   "author": "Seu Nome",
+  "background_url": "/",
   "action": {
-    "title": "Abrir Rolagem B5A",
-    "icon": "/icon.svg",
-    "popover": "/",
-    "height": 600,
-    "width": 800
+    "title": "Rolar Dados",
+    "icon": "/icon.svg"
   }
 }
