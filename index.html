@@ -98,7 +98,7 @@
 
         <!-- ABA 2: FICHA DO ARQUIVISTA -->
         <div id="aba-ficha" class="aba">
-            <div class="ficha-container">
+            <div class="ficha-papel">
                 <!-- Cabeçalho -->
                 <div class="ficha-header">
                     <div class="logo-ficha">BIBLIOTECA<br>DA 5ª AVENIDA</div>
@@ -166,9 +166,8 @@
                         </div>
 
                         <div class="pilha-descarte-container">
-                            <div class="ficha-tarja">PILHA DE DESCARTE</div>
+                            <div class="ficha-tarja" style="margin-bottom: 5px; font-size: 1.1rem;">PILHA DE DESCARTE</div>
                             <div class="descarte-grid">
-                                <!-- 10 quadradinhos representando os dados de descarte -->
                                 <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
                                 <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
                             </div>
@@ -184,7 +183,6 @@
                     <div class="pericias-container">
                         <div class="ficha-tarja">PERÍCIAS</div>
                         <div class="pericias-grid">
-                            <!-- Lista de Perícias com input -->
                             <div class="pericia-item"><label>BARGANHA</label><input type="text" placeholder="0d6"></div>
                             <div class="pericia-item"><label>COMBATE</label><input type="text" placeholder="0d6"></div>
                             <div class="pericia-item"><label>TECNOLOGIA</label><input type="text" placeholder="0d6"></div>
@@ -202,7 +200,7 @@
                 </div>
 
                 <!-- Arma e Habilidade -->
-                <div class="ficha-grid-2" style="margin-top: 10px;">
+                <div class="ficha-grid-2" style="margin-top: 15px;">
                     <div class="box-contorno">
                         <div class="ficha-tarja">ARMA FAVORITA</div>
                         <div class="input-inline"><label>TIPO:</label><input type="text"></div>
@@ -219,14 +217,14 @@
                 </div>
 
                 <!-- Palavras e Inventário -->
-                <div class="ficha-grid-2" style="margin-top: 10px;">
+                <div class="ficha-grid-2" style="margin-top: 15px;">
                     <div class="box-contorno">
                         <div class="ficha-tarja">PALAVRAS DE AFIRMAÇÃO</div>
-                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none; font-family: 'Merriweather';"></textarea>
+                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none;"></textarea>
                     </div>
                     <div class="box-contorno">
                         <div class="ficha-tarja">INVENTÁRIO</div>
-                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none; font-family: 'Merriweather';"></textarea>
+                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none;"></textarea>
                     </div>
                 </div>
                 
@@ -235,10 +233,30 @@
         </div>
     </div>
 
+    <!-- Modais -->
+    <div id="modal-regras" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
+            <h2>📜 A Arte da Rolagem</h2>
+            <div class="modal-body">
+                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>.</p>
+                <p><strong>1:</strong> Catástrofe. <strong>6:</strong> Falha Absoluta. <strong>12:</strong> Momento Lendário.</p>
+            </div>
+        </div>
+    </div>
+    <div id="modal-espectros" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
+            <h2>🔥 Os Espectros do Ímpeto</h2>
+            <div class="modal-body">
+                <p>Ígneo (Sacrifício), Celeste (Controle), Viridiano (Vida), Solar (Liberdade), Índigo (Criatividade), Alabastro (Equilíbrio).</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Menu e Abas
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const btnMenu = document.getElementById('btn-menu');
@@ -255,7 +273,6 @@
             sidebar.classList.remove('active'); overlay.classList.remove('active');
         }
 
-        // Modais
         function abrirModal(id) { sidebar.classList.remove('active'); document.getElementById(id).style.display = "block"; overlay.classList.add('active'); }
         function fecharModal(id) { document.getElementById(id).style.display = "none"; overlay.classList.remove('active'); }
         function fecharTodosModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }

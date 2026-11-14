@@ -1,11 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, query, limitToLast, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-// SUA CONFIGURAÇÃO DO FIREBASE AQUI
 const firebaseConfig = {
   apiKey: "AIzaSyDVpq__JyU5KTQ6p6zB6DTqey4k2jaEFZo",
   authDomain: "b5at-44d1d.firebaseapp.com",
-  databaseURL: "https://b5at-44d1d-default-rtdb.firebaseio.com/", // Verifique se está correta
+  databaseURL: "https://b5at-44d1d-default-rtdb.firebaseio.com/", // <-- VERIFIQUE ESTA LINHA
   projectId: "b5at-44d1d",
   storageBucket: "b5at-44d1d.firebasestorage.app",
   messagingSenderId: "394788459759",
@@ -15,9 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ==========================================
-// LÓGICA DE ROLAGEM (JÁ FUNCIONAVA)
-// ==========================================
+// Referências DOM Rolagem
 const btnRolar = document.getElementById('btn-rolar');
 const inputNome = document.getElementById('nome-jogador');
 const inputQtd = document.getElementById('qtd-dados');
@@ -80,10 +77,7 @@ function conectarSala(idSala) {
     listaHistorico.innerHTML = '';
     salaAtual = idSala;
     const salaRef = query(ref(db, 'salas/' + idSala + '/rolagens'), limitToLast(20));
-    
-    onChildAdded(salaRef, (snapshot) => {
-        adicionarHistoricoNaTela(snapshot.val());
-    });
+    onChildAdded(salaRef, (snapshot) => { adicionarHistoricoNaTela(snapshot.val()); });
 }
 conectarSala(inputSala.value);
 inputSala.addEventListener('change', () => conectarSala(inputSala.value));
@@ -91,12 +85,8 @@ inputSala.addEventListener('change', () => conectarSala(inputSala.value));
 btnRolar.addEventListener('click', () => {
     container.className = 'resultado-container'; 
     regraTexto.style.display = 'none';
-    
-    // Cor do Espectro
     const selectEspectro = document.getElementById('espectro');
-    if (selectEspectro && selectEspectro.value !== 'padrao') {
-        container.classList.add(`espectro-${selectEspectro.value}`);
-    }
+    if (selectEspectro && selectEspectro.value !== 'padrao') container.classList.add(`espectro-${selectEspectro.value}`);
 
     const nome = inputNome.value.trim() || "Arquivista";
     const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
@@ -122,119 +112,67 @@ btnRolar.addEventListener('click', () => {
     }
 
     const rolagemRef = ref(db, 'salas/' + salaAtual + '/rolagens');
-    push(rolagemRef, {
-        nome: nome, d12: rolagemD12, outros: somaDados, vol: volume, total: total
-    });
+    push(rolagemRef, { nome: nome, d12: rolagemD12, outros: somaDados, vol: volume, total: total });
 });
 
 // ==========================================
-// LÓGICA DA FICHA E FIREBASE
+// LÓGICA DA FICHA
 // ==========================================
 const btnSalvarFicha = document.getElementById('btn-salvar-ficha');
 let fichaRef = null;
 
-// Elementos da Ficha
 const el = (id) => document.getElementById(id);
-const fNome = el('f-nome'), fEspectro = el('f-espectro'), fVolume = el('f-volume'), fVocacao = el('f-vocacao'), fTitulo = el('f-titulo');
-const fVigor = el('f-vigor'), fDinamismo = el('f-dinamismo'), fRazao = el('f-razao'), fDeterminacao = el('f-determinacao');
-const fPvAtual = el('f-pv-atual'), fPvMax = el('f-pv-max'), fPiAtual = el('f-pi-atual'), fPiMax = el('f-pi-max'), fHpTemp = el('f-hp-temp'), fIniciativa = el('f-iniciativa');
+const fNome = el('f-nome'), fVolume = el('f-volume'), fPvAtual = el('f-pv-atual'), fPvMax = el('f-pv-max'), fPiAtual = el('f-pi-atual'), fPiMax = el('f-pi-max');
 
-// Função chamada no HTML para os botões + e -
 window.alterarRecurso = function(recurso, valor) {
     if (recurso === 'pv') {
-        let atual = parseInt(fPvAtual.value) || 0;
-        let novo = Math.max(0, atual + valor); // Não deixa ir abaixo de 0
+        let novo = Math.max(0, (parseInt(fPvAtual.value) || 0) + valor);
         fPvAtual.value = novo;
-        
-        // Se o PV chegar a 0, pisca a tela em vermelho
         if (novo === 0) {
             document.body.style.backgroundColor = "#3a1010";
             setTimeout(() => document.body.style.backgroundColor = "", 500);
         }
     } else if (recurso === 'pi') {
-        let atual = parseInt(fPiAtual.value) || 0;
-        fPiAtual.value = Math.max(0, atual + valor);
+        fPiAtual.value = Math.max(0, (parseInt(fPiAtual.value) || 0) + valor);
     }
-    salvarFicha(); // Salva automaticamente ao clicar
+    salvarFicha(); 
 };
 
-// Conecta a ficha ao banco baseada no nome do jogador e ID da sala
 function conectarFicha() {
     const idSala = inputSala.value;
     const nomePersonagem = fNome.value.trim() || inputNome.value.trim() || "Arquivista";
-    
-    // O caminho no banco será: salas/{idSala}/fichas/{nomePersonagem}
     fichaRef = ref(db, 'salas/' + idSala + '/fichas/' + nomePersonagem);
 
-    // Escuta mudanças (útil se o Mestre abrir a ficha ou outro jogador atualizar)
     onValue(fichaRef, (snapshot) => {
         const dados = snapshot.val();
         if (dados) {
             fNome.value = dados.nome || '';
-            fEspectro.value = dados.espectro || '';
             fVolume.value = dados.volume || 1;
-            fVocacao.value = dados.vocacao || '';
-            fTitulo.value = dados.titulo || '';
-            
-            fVigor.value = dados.vigor || '0d4';
-            fDinamismo.value = dados.dinamismo || '0d4';
-            fRazao.value = dados.razao || '0d4';
-            fDeterminacao.value = dados.determinacao || '0d4';
-
             fPvAtual.value = dados.pvAtual || 0;
             fPvMax.value = dados.pvMax || 10;
             fPiAtual.value = dados.piAtual || 0;
             fPiMax.value = dados.piMax || 5;
-            fHpTemp.value = dados.hpTemp || 0;
-            fIniciativa.value = dados.iniciativa || '';
         }
     });
 }
 
-// Salva os dados no Firebase
 async function salvarFicha() {
-    if (!fichaRef) {
-        conectarFicha();
-    }
-    
+    if (!fichaRef) conectarFicha();
     const dados = {
         nome: fNome.value,
-        espectro: fEspectro.value,
         volume: parseInt(fVolume.value) || 1,
-        vocacao: fVocacao.value,
-        titulo: fTitulo.value,
-        vigor: fVigor.value,
-        dinamismo: fDinamismo.value,
-        razao: fRazao.value,
-        determinacao: fDeterminacao.value,
         pvAtual: parseInt(fPvAtual.value) || 0,
         pvMax: parseInt(fPvMax.value) || 0,
         piAtual: parseInt(fPiAtual.value) || 0,
-        piMax: parseInt(fPiMax.value) || 0,
-        hpTemp: parseInt(fHpTemp.value) || 0,
-        iniciativa: fIniciativa.value
+        piMax: parseInt(fPiMax.value) || 0
     };
-
-    try {
-        await set(fichaRef, dados);
-    } catch (error) {
-        console.error("Erro ao salvar ficha:", error);
-    }
+    try { await set(fichaRef, dados); } catch (error) { console.error("Erro ao salvar ficha:", error); }
 }
 
-// Eventos para salvar automaticamente ao mudar algo
-document.querySelectorAll('.ficha-container input').forEach(input => {
-    input.addEventListener('change', salvarFicha);
-});
-
-// Inicializa a ficha
-inputNome.addEventListener('change', () => {
-    if(!fNome.value) fNome.value = inputNome.value;
-    conectarFicha();
-});
+document.querySelectorAll('.ficha-papel input').forEach(input => input.addEventListener('change', salvarFicha));
+inputNome.addEventListener('change', () => { if(!fNome.value) fNome.value = inputNome.value; conectarFicha(); });
 fNome.addEventListener('change', conectarFicha);
 btnSalvarFicha.addEventListener('click', salvarFicha);
 
-// Inicia quando a página carrega
 if (fNome.value === "") fNome.value = inputNome.value;
 conectarFicha();
