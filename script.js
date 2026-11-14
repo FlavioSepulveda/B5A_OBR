@@ -46,7 +46,7 @@ function rolarDados(quantidade, faces) {
 }
 
 // ===== O CLIQUE DO BOTÃO =====
-btnRolar.addEventListener('click', async () => {
+btnRolar.addEventListener('click', () => {
     try {
         // 1. Limpa os estados anteriores
         container.className = '';
@@ -88,7 +88,7 @@ btnRolar.addEventListener('click', async () => {
             if (rolagemD12 === 12) container.classList.add('resultado-12');
         }
 
-        // 5. Integração com a Dice+
+        // 5. Integração com a Dice+ (CORRIGIDA)
         if (typeof OBR !== 'undefined') {
             // Monta a conta para a Dice+
             let notacao = `1d12`;
@@ -97,21 +97,23 @@ btnRolar.addEventListener('click', async () => {
 
             const rollId = `roll_${Date.now()}`;
             
-            // Envia para a Dice+
+            // Envia sem await para não travar a interface
+            // Usa OBR.player.name (síncrono) em vez de await getId()
             OBR.broadcast.sendMessage("dice-plus/roll-request", {
                 rollId: rollId,
-                playerId: await OBR.player.getId(),
+                playerId: OBR.player.id, 
                 playerName: nome,
                 rollTarget: 'everyone',
                 diceNotation: notacao,
                 showResults: true,
                 timestamp: Date.now(),
                 source: "com.biblioteca5a.rolagens"
-            }, { destination: 'ALL' });
+            }, { destination: 'ALL' }).catch(err => {
+                console.log("Dice+ não disponível ou erro no envio:", err);
+            });
         }
     } catch (erro) {
         // Se der erro, mostra no console para sabermos o que foi
         console.error("Erro na rolagem:", erro);
-        alert("Ocorreu um erro ao rolar. Verifique o console (F12).");
     }
 });
