@@ -123,3 +123,51 @@ input:focus { outline: none; border-color: #d4af37; }
 #lista-historico li.hist-12 { border-left-color: #4caf50; }
 .hist-total { font-weight: bold; color: #d4af37; font-size: 1.1em;}
 .hist-detalhe { color: #888; font-size: 0.85em; margin-left: 5px;}
+
+/* Estilo do seletor para combinar com o tema */
+.espectro-select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #4a3c31;
+    background-color: #1a1816;
+    color: #d4af37;
+    font-size: 1em;
+    font-family: 'Cinzel', serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+.espectro-select:focus { outline: none; border-color: #d4af37; }
+
+/* =========================================
+   CORES DOS ESPECTROS DO ÍMPETO (D12)
+   ========================================= */
+
+/* Ígneo (Vermelho) */
+.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: linear-gradient(135deg, #2c1a1a, #222); box-shadow: 0 0 10px rgba(255, 77, 77, 0.2); }
+.espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
+.espectro-igneo .dice-box.principal .dice-label { color: #ff4d4d; }
+
+/* Celeste (Azul) */
+.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
+.espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
+.espectro-celeste .dice-box.principal .dice-label { color: #3d5a80; }
+
+/* Viridiano (Verde) */
+.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: linear-gradient(135deg, #1a2c1a, #222); box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); }
+.espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
+.espectro-viridiano .dice-box.principal .dice-label { color: #4caf50; }
+
+/* Solar (Amarelo/Dourado) */
+.espectro-solar .dice-box.principal { border-color: #fbc02d; background: linear-gradient(135deg, #2c2a1a, #222); box-shadow: 0 0 10px rgba(251, 192, 45, 0.2); }
+.espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
+.espectro-solar .dice-box.principal .dice-label { color: #fbc02d; }
+
+/* Índigo (Roxo) */
+.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
+.espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
+.espectro-indigo .dice-box.principal .dice-label { color: #5c2a72; }
+
+/* Alabastro (Branco/Prata) */
+.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: linear-gradient(135deg, #2a2a2a, #222); box-shadow: 0 0 10px rgba(224, 224, 224, 0.2); }
+.espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
+.espectro-alabastro .dice-box.principal .dice-label { color: #e0e0e0; }

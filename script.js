@@ -1,5 +1,6 @@
 const btnRolar = document.getElementById('btn-rolar');
 const inputNome = document.getElementById('nome-jogador');
+const selectEspectro = document.getElementById('espectro'); // NOVO
 const inputQtd = document.getElementById('qtd-dados');
 const inputVolume = document.getElementById('volume');
 const dadoD12 = document.getElementById('dado-d12');
@@ -61,10 +62,15 @@ function renderizarHistorico() {
 }
 
 btnRolar.addEventListener('click', () => {
-    // LIMPA AS CLASSES DE COR ANTERIORES
-    container.className = '';
+    // 1. Limpa as classes anteriores
+    container.className = 'resultado-container'; 
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
+
+    // 2. APLICA A COR DO ESPECTRO SELECIONADO
+    if (selectEspectro && selectEspectro.value !== 'padrao') {
+        container.classList.add(`espectro-${selectEspectro.value}`);
+    }
 
     const nome = inputNome.value.trim() || "Arquivista";
     const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
@@ -77,38 +83,34 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // Atualiza os números
+    // 3. Atualiza os números
     dadoD12.textContent = rolagemD12;
     dadosOutros.textContent = somaDados;
     
-    // Total formatado com a conta
     totalVisual.innerHTML = `
         <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
         ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
     `;
 
-    // APLICA A COR DO RESULTADO ABSOLUTO (1, 6 ou 12)
+    // 4. Resultados Absolutos (Sobrescreve a cor do Espectro temporariamente para indicar perigo/sucesso)
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
         regraTexto.style.display = 'block';
         
-        // A classe é aplicada no container para mudar o visual da caixa do d12
         if (rolagemD12 === 1) container.classList.add('resultado-1');
         if (rolagemD12 === 6) container.classList.add('resultado-6');
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // Histórico
+    // Histórico e Chat
     const novaRolagem = { nome, d12: rolagemD12, outros: somaDados, vol: volume, total };
     historicoRolagens.push(novaRolagem);
     if (historicoRolagens.length > 4) historicoRolagens.shift();
     renderizarHistorico();
 
-    // Envia para o chat global do Owlbear
     if (typeof OBR !== 'undefined' && OBR.chat) {
         let msg = `🎲 **${nome}** rolou: **${total}** (d12: ${rolagemD12}, dados: ${somaDados}, Vol: ${volume})`;
         if (REGRAS[rolagemD12]) msg += `\n*${REGRAS[rolagemD12]}*`;
-        
         OBR.chat.postMessage(msg).catch(e => console.log("Chat indisponível."));
     }
 });
