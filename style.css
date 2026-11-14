@@ -1,44 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Merriweather', serif;
     background-color: #121212;
     background-image: radial-gradient(circle at 50% 0%, #2a221b 0%, transparent 70%);
     color: #e0e0e0;
-    margin: 0;
-    padding: 20px;
-    height: 100vh;
-    box-sizing: border-box;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
+    padding: 15px;
 }
 
+/* O container principal usa Flexbox */
 .app-container {
     display: flex;
+    flex-direction: row; /* Lado a lado no PC */
     gap: 20px;
     max-width: 1000px;
     width: 100%;
+    align-items: flex-start; /* Não estica as colunas verticalmente */
+}
+
+/* Colunas */
+.coluna-rolagem, .coluna-historico {
+    background: #1a1816;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #4a3c31;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .coluna-rolagem {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: #1a1816;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #4a3c31;
+    flex: 1; /* Ocupa 1 parte do espaço */
+    max-width: 450px;
 }
 
 .coluna-historico {
-    flex: 1;
-    background: #1a1816;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #4a3c31;
-    display: flex;
-    flex-direction: column;
+    flex: 1; /* Ocupa 1 parte do espaço */
+    min-height: 400px;
 }
 
 h2, h3 {
@@ -47,46 +54,95 @@ h2, h3 {
     text-align: center;
     border-bottom: 1px solid #4a3c31;
     padding-bottom: 10px;
-    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
 }
 
+/* Inputs */
 .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .row-inputs { display: flex; gap: 10px; }
-label { font-size: 0.8em; color: #a89f91; text-transform: uppercase; }
+label { font-size: 0.75rem; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; }
 
 input, .espectro-select {
-    padding: 8px; border-radius: 4px; border: 1px solid #4a3c31;
-    background-color: #222; color: #d4af37; font-size: 1em; 
-    font-family: 'Cinzel', serif; width: 100%; box-sizing: border-box;
+    padding: 12px; /* Maior para dedos no celular */
+    border-radius: 6px; 
+    border: 1px solid #4a3c31;
+    background-color: #222; 
+    color: #d4af37; 
+    font-size: 1rem; 
+    font-family: 'Cinzel', serif; 
+    width: 100%;
 }
 
+input:focus, .espectro-select:focus { outline: none; border-color: #d4af37; }
+
+/* Botões de alternância */
 .toggle-group { display: flex; gap: 10px; }
 .toggle {
-    flex: 1; padding: 8px; background: #222; color: #a89f91;
-    border: 1px solid #4a3c31; border-radius: 4px; cursor: pointer;
+    flex: 1; 
+    padding: 12px; 
+    background: #222; 
+    color: #a89f91;
+    border: 1px solid #4a3c31; 
+    border-radius: 6px; 
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
 }
-.toggle.active { background: #d4af37; color: #121212; font-weight: bold; }
+.toggle.active { 
+    background: #d4af37; 
+    color: #121212; 
+    font-weight: bold; 
+    border-color: #d4af37;
+}
 
+/* Botão Rolar */
 #btn-rolar {
-    padding: 12px; font-size: 1.1em; font-family: 'Cinzel', serif; font-weight: bold;
-    background-color: #d4af37; color: #121212;
-    border: none; border-radius: 4px; cursor: pointer;
+    padding: 15px; 
+    font-size: 1.1rem; 
+    font-family: 'Cinzel', serif; 
+    font-weight: bold;
+    background-color: #d4af37; 
+    color: #121212;
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 5px;
 }
+#btn-rolar:hover { background-color: #fce07a; }
 
+/* Área de Resultados */
 #resultado-container {
-    padding: 15px; text-align: center; background: #1e1e1e;
-    border-radius: 8px; border: 1px solid #333;
-    display: flex; flex-direction: column; align-items: center; gap: 15px;
+    padding: 15px; 
+    text-align: center; 
+    background: #1e1e1e;
+    border-radius: 8px; 
+    border: 1px solid #333;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px;
 }
 
-.dice-box { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: 6px; width: 80px; background: #222; }
-.principal { border: 2px solid #3d5a80; background: #1a222c; }
-.secundario { border: 2px solid #5c2a72; background: #221a26; }
-.dice-value { font-family: 'Cinzel', serif; font-size: 2em; font-weight: bold; }
-.dice-label { font-size: 0.7em; text-transform: uppercase; color: #888; }
+.dice-box { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 15px; 
+    border-radius: 8px; 
+    width: 90px; 
+    background: #222; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
+.secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
+.dice-value { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: bold; }
+.dice-label { font-size: 0.7rem; text-transform: uppercase; color: #888; margin-bottom: 5px; }
 
 #total-box { padding-top: 10px; border-top: 1px dashed #444; width: 100%; }
-#total-visual { font-size: 1em; color: #d4af37; font-weight: bold; }
+#total-visual { font-size: 1rem; color: #d4af37; font-weight: bold; }
 
 /* Cores dos Espectros */
 .espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: #2c1a1a; }
@@ -102,16 +158,25 @@ input, .espectro-select {
 .espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: #2a2a2a; }
 .espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
 
-/* Histórico Global */
+/* Histórico */
 #lista-historico-global {
-    list-style: none; padding: 0; margin: 0;
-    display: flex; flex-direction: column; gap: 10px;
-    overflow-y: auto; flex: 1;
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+    overflow-y: auto; 
+    max-height: 500px; /* Limita a altura para não vazar */
 }
 
 #lista-historico-global li {
-    padding: 15px; background: #222; border-radius: 4px;
-    border-left: 5px solid #555; display: flex; justify-content: space-between;
+    padding: 12px; 
+    background: #222; 
+    border-radius: 6px;
+    border-left: 5px solid #555; 
+    display: flex; 
+    justify-content: space-between;
     align-items: center;
     animation: slideIn 0.3s ease;
 }
@@ -120,10 +185,32 @@ input, .espectro-select {
 #lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); }
 #lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
 
-.hist-total { font-size: 1.4em; font-weight: bold; color: #d4af37; }
-.hist-detalhe { color: #888; font-size: 0.85em; }
+.hist-total { font-size: 1.2rem; font-weight: bold; color: #d4af37; }
+.hist-detalhe { color: #888; font-size: 0.8rem; }
 
 @keyframes slideIn {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
+}
+
+/* =========================================
+   RESPONSIVIDADE PARA CELULAR (A MÁGICA ACONTECE AQUI)
+   ========================================= */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column; /* Empilha as colunas no celular */
+    }
+
+    .coluna-rolagem, .coluna-historico {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .coluna-historico {
+        min-height: auto;
+    }
+
+    #lista-historico-global {
+        max-height: 300px; /* Histórico menor no celular */
+    }
 }
