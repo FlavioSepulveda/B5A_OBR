@@ -1,13 +1,14 @@
 {
-  "name": "B5A - Rolagem Global",
+  "name": "B5A - Mesa de Rolagem",
   "version": "1.0.0",
   "manifest_version": 1,
-  "background_url": "/",
+  "author": "Seu Nome",
   "action": {
-    "title": "Abrir Rolagem",
+    "title": "Abrir Mesa B5A",
     "icon": "/icon.svg",
     "popover": "/",
     "height": 600,
-    "width": 400
+    "width": 800,
+    "fullscreen": true 
   }
 }

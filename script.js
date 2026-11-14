@@ -15,15 +15,12 @@ let tipoRolagem = 'atributo';
 let historicoRolagens = [];
 const CANAL = "com.biblioteca5a.rolagens.global";
 
-// Atualiza o texto "2d4", "1d6", etc.
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
 }
-
 inputQtd.addEventListener('input', atualizarLabel);
 
-// Botões de Atributo/Perícia
 toggles.forEach(btn => {
     btn.addEventListener('click', () => {
         toggles.forEach(b => b.classList.remove('active'));
@@ -33,25 +30,18 @@ toggles.forEach(btn => {
     });
 });
 
-const REGRAS = {
-    1: "Catástrofe Definitiva!",
-    6: "Falha Absoluta!",
-    12: "Momento Lendário!"
-};
+const REGRAS = { 1: "Catástrofe!", 6: "Falha Absoluta!", 12: "Momento Lendário!" };
 
-// Rola X dados de N faces
 function rolarDados(quantidade, faces) {
     const resultados = [];
-    for (let i = 0; i < quantidade; i++) {
-        resultados.push(Math.floor(Math.random() * faces) + 1);
-    }
+    for (let i = 0; i < quantidade; i++) resultados.push(Math.floor(Math.random() * faces) + 1);
     return resultados;
 }
 
-// Desenha o histórico na tela
 function renderizarHistorico() {
     listaHistorico.innerHTML = ''; 
-    const recentes = historicoRolagens.slice(-4).reverse();
+    // Como a tela é cheia, podemos mostrar as últimas 15 rolagens
+    const recentes = historicoRolagens.slice(-15).reverse();
 
     recentes.forEach(item => {
         const li = document.createElement('li');
@@ -60,62 +50,49 @@ function renderizarHistorico() {
         if (item.d12 === 12) li.classList.add('hist-12');
 
         li.innerHTML = `
-            <span>
+            <div>
                 <strong>${item.nome}</strong> 
-                <span class="hist-detalhe">(${item.d12} + ${item.outros} + ${item.vol})</span>
-            </span>
-            <span class="hist-total">${item.total}</span>
+                <div class="hist-detalhe">${item.d12} (d12) + ${item.outros} + ${item.vol} (Vol)</div>
+            </div>
+            <div class="hist-total">${item.total}</div>
         `;
         listaHistorico.appendChild(li);
     });
 }
 
-// Escuta as mensagens dos outros jogadores
+// Inicia a escuta na rede do Owlbear
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
         OBR.broadcast.onMessage(CANAL, (event) => {
             const dados = event.data;
+            
+            // Se não for minha própria rolagem, adiciona ao histórico e atualiza a tela
             if (dados.senderId !== OBR.player.id) {
-                // Adiciona ao histórico local de quem recebeu
                 historicoRolagens.push(dados);
-                if (historicoRolagens.length > 4) historicoRolagens.shift();
                 renderizarHistorico();
             }
         });
     });
 }
 
-// O CLIQUE DO BOTÃO
 btnRolar.addEventListener('click', () => {
     container.className = '';
     regraTexto.style.display = 'none';
-    regraTexto.textContent = '';
 
     const nome = inputNome.value.trim() || "Arquivista";
     const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
-    const volume = Math.max(1, Math.min(8, parseInt(inputVolume.value) || 1));
+    const volume = Math.max(1, parseInt(inputVolume.value) || 1);
     const faces = tipoRolagem === 'atributo' ? 4 : 6;
-    const nomeDado = tipoRolagem === 'atributo' ? 'd4' : 'd6';
 
     const rolagemD12 = Math.floor(Math.random() * 12) + 1;
     const resultadosDados = rolarDados(qtdDados, faces);
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // 1. Atualiza a interface visual
+    // Mostra na tela
     dadoD12.textContent = rolagemD12;
-    if (qtdDados > 0) {
-        dadosOutros.textContent = somaDados;
-        dadosOutros.title = `Dados: [${resultadosDados.join(', ')}]`;
-    } else {
-        dadosOutros.textContent = '0';
-        dadosOutros.title = "Desafiar o Destino";
-    }
-
-    totalVisual.innerHTML = `
-        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
-        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
-    `;
+    dadosOutros.textContent = somaDados;
+    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
 
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
@@ -125,31 +102,18 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // 2. Adiciona ao histórico local
+    // Cria o pacote de rolagem
     const novaRolagem = {
         senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
-        nome: nome,
-        d12: rolagemD12,
-        outros: somaDados,
-        vol: volume,
-        total: total
+        nome: nome, d12: rolagemD12, outros: somaDados, vol: volume, total: total
     };
     
+    // Adiciona na SUA tela
     historicoRolagens.push(novaRolagem);
-    if (historicoRolagens.length > 4) historicoRolagens.shift();
     renderizarHistorico();
 
-    // 3. Tenta enviar para os outros (Notificação Nativa)
+    // Envia para TODOS (agora funciona porque a tela está sempre ativa)
     if (typeof OBR !== 'undefined') {
-        // Envia a mensagem no canal
         OBR.broadcast.sendMessage(CANAL, novaRolagem, { destination: 'ALL' });
-        
-        // Mostra a notificação nativa na sua tela também
-        let tipoNotificacao = "INFO";
-        if (rolagemD12 === 1) tipoNotificacao = "ERROR";
-        if (rolagemD12 === 6) tipoNotificacao = "WARNING";
-        if (rolagemD12 === 12) tipoNotificacao = "SUCCESS";
-        
-        OBR.notification.show(`${nome} rolou ${total} (d12: ${rolagemD12})`, tipoNotificacao);
     }
 });

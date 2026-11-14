@@ -3,62 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rolagem - Biblioteca 5ª Avenida</title>
+    <title>Mesa - B5A</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h2>Registro de Rolagem</h2>
+    <div class="mesa-container">
+        <!-- Lado Esquerdo: A ROLAGEM -->
+        <div class="painel-rolagem">
+            <h2>Registro de Rolagem</h2>
+            
+            <div class="input-group">
+                <label for="nome-jogador">Seu Nome / Personagem</label>
+                <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
+            </div>
 
-    <div class="input-group">
-        <label for="nome-jogador">Seu Nome / Personagem</label>
-        <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
-    </div>
+            <div class="input-group">
+                <label>Tipo de Teste</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
+                    <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
+                </div>
+            </div>
 
-    <div class="input-group">
-        <label>Tipo de Teste</label>
-        <div class="toggle-group">
-            <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
-            <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
+            <div class="row-inputs">
+                <div class="input-group">
+                    <label for="qtd-dados">Qtd. de Dados</label>
+                    <input type="number" id="qtd-dados" min="0" max="10" value="2">
+                </div>
+                <div class="input-group">
+                    <label for="volume">Volume (1-8)</label>
+                    <input type="number" id="volume" min="1" max="8" value="1">
+                </div>
+            </div>
+
+            <button id="btn-rolar">Lançar Dados</button>
+
+            <div id="resultado-container">
+                <div id="d12-box" class="dice-box principal">
+                    <span class="dice-label">d12</span>
+                    <span id="dado-d12" class="dice-value">-</span>
+                </div>
+                <div id="outros-dados-box" class="dice-box secundario">
+                    <span id="label-outros" class="dice-label">2d4</span>
+                    <span id="dados-outros" class="dice-value">-</span>
+                </div>
+                <div id="total-box">
+                    <span id="total-visual">Aguardando rolagem...</span>
+                </div>
+                <div id="regra-texto"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="row-inputs">
-        <div class="input-group">
-            <label for="qtd-dados">Qtd. de Dados</label>
-            <input type="number" id="qtd-dados" min="0" max="10" value="2">
+        <!-- Lado Direito: O HISTÓRICO GLOBAL -->
+        <div class="painel-historico">
+            <h3>Crônica da Mesa (Global)</h3>
+            <ul id="lista-historico">
+                <!-- O histórico de todo mundo vai aparecer aqui -->
+            </ul>
         </div>
-
-        <div class="input-group">
-            <label for="volume">Volume (1-8)</label>
-            <input type="number" id="volume" min="1" max="8" value="1">
-        </div>
-    </div>
-
-    <button id="btn-rolar">Lançar Dados</button>
-
-    <div id="resultado-container">
-        <div id="d12-box" class="dice-box principal">
-            <span class="dice-label">d12</span>
-            <span id="dado-d12" class="dice-value">-</span>
-        </div>
-
-        <div id="outros-dados-box" class="dice-box secundario">
-            <span id="label-outros" class="dice-label">2d4</span>
-            <span id="dados-outros" class="dice-value">-</span>
-        </div>
-
-        <div id="total-box">
-            <span id="total-visual">Aguardando rolagem...</span>
-        </div>
-
-        <div id="regra-texto"></div>
-    </div>
-
-    <div id="historico-container">
-        <h3>Últimas Rolagens</h3>
-        <ul id="lista-historico">
-        </ul>
     </div>
 
     <script src="script.js"></script>
