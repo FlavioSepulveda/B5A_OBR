@@ -12,8 +12,7 @@ const toggles = document.querySelectorAll('.toggle');
 const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
-const CANAL_ROLAGEM = "com.biblioteca5a.rolagens.global";
-const MY_EXTENSION_ID = "com.biblioteca5a.rolagens";
+const MY_EXTENSION_ID = "com.biblioteca5a.rolagens"; // ID único da sua extensão
 let historicoRolagens = [];
 
 function atualizarLabel() {
@@ -67,7 +66,7 @@ function renderizarHistorico() {
     });
 }
 
-// Função para verificar se a Dice+ está pronta (conforme documentação oficial)
+// Função oficial da Dice+ para verificar se ela está pronta [citation:1]
 async function checkDicePlusReady() {
     if (typeof OBR === 'undefined') return false;
     
@@ -91,16 +90,13 @@ async function checkDicePlusReady() {
     });
 }
 
-// Escuta broadcast local (para quem estiver com o painel aberto)
+// Escuta o resultado que a Dice+ devolve para a sua extensão [citation:1]
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
-        OBR.broadcast.onMessage(CANAL_ROLAGEM, (event) => {
-            const dados = event.data;
-            if (dados.senderId !== OBR.player.id) {
-                historicoRolagens.push(dados);
-                if (historicoRolagens.length > 4) historicoRolagens.shift();
-                renderizarHistorico();
-            }
+        OBR.broadcast.onMessage(`${MY_EXTENSION_ID}/roll-result`, (event) => {
+            const result = event.data;
+            console.log("Resultado da Dice+ recebido:", result);
+            // Aqui você poderia atualizar o histórico local com o resultado oficial da Dice+
         });
     });
 }
@@ -159,12 +155,8 @@ btnRolar.addEventListener('click', async () => {
         if (historicoRolagens.length > 4) historicoRolagens.shift();
         renderizarHistorico();
 
-        // --- INTEGRAÇÃO GLOBAL COM A DICE+ (CORRIGIDA) ---
+        // --- INTEGRAÇÃO GLOBAL COM A DICE+ (SEGUNDO DOCUMENTAÇÃO) ---
         if (typeof OBR !== 'undefined') {
-            // 1. Envia para o seu próprio broadcast
-            OBR.broadcast.sendMessage(CANAL_ROLAGEM, novaRolagem, { destination: 'ALL' });
-
-            // 2. Verifica se a Dice+ está pronta ANTES de enviar
             const dicePlusReady = await checkDicePlusReady();
             
             if (dicePlusReady) {
@@ -174,21 +166,21 @@ btnRolar.addEventListener('click', async () => {
 
                 const rollId = `roll_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                 
-                // Envia para a Dice+
+                // Envia para a Dice+ no formato oficial [citation:1]
                 await OBR.broadcast.sendMessage("dice-plus/roll-request", {
                     rollId: rollId,
                     playerId: OBR.player.id,
                     playerName: nome,
                     rollTarget: 'everyone',
                     diceNotation: notacao,
-                    showResults: true,
+                    showResults: true, // Mostra o popup da Dice+ na tela de todos
                     timestamp: Date.now(),
-                    source: MY_EXTENSION_ID
+                    source: MY_EXTENSION_ID // Campo obrigatório [citation:1]
                 }, { destination: 'ALL' });
 
                 console.log("Rolagem enviada para a Dice+ com sucesso!");
             } else {
-                console.warn("Dice+ não está pronta ou não foi encontrada na sala.");
+                console.error("Dice+ não encontrada ou não está pronta na sala. Verifique se está ativada.");
             }
         }
 
