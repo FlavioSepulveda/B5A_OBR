@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades - B5A</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/comunidade.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
+
+    <div class="comunidade-container">
+        <!-- FORMULÁRIO -->
+        <div class="painel-escrita">
+            <h2>Registrar Habilidade</h2>
+            <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
+                
+                <div class="input-group">
+                    <label>Nome da Habilidade</label>
+                    <input type="text" id="form-titulo" placeholder="Ex: Lâmina Definitiva">
+                </div>
+                
+                <div class="input-group">
+                    <label>Tipo</label>
+                    <select id="form-tipo">
+                        <option value="Palavra de Afirmação">Palavra de Afirmação</option>
+                        <option value="Frase de Efeito">Frase de Efeito</option>
+                        <option value="Título">Título</option>
+                    </select>
+                </div>
+
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Custo (PI / PV)</label>
+                        <input type="text" id="form-custo" placeholder="Ex: 3 PI ou -4 PV">
+                    </div>
+                    <div class="input-group">
+                        <label>Descarte (Se houver)</label>
+                        <input type="text" id="form-descarte" placeholder="Ex: +1d6 por dado">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>URL da Imagem (Opcional)</label>
+                    <input type="url" id="form-imagem" placeholder="Link da imagem">
+                </div>
+
+                <div class="input-group">
+                    <label>Efeito / Descrição</label>
+                    <textarea id="form-texto" rows="4" placeholder="O que essa habilidade faz?"></textarea>
+                </div>
+                
+                <button id="btn-salvar-form" class="btn-primario" style="padding: 10px; margin-top: 10px;">Salvar Habilidade</button>
+                <p id="status-form" style="font-size: 0.8rem; color: #888; text-align: center;"></p>
+            </div>
+        </div>
+
+        <!-- FEED -->
+        <div class="painel-feed">
+            <h2>Habilidades da Comunidade</h2>
+            <div id="lista-feed" class="grid-cronicas"></div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-item" class="modal-leitura">
+        <div class="modal-leitura-content">
+            <span class="close-btn" onclick="fecharModal()">&times;</span>
+            <img id="modal-img" src="" class="modal-capa" style="background-color: #111;">
+            <h2 id="modal-titulo">Nome</h2>
+            <p id="modal-subtitulo" style="color: var(--gold); font-size: 0.9rem; margin-bottom: 10px;"></p>
+            <div id="modal-texto" style="line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap;"></div>
+            
+            <div id="modal-habilidades" style="background: #111; padding: 10px; border: 1px solid #333; border-radius: 4px; margin-bottom: 20px;"></div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex: 1;">
+                    ❤️ Curtir (<span id="qtd-likes">0</span>)
+                </button>
+                <button id="btn-editar" class="btn-primario" style="display: none; flex: 1;" onclick="prepararEdicao()">Editar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/habilidades.js"></script>
+</body>
+</html>

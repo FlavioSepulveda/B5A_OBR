@@ -81,45 +81,46 @@ h1, h2, h3, .nav-brand, .btn-primario, .nav-btn, .btn-login-nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 100px 20px 40px;
+    padding: 100px 20px 40px; /* Espaço para a navbar */
     text-align: center;
+    min-height: 100vh;
 }
 
-/* AQUI ESTÁ A CLASSE DA SUA LOGO SVG */
 .logo-principal {
     width: 100%;
-    max-width: 380px; /* Aumentado para ficar em destaque */
+    max-width: 280px; 
     height: auto;
-    margin-top: -100px; /* Puxa o texto para cima, sobrepondo o vazio da imagem */
-    margin-bottom: 0px;
+    margin-top: -30px; /* Sobe um pouco a logo para não ficar um vão gigante */
+    margin-bottom: 10px;
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
 }
-
-/* REMOVIDO O .home-logo ANTIGO */
 
 .home-subtitulo {
     color: #888;
     font-style: italic;
-    margin-top: -70px; /* Puxa o texto para cima, sobrepondo o vazio da imagem */
-    margin-bottom: 40px; /* Era 50px, agora está colado nos cards */
-    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 40px;
+    font-size: 1rem;
 }
 
+/* GRID DOS CARDS - O SEGREDO ESTÁ AQUI */
 .home-menu {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    /* O minmax(250px) impede que os cards fiquem finos e amassem o texto */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: 20px;
     width: 100%;
-    max-width: 900px;
+    max-width: 900px; 
+    margin: 0 auto;
 }
 
 .card-menu {
     background: var(--bg-panel);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 30px 20px;
+    padding: 20px 15px;
     text-decoration: none;
-    color: #fff;
+    color: #fff !important; /* Força a cor branca para sumir com o roxo */
     transition: all 0.3s;
     display: flex;
     flex-direction: column;
@@ -131,11 +132,38 @@ h1, h2, h3, .nav-brand, .btn-primario, .nav-btn, .btn-login-nav {
     border-color: var(--gold);
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    background: #1e1e1e;
 }
 
-.card-menu .icone { font-size: 3rem; margin-bottom: 10px; }
-.card-menu h2 { color: var(--gold); font-size: 1.5rem; margin-bottom: 10px; }
-.card-menu p { color: #888; font-size: 0.9rem; line-height: 1.4; }
+.card-menu .icone { 
+    font-size: 2rem; 
+    margin-bottom: 10px; 
+    line-height: 1;
+}
+
+/* Força a cor dourada e remove o roxo do navegador */
+.card-menu h2 { 
+    color: var(--gold) !important; 
+    font-size: 1.3rem; 
+    margin-bottom: 5px; 
+    font-family: 'Bebas Neue', sans-serif;
+    text-decoration: none;
+}
+
+/* Força a cor cinza e remove o roxo do navegador */
+.card-menu p { 
+    color: #888 !important; 
+    font-size: 0.85rem; 
+    line-height: 1.4; 
+    text-decoration: none;
+}
+
+.destaque-menu {
+    border-color: var(--gold);
+    background: rgba(199, 168, 107, 0.05);
+}
+
+
 
 /* =========================================
    LAYOUT DE TEXTO (Regras, Guia, etc)
@@ -182,33 +210,43 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 }
 .btn-primario:hover { background-color: #dfc28c; }
 
-/* Responsividade Básica */
-/* Responsividade Básica */
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+/* =========================================
+   RESPONSIVIDADE (CELULAR)
+   ========================================= */
 @media (max-width: 900px) {
     .top-nav { 
         flex-direction: column; 
         height: auto; 
-        padding: 15px; 
-        gap: 10px; 
+        padding: 10px; 
+        gap: 5px; 
     }
     
-    /* Aumenta o espaço do topo para o conteúdo não ficar embaixo da navbar */
     .home-container {
-        padding-top: 180px; 
+        /* No celular, a navbar fica mais alta. Empurramos o conteúdo para baixo dela. */
+        padding-top: 130px; 
     }
 
     .logo-principal { 
-        max-width: 220px; 
-        margin-bottom: 10px;
+        max-width: 180px; /* Logo menor no celular */
+        margin-top: 0;
     } 
     
     .home-subtitulo {
-        margin-top: 0;
-        margin-bottom: 30px;
+        margin-top: 5px; /* No celular as vezes é melhor não sobrepor */
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .home-menu {
+        grid-template-columns: 1fr; /* 1 card por linha no celular */
+        max-width: 100%;
     }
 
     .conteudo-texto { 
         padding: 20px; 
-        margin-top: 150px; /* Ajusta as páginas de texto também */
+        margin-top: 130px;
     }
 }

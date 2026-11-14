@@ -193,3 +193,31 @@
     .comunidade-container { flex-direction: column; max-width: 100%; }
     .painel-escrita, .painel-feed { flex: auto; width: 100%; }
 }
+
+/* ===== ADIÇÕES PARA BESTIÁRIO E ARSENAL ===== */
+.grid-form-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.grid-form-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.slot-habilidade-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid #33291e;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .grid-form-2,
+    .grid-form-3 {
+        grid-template-columns: 1fr;
+    }
+}

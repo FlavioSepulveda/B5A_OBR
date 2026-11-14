@@ -3,121 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bestiário das Almas - Biblioteca da 5ª Avenida</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Bestiário - B5A</title>
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/comunidade.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="topo-biblioteca">
-        <a href="../index.html" class="btn-voltar">← Voltar à Biblioteca</a>
-        <h1>Bestiário das Almas</h1>
-        <p>Registre anomalias, feras e entidades encontradas entre as estantes.</p>
-    </header>
+    <nav class="top-nav">
+        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
 
-    <main class="container-comunidade">
-        <!-- FORMULÁRIO DE CRIAÇÃO / EDIÇÃO -->
-        <section class="caixa-criar-cronica">
-            <h2 id="titulo-form-monstro">Registrar Nova Criatura</h2>
-            <input type="hidden" id="monstro-edit-id" value="">
-
-            <div class="grid-form-2">
-                <div>
-                    <label>Nome da Criatura *</label>
-                    <input type="text" id="monstro-nome" placeholder="Ex: O Tirano de Cinzas">
+    <div class="comunidade-container">
+        <!-- FORMULÁRIO -->
+        <div class="painel-escrita">
+            <h2>Registrar Monstro</h2>
+            <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
+                <div class="input-group">
+                    <label>Nome do Monstro</label>
+                    <input type="text" id="form-titulo" placeholder="Ex: Tirano de Cinzas">
                 </div>
-                <div>
-                    <label>Imagem da Criatura (Opcional)</label>
-                    <input type="file" id="monstro-img-input" accept="image/*">
-                    <img id="monstro-img-preview" style="display:none; max-height:120px; margin-top:8px; border-radius:6px; border:1px solid #444;">
-                </div>
-            </div>
-
-            <div class="grid-form-3" style="margin-top: 12px;">
-                <div>
-                    <label>Natureza / Tipagem</label>
-                    <select id="monstro-natureza">
-                        <option value="Fera">Fera</option>
-                        <option value="Humanoide">Humanoide</option>
-                        <option value="Manifestação">Manifestação</option>
-                        <option value="Construto">Construto</option>
-                        <option value="Anomalia">Anomalia</option>
-                        <option value="Entidade">Entidade</option>
-                        <option value="Arquivista">Arquivista</option>
-                        <option value="Relíquia Viva">Relíquia Viva</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Espectro Predominante</label>
-                    <select id="monstro-espectro">
-                        <option value="Ígneo">Ígneo (Vermelho)</option>
-                        <option value="Celeste">Celeste (Azul)</option>
-                        <option value="Viridiano">Viridiano (Verde)</option>
-                        <option value="Solar">Solar (Amarelo)</option>
-                        <option value="Índigo">Índigo (Violeta)</option>
-                        <option value="Alabastro">Alabastro (Branco)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Nível de Ameaça / Volume</label>
-                    <input type="text" id="monstro-ameaca" placeholder="Ex: Comum | Vol. I ou Chefe | Vol. V">
-                </div>
-            </div>
-
-            <div class="grid-form-3" style="margin-top: 12px;">
-                <div>
-                    <label>Atributo Dominante (Testes Contra)</label>
-                    <select id="monstro-atributo">
-                        <option value="Vigor">Vigor</option>
-                        <option value="Dinamismo">Dinamismo</option>
-                        <option value="Razão">Razão</option>
-                        <option value="Determinação">Determinação</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Pontos de Vida (PV)</label>
-                    <input type="number" id="monstro-pv" value="15" min="1">
-                </div>
-                <div>
-                    <label>Taxa de Acerto (TA)</label>
-                    <input type="number" id="monstro-ta" value="12" min="1">
-                </div>
-            </div>
-
-            <div style="margin-top: 12px;">
-                <label>Descritor & Ataques Básicos</label>
-                <textarea id="monstro-desc" rows="3" placeholder="Aparência, comportamento e ataques básicos (ex: Mordida Incandescente: 1d12 + 3d4 + 1 | Dano: 1d4+2)..."></textarea>
-            </div>
-
-            <!-- 3 SLOTS DE HABILIDADES -->
-            <div style="margin-top: 16px;">
-                <label style="font-weight:bold; color:#d4af37;">Habilidades da Criatura (Até 3 Slots)</label>
                 
-                <div class="slot-habilidade" style="margin-top:8px; padding:10px; background:rgba(0,0,0,0.25); border-radius:6px;">
-                    <input type="text" id="hab1-nome" placeholder="Slot 1 — Nome e Custo (ex: Aura de Calor - Passiva)">
-                    <textarea id="hab1-desc" rows="2" placeholder="Efeito da habilidade 1..." style="margin-top:6px;"></textarea>
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Vida (PV)</label>
+                        <input type="number" id="form-vida" value="10">
+                    </div>
+                    <div class="input-group">
+                        <label>TA (Defesa)</label>
+                        <input type="number" id="form-ta" value="12">
+                    </div>
+                </div>
+                
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Atributo Dominante</label>
+                        <select id="form-dominante">
+                            <option value="Vigor">Vigor</option>
+                            <option value="Dinamismo">Dinamismo</option>
+                            <option value="Razão">Razão</option>
+                            <option value="Determinação">Determinação</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Espectro</label>
+                        <input type="text" id="form-espectro" placeholder="Ex: Ígneo">
+                    </div>
                 </div>
 
-                <div class="slot-habilidade" style="margin-top:8px; padding:10px; background:rgba(0,0,0,0.25); border-radius:6px;">
-                    <input type="text" id="hab2-nome" placeholder="Slot 2 — Nome e Custo (ex: Rugido do Desafio - 3 PI)">
-                    <textarea id="hab2-desc" rows="2" placeholder="Efeito da habilidade 2..." style="margin-top:6px;"></textarea>
+                <div class="input-group">
+                    <label>URL da Imagem</label>
+                    <input type="url" id="form-imagem" placeholder="Link da imagem">
                 </div>
 
-                <div class="slot-habilidade" style="margin-top:8px; padding:10px; background:rgba(0,0,0,0.25); border-radius:6px;">
-                    <input type="text" id="hab3-nome" placeholder="Slot 3 (Capstone) — Nome e Custo (ex: Chama Devoradora - 4 PI)">
-                    <textarea id="hab3-desc" rows="2" placeholder="Efeito da habilidade 3..." style="margin-top:6px;"></textarea>
+                <div class="input-group">
+                    <label>Descrição / Ataques</label>
+                    <textarea id="form-texto" rows="3" placeholder="Descreva o comportamento e ataques..."></textarea>
                 </div>
+
+                <label style="color: var(--gold); margin-top: 10px;">Habilidades (Até 3)</label>
+                <input type="text" id="form-hab1" placeholder="Habilidade 1">
+                <input type="text" id="form-hab2" placeholder="Habilidade 2">
+                <input type="text" id="form-hab3" placeholder="Habilidade 3">
+                
+                <button id="btn-salvar-form" class="btn-primario" style="padding: 10px; margin-top: 10px;">Salvar Monstro</button>
+                <p id="status-form" style="font-size: 0.8rem; color: #888; text-align: center;"></p>
             </div>
+        </div>
 
-            <div style="margin-top: 16px; display:flex; gap:10px;">
-                <button id="btn-salvar-monstro" class="btn-principal">Salvar no Bestiário</button>
-                <button id="btn-cancelar-edicao-monstro" class="btn-secundario" style="display:none;">Cancelar Edição</button>
+        <!-- FEED -->
+        <div class="painel-feed">
+            <h2>Bestiário da Comunidade</h2>
+            <div id="lista-feed" class="grid-cronicas"></div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-item" class="modal-leitura">
+        <div class="modal-leitura-content">
+            <span class="close-btn" onclick="fecharModal()">&times;</span>
+            <img id="modal-img" src="" class="modal-capa" style="background-color: #111;">
+            <h2 id="modal-titulo">Nome</h2>
+            <p id="modal-subtitulo" style="color: var(--gold); font-size: 0.9rem; margin-bottom: 10px;"></p>
+            <div id="modal-texto" style="line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap;"></div>
+            
+            <div id="modal-habilidades" style="background: #111; padding: 10px; border: 1px solid #333; border-radius: 4px; margin-bottom: 20px;"></div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex: 1;">
+                    ❤️ Curtir (<span id="qtd-likes">0</span>)
+                </button>
+                <button id="btn-editar" class="btn-primario" style="display: none; flex: 1;" onclick="prepararEdicao()">Editar</button>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- FEED DE CRIATURAS -->
-        <section id="lista-monstros" class="feed-cronicas"></section>
-    </main>
-
+    <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/monstros.js"></script>
 </body>
 </html>

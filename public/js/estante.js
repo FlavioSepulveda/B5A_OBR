@@ -1,36 +1,45 @@
 import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-function carregarEstante() {
-    const container = document.getElementById('estante-container');
-    if (!container) return;
+const container = document.getElementById('estante-container');
 
-    window.addEventListener('usuarioLogado', () => {
-        if (!idJogadorAtual) return;
-        
-        // Puxa a ficha atual do jogador
-        const fichaRef = ref(db, `salas/${salaAtual}/jogadores/${idJogadorAtual}`);
-        
-        onValue(fichaRef, (snapshot) => {
-            const dados = snapshot.val();
-            container.innerHTML = '';
+window.addEventListener('usuarioLogado', () => {
+    if (!idJogadorAtual) return;
+    
+    const fichasRef = ref(db, `salas/${salaAtual}/jogadores`);
+    
+    onValue(fichasRef, (snapshot) => {
+        container.innerHTML = '';
+        const dados = snapshot.val();
+        let temPersonagem = false;
 
-            if (dados) {
-                // Transforma o personagem em um Livro
-                const livro = document.createElement('div');
-                livro.className = 'livro';
-                // Ao clicar, vai para a página da ficha
-                livro.onclick = () => window.location.href = 'ficha.html'; 
-                
-                livro.innerHTML = `
-                    <div class="livro-texto">${dados.nome || 'Sem Nome'}</div>
-                `;
-                container.appendChild(livro);
-            } else {
-                container.innerHTML = '<p style="color: #888; font-style: italic;">Sua estante está vazia. Crie um personagem na Mesa de Jogo.</p>';
-            }
-        });
+        if (dados) {
+            Object.keys(dados).forEach(id => {
+                if (id === idJogadorAtual) {
+                    temPersonagem = true;
+                    const ficha = dados[id];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'livro-card';
+                    card.onclick = () => window.location.href = `ficha.html?id=${id}`;
+                    
+                    card.innerHTML = `
+                        <div class="livro-titulo">${ficha.nome || 'Sem Nome'}</div>
+                        <div class="livro-detalhe">${ficha.espectro || 'Sem Espectro'}</div>
+                        <div class="livro-detalhe">Vol. ${ficha.volume || 1}</div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        if (!temPersonagem) {
+            container.innerHTML = `
+                <div class="livro-vazio">
+                    <p>Nenhum personagem na estante ainda.</p>
+                    <a href="ficha.html" class="btn-primario" style="text-decoration: none; max-width: 300px;">Criar Novo Arquivista</a>
+                </div>
+            `;
+        }
     });
-}
-
-carregarEstante();
+});
