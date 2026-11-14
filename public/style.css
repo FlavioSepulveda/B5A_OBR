@@ -52,14 +52,14 @@ h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value, .btn-rolar-nome, .va
 }
 
 .aba {
-    display: none; /* Esconde todas as abas por padrão */
+    display: none;
     width: 100%;
     max-width: 1250px;
     padding: 0 15px;
 }
 
 .aba.active {
-    display: block; /* Mostra apenas a aba ativa */
+    display: block;
     animation: fadeIn 0.3s ease;
 }
 
@@ -94,7 +94,7 @@ h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value, .btn-rolar-nome, .va
     border-radius: 6px;
     display: flex;
     flex-direction: column;
-    height: fit-content; /* Não estica verticalmente */
+    height: fit-content;
 }
 
 /* COMPONENTES DA FICHA */
@@ -140,7 +140,7 @@ input:focus, select:focus { border-color: var(--gold); }
     flex-direction: column; 
     align-items: center; 
     gap: 15px; 
-    margin-top: 0px; /* Cola no topo */
+    margin-top: 0px; 
     margin-bottom: 20px; 
 }
 
@@ -166,7 +166,12 @@ input:focus, select:focus { border-color: var(--gold); }
 .espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
 
 /* HISTÓRICO */
-.coluna-historico h3 { color: var(--gold); font-size: 1.3rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 15px; padding-bottom: 10px; margin-bottom: 15px; }
+.historico-wrapper {
+    border-top: 1px solid var(--border-color); /* Linha separando o resultado do histórico */
+    padding-top: 15px;
+}
+
+.historico-wrapper h3 { color: var(--gold); font-size: 1.3rem; text-align: center; padding-bottom: 10px; margin-bottom: 15px; }
 #lista-historico-global { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 600px; }
 #lista-historico-global li { padding: 12px; background: var(--bg-input); border-radius: 4px; border-left: 4px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
 #lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
