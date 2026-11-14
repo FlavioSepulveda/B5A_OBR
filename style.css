@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,289 +13,171 @@ body {
     overflow-x: hidden;
 }
 
-/* =========================================
-   MENU LATERAL (SIDEBAR)
-   ========================================= */
-.menu-toggle {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 900;
-    background-color: #1a1816;
-    color: #d4af37;
-    border: 1px solid #d4af37;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+h2, h3, .logo, .menu-toggle, .nav-btn, #btn-rolar, .btn-primario, .dice-value, .btn-controle {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
 }
 
+/* =========================================
+   MENU E ABAS
+   ========================================= */
+.menu-toggle {
+    position: fixed; top: 15px; left: 15px; z-index: 900;
+    background-color: #1a1816; color: #d4af37; border: 1px solid #d4af37;
+    padding: 10px 15px; border-radius: 5px; font-size: 1.2rem; cursor: pointer;
+    transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
 .menu-toggle:hover { background-color: #d4af37; color: #121212; }
 
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: -320px;
-    width: 300px;
-    height: 100vh;
-    background-color: #151312;
-    border-right: 2px solid #d4af37;
-    z-index: 1000;
-    transition: left 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+    background-color: #151312; border-right: 2px solid #d4af37;
+    z-index: 1000; transition: left 0.3s ease; display: flex; flex-direction: column;
     box-shadow: 5px 0 15px rgba(0,0,0,0.8);
 }
-
 .sidebar.active { left: 0; }
 
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #4a3c31;
-    background-color: #1a1816;
-}
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #4a3c31; background-color: #1a1816; }
+.sidebar-header h2 { font-size: 1.5rem; color: #d4af37; border: none; padding: 0; }
+.close-sidebar { background: none; border: none; color: #a89f91; font-size: 2rem; cursor: pointer; }
+.sidebar-links { display: flex; flex-direction: column; padding: 20px; gap: 10px; flex: 1; }
+.nav-btn { background: transparent; color: #a89f91; border: 1px solid #4a3c31; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 1.2rem; text-align: left; transition: all 0.2s; }
+.nav-btn:hover { background: #d4af37; color: #121212; border-color: #d4af37; padding-left: 20px; }
+.sidebar-footer { padding: 20px; text-align: center; border-top: 1px solid #4a3c31; color: #555; font-style: italic; }
 
-.sidebar-header h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    color: #d4af37;
-    border: none;
-    padding: 0;
-}
-
-.close-sidebar {
-    background: none;
-    border: none;
-    color: #a89f91;
-    font-size: 1.8rem;
-    cursor: pointer;
-}
-.close-sidebar:hover { color: #ff4d4d; }
-
-.sidebar-links {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 10px;
-    flex: 1;
-}
-
-.nav-btn {
-    background: transparent;
-    color: #a89f91;
-    border: 1px solid #4a3c31;
-    padding: 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    text-align: left;
-    transition: all 0.2s;
-}
-
-.nav-btn:hover {
-    background: #d4af37;
-    color: #121212;
-    border-color: #d4af37;
-    padding-left: 20px;
-}
-
-.sidebar-footer {
-    padding: 20px;
-    text-align: center;
-    border-top: 1px solid #4a3c31;
-    color: #555;
-    font-size: 0.8rem;
-    font-style: italic;
-}
-
-/* FUNDO ESCURO (OVERLAY) */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(3px);
-    z-index: 800;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); z-index: 800; display: none; opacity: 0; transition: opacity 0.3s; }
 .overlay.active { display: block; opacity: 1; }
 
-/* =========================================
-   LAYOUT PRINCIPAL (O site em si)
-   ========================================= */
-.app-container {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    max-width: 1000px;
-    width: 100%;
-    margin: 60px auto 20px auto;
-    padding: 0 15px;
-}
+.abas-container { margin-top: 60px; width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; padding: 0 15px; }
+.aba { display: none; }
+.aba.active { display: block; animation: fadeIn 0.4s ease; }
 
-.coluna-rolagem, .coluna-historico {
-    background: #1a1816;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #4a3c31;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+/* =========================================
+   ESTILOS DA ROLAGEM
+   ========================================= */
+.app-container { display: flex; flex-direction: row; gap: 20px; width: 100%; margin: 20px 0; }
+.coluna-rolagem, .coluna-historico { background: #1a1816; padding: 20px; border-radius: 8px; border: 1px solid #4a3c31; display: flex; flex-direction: column; gap: 15px; }
 .coluna-rolagem { flex: 1; max-width: 450px; }
 .coluna-historico { flex: 1; min-height: 400px; }
-
-h2, h3 {
-    font-family: 'Cinzel', serif;
-    color: #d4af37;
-    text-align: center;
-    border-bottom: 1px solid #4a3c31;
-    padding-bottom: 10px;
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-}
-
-/* Inputs e botões */
+h2, h3 { color: #d4af37; text-align: center; border-bottom: 1px solid #4a3c31; padding-bottom: 10px; margin-bottom: 5px; font-size: 1.8rem; }
 .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .row-inputs { display: flex; gap: 10px; }
-label { font-size: 0.75rem; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; }
-input, .espectro-select { padding: 12px; border-radius: 6px; border: 1px solid #4a3c31; background-color: #222; color: #d4af37; font-size: 1rem; font-family: 'Cinzel', serif; width: 100%; }
-input:focus, .espectro-select:focus { outline: none; border-color: #d4af37; }
+label { font-size: 0.75rem; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; font-family: 'Merriweather', serif; }
+input, select, textarea { padding: 12px; border-radius: 6px; border: 1px solid #4a3c31; background-color: #222; color: #d4af37; font-size: 1rem; font-family: 'Merriweather', serif; width: 100%; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: #d4af37; }
 .toggle-group { display: flex; gap: 10px; }
-.toggle { flex: 1; padding: 12px; background: #222; color: #a89f91; border: 1px solid #4a3c31; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
-.toggle.active { background: #d4af37; color: #121212; font-weight: bold; border-color: #d4af37; }
-#btn-rolar { padding: 15px; font-size: 1.1rem; font-family: 'Cinzel', serif; font-weight: bold; background-color: #d4af37; color: #121212; border: none; border-radius: 6px; cursor: pointer; margin-top: 5px; }
+.toggle { flex: 1; padding: 10px; background: #222; color: #a89f91; border: 1px solid #4a3c31; border-radius: 6px; cursor: pointer; font-size: 1rem; font-family: 'Bebas Neue', sans-serif; }
+.toggle.active { background: #d4af37; color: #121212; border-color: #d4af37; }
+#btn-rolar { padding: 15px; font-size: 1.5rem; background-color: #d4af37; color: #121212; border: none; border-radius: 6px; cursor: pointer; margin-top: 5px; }
 #btn-rolar:hover { background-color: #fce07a; }
-
-/* Resultados */
 #resultado-container { padding: 15px; text-align: center; background: #1e1e1e; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.dice-box { display: flex; flex-direction: column; align-items: center; padding: 15px; border-radius: 8px; width: 90px; background: #222; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+.dice-box { display: flex; flex-direction: column; align-items: center; padding: 15px; border-radius: 8px; width: 90px; background: #222; }
 .principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
 .secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
-.dice-value { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: bold; }
-.dice-label { font-size: 0.7rem; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+.dice-value { font-size: 3rem; }
+.dice-label { font-family: 'Merriweather', serif; font-size: 0.7rem; text-transform: uppercase; color: #888; }
 #total-box { padding-top: 10px; border-top: 1px dashed #444; width: 100%; }
-#total-visual { font-size: 1rem; color: #d4af37; font-weight: bold; }
-
-/* Cores dos Espectros */
-.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: #2c1a1a; }
-.espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
-.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: #1a222c; }
-.espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
-.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: #1a2c1a; }
-.espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
-.espectro-solar .dice-box.principal { border-color: #fbc02d; background: #2c2a1a; }
-.espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
-.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: #221a26; }
-.espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
-.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: #2a2a2a; }
-.espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
-
-/* Histórico */
+#total-visual { font-size: 1rem; color: #d4af37; font-weight: bold; font-family: 'Merriweather', serif; }
 #lista-historico-global { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 500px; }
-#lista-historico-global li { padding: 12px; background: #222; border-radius: 6px; border-left: 5px solid #555; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease; }
+#lista-historico-global li { padding: 12px; background: #222; border-radius: 6px; border-left: 5px solid #555; display: flex; justify-content: space-between; align-items: center; font-family: 'Merriweather', serif;}
 #lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
 #lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); }
 #lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
-.hist-total { font-size: 1.2rem; font-weight: bold; color: #d4af37; }
+.hist-total { font-size: 1.2rem; font-weight: bold; color: #d4af37; font-family: 'Bebas Neue', sans-serif; }
 .hist-detalhe { color: #888; font-size: 0.8rem; }
 
-@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
 /* =========================================
-   ESTILO DOS MODAIS (LIVRO ANTIGO)
+   ESTILOS DA FICHA (V3 - Preto e Branco)
    ========================================= */
-.modal {
-    display: none;
-    position: fixed; 
-    z-index: 1000; 
-    left: 0; top: 0; 
-    width: 100%; height: 100%; 
-    overflow-y: auto;
-}
-
-.modal-content {
-    background-color: #1e1b18;
-    margin: 5% auto;
+.ficha-container {
+    background: #f4f4f4; /* Fundo branco/cinza claro para a ficha */
+    color: #000;
     padding: 30px;
-    border: 1px solid #d4af37;
     border-radius: 4px;
-    width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
-    overflow-y: auto; 
-    color: #d1c9c0;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.9);
-    position: relative;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 3px);
+    max-width: 900px;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    font-family: 'Merriweather', serif;
 }
 
-/* Barra de rolagem temática */
-.modal-content::-webkit-scrollbar { width: 8px; }
-.modal-content::-webkit-scrollbar-track { background: #1a1816; }
-.modal-content::-webkit-scrollbar-thumb { background: #4a3c31; border-radius: 4px; }
-.modal-content::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+.ficha-container input, .ficha-container textarea {
+    background: transparent; color: #000; border: none; border-bottom: 1px solid #000;
+    border-radius: 0; padding: 5px; font-size: 1rem;
+}
+.ficha-container input:focus, .ficha-container textarea:focus { border-bottom: 2px solid #000; }
 
-.modal-content h2 {
-    font-family: 'Cinzel', serif;
-    border-bottom: 2px solid #4a3c31;
-    margin-bottom: 20px;
-    color: #d4af37;
-    text-align: center;
-    padding-bottom: 10px;
+/* Cabeçalho */
+.ficha-header { display: flex; gap: 20px; margin-bottom: 20px; align-items: flex-start; border-bottom: 3px solid #000; padding-bottom: 15px; }
+.logo-ficha { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; line-height: 0.9; letter-spacing: -1px; }
+.header-info { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.input-inline { display: flex; align-items: flex-end; gap: 5px; }
+.input-inline label { color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; margin-bottom: 0; }
+.input-inline input { flex: 1; padding: 2px; }
+
+/* Tarjas Pretas */
+.ficha-tarja {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    padding: 2px 10px;
+    margin-bottom: 15px;
+    display: inline-block;
+    letter-spacing: 2px;
+    width: 100%;
 }
 
-.modal-body p, .modal-body li {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 12px;
-    text-align: justify;
-}
+/* Atributos */
+.ficha-atributos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.atributo-box { border: 2px solid #1a1a1a; padding: 5px; text-align: center; position: relative; }
+.atributo-nome { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; background: #1a1a1a; color: #fff; margin: -5px -5px 10px -5px; padding: 2px; }
+.input-dado { text-align: center; font-size: 1.5rem !important; font-family: 'Bebas Neue', sans-serif !important; }
 
-.modal-body strong { color: #d4af37; }
-.modal-body hr { border: 0; height: 1px; background: #4a3c31; margin: 20px 0; }
+/* Grid de 2 Colunas (Valores/Perícias e Arma/Habilidade) */
+.ficha-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-.modal-body h3 {
-    font-family: 'Cinzel', serif;
-    color: #d4af37;
-    text-align: left;
-    border: none;
-    font-size: 1.1rem;
-    margin-top: 15px;
-    margin-bottom: 5px;
-}
+/* Valores Básicos */
+.valor-row { display: flex; align-items: center; border: 1px solid #1a1a1a; padding: 5px; margin-bottom: 5px; }
+.valor-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; width: 80px; text-align: center; border-right: 1px solid #1a1a1a; margin-right: 10px; }
+.valor-controle { display: flex; align-items: center; justify-content: space-between; flex: 1; }
+.valor-controle input { width: 50px; text-align: center; font-size: 1.3rem; font-family: 'Bebas Neue', sans-serif; border: none; }
+.barra-separador { font-weight: bold; margin: 0 5px; }
 
-.espectro-item { margin-bottom: 15px; border-bottom: 1px dotted #333; padding-bottom: 10px; }
-.espectro-item h3 { margin: 0 0 5px 0; }
+/* Botões + e - */
+.btn-controle { background: #1a1a1a; color: #fff; border: none; width: 30px; height: 30px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+.btn-controle:hover { background: #555; }
 
-.close-btn {
-    color: #d4af37;
-    position: absolute;
-    top: 10px; right: 20px;
-    font-size: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.close-btn:hover { color: #ff4d4d; transform: scale(1.1); }
+/* Pilha de Descarte */
+.pilha-descarte-container { border: 1px solid #1a1a1a; padding: 5px; margin-top: 10px; }
+.pilha-descarte-container .ficha-tarja { margin-bottom: 5px; }
+.descarte-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+.descarte-box { border: 1px solid #1a1a1a; height: 25px; background: #fff; }
+
+/* Perícias */
+.pericias-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pericia-item { display: flex; flex-direction: column; }
+.pericia-item label { color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; margin-bottom: 2px; }
+.pericia-item input { border: 1px solid #000; height: 30px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; }
+
+/* Caixas de Contorno (Arma, Habilidade, Palavras, Inventário) */
+.box-contorno { border: 1px solid #1a1a1a; padding: 10px; }
+.box-contorno .ficha-tarja { margin-bottom: 10px; }
+.box-contorno label { color: #000; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; }
+.box-contorno textarea { border-bottom: none; background: repeating-linear-gradient(transparent, transparent 31px, #000 31px, #000 32px); line-height: 32px; padding: 0; }
+
+/* Botão Salvar */
+.btn-primario { background: #1a1a1a; color: #fff; border: none; padding: 15px; border-radius: 4px; font-size: 1.5rem; cursor: pointer; width: 100%; }
+.btn-primario:hover { background: #444; }
 
 /* =========================================
-   RESPONSIVIDADE PARA CELULAR
+   RESPONSIVIDADE
    ========================================= */
 @media (max-width: 768px) {
-    .app-container { flex-direction: column; margin-top: 70px; }
+    .app-container { flex-direction: column; }
     .coluna-rolagem, .coluna-historico { width: 100%; max-width: 100%; }
-    #lista-historico-global { max-height: 300px; }
-    .modal-content { width: 95%; margin: 10% auto; padding: 20px; }
+    .ficha-header { flex-direction: column; align-items: center; text-align: center; }
+    .logo-ficha { font-size: 2.5rem; }
+    .ficha-atributos-grid { grid-template-columns: repeat(2, 1fr); }
+    .ficha-grid-2 { grid-template-columns: 1fr; }
+    .pericias-grid { grid-template-columns: repeat(2, 1fr); }
 }

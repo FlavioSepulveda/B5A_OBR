@@ -5,200 +5,232 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa B5A - Rolagem Global</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- BOTÃO DE ABRIR O MENU LATERAL -->
     <button id="btn-menu" class="menu-toggle">☰ Arquivos</button>
 
-    <!-- MENU LATERAL (SIDEBAR) -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h2>Arquivos da Biblioteca</h2>
             <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
         </div>
         <div class="sidebar-links">
-            <button class="nav-btn" onclick="abrirModal('modal-regras')">📜 Regras da Rolagem</button>
+            <button class="nav-btn" onclick="mudarAba('aba-rolagem')">🎲 Mesa de Rolagem</button>
+            <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
+            <hr style="border-color:#4a3c31; margin: 10px 0;">
+            <button class="nav-btn" onclick="abrirModal('modal-regras')">📖 Regras da Rolagem</button>
             <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros do Ímpeto</button>
-            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos (Combate)</button>
-            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações (Investigação)</button>
         </div>
         <div class="sidebar-footer">
             <p>Bestiário das Almas</p>
         </div>
     </div>
 
-    <!-- FUNDO ESCURO QUANDO O MENU OU MODAL ABRE -->
     <div id="overlay" class="overlay"></div>
 
-    <div class="app-container">
-        <!-- Coluna da Esquerda: Rolagem -->
-        <div class="coluna-rolagem">
-            <h2>Registro de Rolagem</h2>
-
-            <div class="input-group" style="background: #2b231d; padding: 10px; border-radius: 5px; border: 1px solid #d4af37;">
-                <label for="sala-id" style="color: #d4af37;">ID da Sala</label>
-                <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
-            </div>
-
-            <div class="input-group">
-                <label for="nome-jogador">Seu Nome / Personagem</label>
-                <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
-            </div>
-
-            <div class="input-group">
-                <label for="espectro">Espectro do Ímpeto</label>
-                <select id="espectro" class="espectro-select">
-                    <option value="padrao">Nenhum (Padrão)</option>
-                    <option value="igneo">Ígneo (Vermelho)</option>
-                    <option value="celeste">Celeste (Azul)</option>
-                    <option value="viridiano">Viridiano (Verde)</option>
-                    <option value="solar">Solar (Amarelo)</option>
-                    <option value="indigo">Índigo (Roxo)</option>
-                    <option value="alabastro">Alabastro (Branco)</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Tipo de Teste</label>
-                <div class="toggle-group">
-                    <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
-                    <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
+    <div class="abas-container">
+        <!-- ABA 1: ROLAGEM -->
+        <div id="aba-rolagem" class="aba active">
+            <div class="app-container">
+                <div class="coluna-rolagem">
+                    <h2>Registro de Rolagem</h2>
+                    <div class="input-group" style="background: #2b231d; padding: 10px; border-radius: 5px; border: 1px solid #d4af37;">
+                        <label for="sala-id" style="color: #d4af37;">ID da Sala</label>
+                        <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
+                    </div>
+                    <div class="input-group">
+                        <label for="nome-jogador">Seu Nome / Personagem</label>
+                        <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
+                    </div>
+                    <div class="input-group">
+                        <label for="espectro">Espectro do Ímpeto</label>
+                        <select id="espectro" class="espectro-select">
+                            <option value="padrao">Nenhum (Padrão)</option>
+                            <option value="igneo">Ígneo (Vermelho)</option>
+                            <option value="celeste">Celeste (Azul)</option>
+                            <option value="viridiano">Viridiano (Verde)</option>
+                            <option value="solar">Solar (Amarelo)</option>
+                            <option value="indigo">Índigo (Roxo)</option>
+                            <option value="alabastro">Alabastro (Branco)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tipo de Teste</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
+                            <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
+                        </div>
+                    </div>
+                    <div class="row-inputs">
+                        <div class="input-group">
+                            <label for="qtd-dados">Qtd. de Dados</label>
+                            <input type="number" id="qtd-dados" min="0" max="10" value="2">
+                        </div>
+                        <div class="input-group">
+                            <label for="volume">Volume (1-8)</label>
+                            <input type="number" id="volume" min="1" max="8" value="1">
+                        </div>
+                    </div>
+                    <button id="btn-rolar">Lançar Dados</button>
+                    <div id="resultado-container">
+                        <div id="d12-box" class="dice-box principal">
+                            <span class="dice-label">d12</span>
+                            <span id="dado-d12" class="dice-value">-</span>
+                        </div>
+                        <div id="outros-dados-box" class="dice-box secundario">
+                            <span id="label-outros" class="dice-label">2d4</span>
+                            <span id="dados-outros" class="dice-value">-</span>
+                        </div>
+                        <div id="total-box">
+                            <span id="total-visual">Aguardando rolagem...</span>
+                        </div>
+                        <div id="regra-texto"></div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="row-inputs">
-                <div class="input-group">
-                    <label for="qtd-dados">Qtd. de Dados</label>
-                    <input type="number" id="qtd-dados" min="0" max="10" value="2">
-                </div>
-                <div class="input-group">
-                    <label for="volume">Volume (1-8)</label>
-                    <input type="number" id="volume" min="1" max="8" value="1">
-                </div>
-            </div>
-
-            <button id="btn-rolar">Lançar Dados</button>
-
-            <div id="resultado-container">
-                <div id="d12-box" class="dice-box principal">
-                    <span class="dice-label">d12</span>
-                    <span id="dado-d12" class="dice-value">-</span>
-                </div>
-                <div id="outros-dados-box" class="dice-box secundario">
-                    <span id="label-outros" class="dice-label">2d4</span>
-                    <span id="dados-outros" class="dice-value">-</span>
-                </div>
-                <div id="total-box">
-                    <span id="total-visual">Aguardando rolagem...</span>
-                </div>
-                <div id="regra-texto"></div>
-            </div>
-        </div>
-
-        <!-- Coluna da Direita: Histórico Global -->
-        <div class="coluna-historico">
-            <h3>Crônica da Mesa</h3>
-            <ul id="lista-historico-global"></ul>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODAIS DE CONSULTA (MANUAL REDUZIDO) -->
-    <!-- ========================================== -->
-
-    <!-- Modal de Regras -->
-    <div id="modal-regras" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
-            <h2>📜 A Arte da Rolagem</h2>
-            <div class="modal-body">
-                <p>Na Biblioteca da 5ª Avenida, o destino não está escrito de antemão. Ele nasce do encontro entre aquilo que seu Arquivista é capaz de fazer e aquilo que o d12 decidiu contar.</p>
-                
-                <h3>A Fórmula do Teste</h3>
-                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>. Compare o resultado à TA (Taxa de Acerto) definida pelo Guardião. Igual ou maior, a ação é bem-sucedida.</p>
-                
-                <hr>
-                <h3>Os Três Resultados Absolutos</h3>
-                <p>O d12 possui faces especiais que acrescentam uma camada narrativa (e mecânica) ao destino:</p>
-                <p><strong>1 — Catástrofe Definitiva:</strong> A ação falha automaticamente, não importa quantos bônus você tenha. O Guardião ganha 1 Dado de Descartes para usar contra o grupo.</p>
-                <p><strong>6 — Falha Absoluta:</strong> A tentativa não deu certo, mesmo que o total supere a TA. Não há desastre extra, apenas o fechamento daquele caminho.</p>
-                <p><strong>12 — Momento Lendário:</strong> O resultado soma normalmente. Se vencer, a ação ganha uma dimensão lendária. Se falhar, uma reviravolta positiva ainda surge da tentativa.</p>
-                
-                <hr>
-                <h3>Desafiar o Destino</h3>
-                <p>Mesmo sem dados em um Atributo ou sem a Perícia exigida, você pode tentar. Role <strong>2d12</strong> e mantenha o maior resultado. Falhar aqui é mais severo: o Guardião ganha um Dado de Descartes ou impõe uma complicação imediata.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Espectros -->
-    <div id="modal-espectros" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
-            <h2>🔥 Os Espectros do Ímpeto</h2>
-            <div class="modal-body">
-                <p>O Espectro não define sua profissão ou como você luta. Ele revela a convicção que impulsiona suas escolhas, o motivo pelo qual você continua caminhando.</p>
-                
-                <div class="espectro-item">
-                    <h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3>
-                    <p>Ofensiva, sacrifício e ambição. <em>"O que você está disposto a sacrificar?"</em> Uma chama que consome tudo em nome de um único objetivo.</p>
-                </div>
-                <div class="espectro-item">
-                    <h3 style="color:#8eb1d9">Celeste (Azul)</h3>
-                    <p>Controle, ordem e precisão. <em>"Como você pretende alcançar seu objetivo?"</em> A mente disciplinada que enxerga padrões onde outros vêem caos.</p>
-                </div>
-                <div class="espectro-item">
-                    <h3 style="color:#4caf50">Viridiano (Verde)</h3>
-                    <p>Vida, perseverança e crescimento. <em>"Por que continuar mesmo após cair?"</em> A força que finca raízes e espera o inverno passar.</p>
-                </div>
-                <div class="espectro-item">
-                    <h3 style="color:#fbc02d">Solar (Amarelo)</h3>
-                    <p>Liberdade, mobilidade e adaptação. <em>"O que existe além do horizonte?"</em> A recusa em permanecer onde os sonhos não podem alcançar.</p>
-                </div>
-                <div class="espectro-item">
-                    <h3 style="color:#b285c9">Índigo (Roxo)</h3>
-                    <p>Criatividade, conhecimento e imaginação. <em>"E se tudo pudesse ser diferente?"</em> O desejo de reinventar a realidade.</p>
-                </div>
-                <div class="espectro-item">
-                    <h3 style="color:#ffffff">Alabastro (Branco)</h3>
-                    <p>Equilíbrio, proteção e união. <em>"Como impedir que um extremo destrua todos os outros?"</em> A busca por garantir que nenhum lado prevaleça sobre os demais.</p>
+                <div class="coluna-historico">
+                    <h3>Crônica da Mesa</h3>
+                    <ul id="lista-historico-global"></ul>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal de Caminhos -->
-    <div id="modal-caminhos" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-caminhos')">&times;</span>
-            <h2>⚔️ Caminhos (Combate)</h2>
-            <div class="modal-body">
-                <p>O Caminho define como você enfrenta os desafios da Biblioteca. Ele dita sua Arma Favorita e concede habilidades exclusivas de combate.</p>
-                
-                <p><strong>Guerreiro:</strong> A linha de frente. Enfrenta perigos de frente, com um foco inabalável em Vida e resistência física. <em>Arma Favorita: Soco-Inglês, Espada Longa ou Machado.</em></p>
-                <p><strong>Mago:</strong> O estudioso do Ímpeto. Trata cada Palavra como parte da linguagem da realidade. <em>Arma Favorita: Grimórios, Cajados ou Orbes.</em></p>
-                <p><strong>Suporte:</strong> O pilar do grupo. Fortalece aliados e cria oportunidades, garantindo que ninguém fique para trás. <em>Arma Favorita: Componentes Ritualísticos, Grimórios ou Varinhas.</em></p>
-                <p><strong>Assassino:</strong> A precisão fatal. Vence batalhas antes do primeiro golpe, aguardando o momento de atacar pelas sombras. <em>Arma Favorita: Adagas e Agulhas.</em></p>
-                <p><strong>Atirador:</strong> O mestre da distância. Transforma paciência em vantagem e cada disparo em uma oportunidade decisiva. <em>Arma Favorita: Arcos, Bestas e Armas de Fogo.</em></p>
-            </div>
-        </div>
-    </div>
+        <!-- ABA 2: FICHA DO ARQUIVISTA -->
+        <div id="aba-ficha" class="aba">
+            <div class="ficha-container">
+                <!-- Cabeçalho -->
+                <div class="ficha-header">
+                    <div class="logo-ficha">BIBLIOTECA<br>DA 5ª AVENIDA</div>
+                    <div class="header-info">
+                        <div class="input-inline"><label>NOME:</label> <input type="text" id="f-nome" placeholder="Nome do Arquivista"></div>
+                        <div class="input-inline"><label>ÍMPETO:</label> <input type="text" id="f-espectro" placeholder="Espectro"></div>
+                        <div class="input-inline"><label>VOLUME:</label> <input type="number" id="f-volume" min="1" max="8" value="1"></div>
+                        <div class="input-inline"><label>VOCAÇÃO:</label> <input type="text" id="f-vocacao" placeholder="Caminho ou Vocação"></div>
+                        <div class="input-inline"><label>TÍTULO:</label> <input type="text" id="f-titulo" placeholder="Título"></div>
+                    </div>
+                </div>
 
-    <!-- Modal de Vocações -->
-    <div id="modal-vocacoes" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-vocacoes')">&times;</span>
-            <h2>🔍 Vocações (Investigação)</h2>
-            <div class="modal-body">
-                <p>Nem todo Arquivista enfrenta o desconhecido com uma lâmina. As Vocações focam na investigação, na memória e na manipulação sutil da realidade.</p>
+                <!-- Atributos -->
+                <div class="ficha-tarja">ATRIBUTOS</div>
+                <div class="ficha-atributos-grid">
+                    <div class="atributo-box">
+                        <div class="atributo-nome">VIGOR</div>
+                        <input type="text" id="f-vigor" value="0d4" class="input-dado">
+                    </div>
+                    <div class="atributo-box">
+                        <div class="atributo-nome">DINAMISMO</div>
+                        <input type="text" id="f-dinamismo" value="0d4" class="input-dado">
+                    </div>
+                    <div class="atributo-box">
+                        <div class="atributo-nome">RAZÃO</div>
+                        <input type="text" id="f-razao" value="0d4" class="input-dado">
+                    </div>
+                    <div class="atributo-box">
+                        <div class="atributo-nome">DETERMINAÇÃO</div>
+                        <input type="text" id="f-determinacao" value="0d4" class="input-dado">
+                    </div>
+                </div>
+
+                <!-- Valores Básicos e Perícias -->
+                <div class="ficha-grid-2">
+                    <!-- Valores Básicos -->
+                    <div class="valores-basicos">
+                        <div class="ficha-tarja">VALORES BÁSICOS</div>
+                        
+                        <div class="valor-row">
+                            <div class="valor-label">HP</div>
+                            <div class="valor-controle">
+                                <button class="btn-controle" onclick="alterarRecurso('pv', -1)">-</button>
+                                <input type="number" id="f-pv-atual" value="10">
+                                <span class="barra-separador">/</span>
+                                <input type="number" id="f-pv-max" value="10">
+                                <button class="btn-controle" onclick="alterarRecurso('pv', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="valor-row">
+                            <div class="valor-label">PI MAX.</div>
+                            <div class="valor-controle">
+                                <button class="btn-controle" onclick="alterarRecurso('pi', -1)">-</button>
+                                <input type="number" id="f-pi-atual" value="5">
+                                <span class="barra-separador">/</span>
+                                <input type="number" id="f-pi-max" value="5">
+                                <button class="btn-controle" onclick="alterarRecurso('pi', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="valor-row">
+                            <div class="valor-label">HP TEMP.</div>
+                            <input type="number" id="f-hp-temp" value="0">
+                        </div>
+
+                        <div class="pilha-descarte-container">
+                            <div class="ficha-tarja">PILHA DE DESCARTE</div>
+                            <div class="descarte-grid">
+                                <!-- 10 quadradinhos representando os dados de descarte -->
+                                <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
+                                <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
+                            </div>
+                        </div>
+
+                        <div class="valor-row" style="margin-top: 10px;">
+                            <div class="valor-label">INICIATIVA</div>
+                            <input type="text" id="f-iniciativa" placeholder="1d12 + ...">
+                        </div>
+                    </div>
+
+                    <!-- Perícias -->
+                    <div class="pericias-container">
+                        <div class="ficha-tarja">PERÍCIAS</div>
+                        <div class="pericias-grid">
+                            <!-- Lista de Perícias com input -->
+                            <div class="pericia-item"><label>BARGANHA</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>COMBATE</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>TECNOLOGIA</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>RESISTÊNCIA</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>INTUIÇÃO</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>MEDICINA</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>INVESTIGAR</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>INVASÃO</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>PESQUISA</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>ARCANISMO</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>IMAGINAÇÃO</label><input type="text" placeholder="0d6"></div>
+                            <div class="pericia-item"><label>HISTÓRIA</label><input type="text" placeholder="0d6"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arma e Habilidade -->
+                <div class="ficha-grid-2" style="margin-top: 10px;">
+                    <div class="box-contorno">
+                        <div class="ficha-tarja">ARMA FAVORITA</div>
+                        <div class="input-inline"><label>TIPO:</label><input type="text"></div>
+                        <div class="input-inline"><label>DANO:</label><input type="text"></div>
+                        <div class="input-inline"><label>CRÍTICO:</label><input type="text"></div>
+                        <div class="input-inline" style="margin-top: 5px;"><label>EFEITO:</label><input type="text"></div>
+                    </div>
+
+                    <div class="box-contorno">
+                        <div class="ficha-tarja">HABILIDADE DE IMPETO</div>
+                        <label>HABILIDADE ATIVA -</label>
+                        <textarea rows="3" style="width: 100%; border: none; border-bottom: 1px solid #000; background: transparent; resize: none; outline: none;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Palavras e Inventário -->
+                <div class="ficha-grid-2" style="margin-top: 10px;">
+                    <div class="box-contorno">
+                        <div class="ficha-tarja">PALAVRAS DE AFIRMAÇÃO</div>
+                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none; font-family: 'Merriweather';"></textarea>
+                    </div>
+                    <div class="box-contorno">
+                        <div class="ficha-tarja">INVENTÁRIO</div>
+                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none; font-family: 'Merriweather';"></textarea>
+                    </div>
+                </div>
                 
-                <p><strong>Cronista:</strong> Altera a forma como o mundo é lembrado. Uma história bem escrita pode mudar o destino de quem a vive.</p>
-                <p><strong>Selador:</strong> O carcereiro de anomalias. Dedica a vida a impedir que histórias perigosas escapem das páginas da Biblioteca.</p>
-                <p><strong>Guardião de Memórias:</strong> Preserva o que nenhuma espada protege. Caminha entre páginas esquecidas restaurando identidades perdidas.</p>
-                <p><strong>Investigador das Sombras:</strong> Enxerga o que foi escondido. Rastros de Ímpeto, portas secretas e mentiras são o verdadeiro mapa da Biblioteca.</p>
-                <p><strong>Cartógrafo de Realidades:</strong> O mapa não mostra o mundo, o mapa cria o mundo. Dobra o espaço e encontra caminhos onde só existem paredes.</p>
-                <p><strong>Ecoísta:</strong> O passado nunca morre. Invoca ecos de ações e objetos que já existiram para alterar o presente.</p>
+                <button id="btn-salvar-ficha" class="btn-primario" style="margin-top: 20px;">Salvar Ficha</button>
             </div>
         </div>
     </div>
@@ -206,40 +238,27 @@
     <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Lógica do Menu Lateral
+        // Menu e Abas
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const btnMenu = document.getElementById('btn-menu');
         const btnFecharMenu = document.getElementById('btn-fechar-menu');
 
-        function toggleMenu() {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
+        function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
         btnMenu.addEventListener('click', toggleMenu);
         btnFecharMenu.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            fecharTodosModais();
-        });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); fecharTodosModais(); });
 
-        // Lógica dos Modais
-        function abrirModal(id) {
-            sidebar.classList.remove('active');
-            document.getElementById(id).style.display = "block";
-            overlay.classList.add('active');
+        function mudarAba(idAba) {
+            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('active'));
+            document.getElementById(idAba).classList.add('active');
+            sidebar.classList.remove('active'); overlay.classList.remove('active');
         }
 
-        function fecharModal(id) {
-            document.getElementById(id).style.display = "none";
-            overlay.classList.remove('active');
-        }
-
-        function fecharTodosModais() {
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-        }
+        // Modais
+        function abrirModal(id) { sidebar.classList.remove('active'); document.getElementById(id).style.display = "block"; overlay.classList.add('active'); }
+        function fecharModal(id) { document.getElementById(id).style.display = "none"; overlay.classList.remove('active'); }
+        function fecharTodosModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     </script>
 </body>
 </html>
