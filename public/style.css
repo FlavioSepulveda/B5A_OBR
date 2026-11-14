@@ -226,3 +226,83 @@ input:focus, select:focus { border-color: var(--gold); }
     .coluna-ficha, .coluna-meio, .coluna-historico { width: 100%; max-width: 600px; }
     .conteudo-texto { padding: 20px; }
 }
+
+/* =========================================
+   CARDS DE CRÔNICAS DA COMUNIDADE
+   ========================================= */
+.grid-cronicas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card-cronica {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.card-cronica:hover {
+    transform: translateY(-5px);
+    border-color: var(--gold);
+}
+
+.card-cronica-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background-color: #111;
+    border-bottom: 2px solid var(--gold);
+}
+
+.card-cronica-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-cronica-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.card-cronica-info {
+    font-size: 0.75rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.card-cronica-resumo {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    /* Limita o texto a 3 linhas e coloca "..." */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-cronica-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--gold);
+    font-weight: bold;
+}
