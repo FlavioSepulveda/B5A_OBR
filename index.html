@@ -8,13 +8,24 @@
 </head>
 <body>
 
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR -->
+    <nav class="navbar">
+        <div class="logo">Biblioteca da 5ª Avenida</div>
+        <div class="nav-links">
+            <button class="nav-btn" onclick="abrirModal('modal-regras')">Regras</button>
+            <button class="nav-btn" onclick="abrirModal('modal-espectros')">Espectros</button>
+            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">Caminhos</button>
+            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">Vocações</button>
+        </div>
+    </nav>
+
     <div class="app-container">
         <!-- Coluna da Esquerda: Rolagem -->
         <div class="coluna-rolagem">
             <h2>Registro de Rolagem</h2>
 
             <div class="input-group" style="background: #2b231d; padding: 10px; border-radius: 5px; border: 1px solid #d4af37;">
-                <label for="sala-id" style="color: #d4af37;">ID da Sala (Compartilhe com a mesa)</label>
+                <label for="sala-id" style="color: #d4af37;">ID da Sala</label>
                 <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
             </div>
 
@@ -82,7 +93,91 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAIS DE CONSULTA RÁPIDA -->
+    <!-- ========================================== -->
+
+    <!-- Modal de Regras -->
+    <div id="modal-regras" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
+            <h2>Regras Básicas</h2>
+            <div class="modal-body">
+                <p><strong>Rolagem:</strong> 1d12 + Dados de Atributo/Perícia + Volume.</p>
+                <p><strong>Resultados Absolutos:</strong></p>
+                <ul>
+                    <li><strong>1 (Catástrofe):</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</li>
+                    <li><strong>6 (Falha Absoluta):</strong> Falha automática, mesmo que o total supere a TA.</li>
+                    <li><strong>12 (Momento Lendário):</strong> Soma normal, mas se vencer, o sucesso é épico.</li>
+                </ul>
+                <p><strong>Desafiar o Destino:</strong> Rolar 2d12 e pegar o maior (sem ter o dado/perícia).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Espectros -->
+    <div id="modal-espectros" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
+            <h2>Espectros do Ímpeto</h2>
+            <div class="modal-body">
+                <p><strong>Ígneo (Vermelho):</strong> Sacrifício e Ambição. <em>"O que você está disposto a sacrificar?"</em></p>
+                <p><strong>Celeste (Azul):</strong> Controle e Razão. <em>"Como você pretende alcançar seu objetivo?"</em></p>
+                <p><strong>Viridiano (Verde):</strong> Vida e Perseverança. <em>"Por que continuar mesmo após cair?"</em></p>
+                <p><strong>Solar (Amarelo):</strong> Liberdade e Movimento. <em>"O que existe além do horizonte?"</em></p>
+                <p><strong>Índigo (Roxo):</strong> Criatividade e Conhecimento. <em>"E se tudo pudesse ser diferente?"</em></p>
+                <p><strong>Alabastro (Branco):</strong> Equilíbrio e Justiça. <em>"Como impedir que um extremo destrua os outros?"</em></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Caminhos -->
+    <div id="modal-caminhos" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-caminhos')">&times;</span>
+            <h2>Caminhos (Combate)</h2>
+            <div class="modal-body">
+                <p><strong>Guerreiro:</strong> Linha de frente. Foco em Vida e resistência.</p>
+                <p><strong>Mago:</strong> Estudo do Ímpeto. Foco em Palavras e Ímpeto máximo.</p>
+                <p><strong>Suporte:</strong> Proteção e cura. Foco em auxiliar os aliados.</p>
+                <p><strong>Assassino:</strong> Furtividade e dano massivo em alvos desprevenidos.</p>
+                <p><strong>Atirador:</strong> Precisão à distância e controle de área.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Vocações -->
+    <div id="modal-vocacoes" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-vocacoes')">&times;</span>
+            <h2>Vocações (Investigação)</h2>
+            <div class="modal-body">
+                <p><strong>Cronista:</strong> Altera a forma como o mundo é lembrado.</p>
+                <p><strong>Selador:</strong> Contém anomalias e histórias perigosas.</p>
+                <p><strong>Guardião de Memórias:</strong> Preserva lembranças e cura mentes.</p>
+                <p><strong>Investigador das Sombras:</strong> Enxerga o que está oculto nas entrelinhas.</p>
+                <p><strong>Cartógrafo de Realidades:</strong> Dobra o espaço e encontra caminhos impossíveis.</p>
+                <p><strong>Ecoísta:</strong> Invoca ecos de ações e objetos do passado.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase e Script -->
     <script type="module" src="script.js"></script>
+    <script>
+        // Funções simples para abrir e fechar os modais
+        function abrirModal(id) {
+            document.getElementById(id).style.display = "block";
+        }
+        function fecharModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+        // Fecha o modal se clicar fora dele
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Merriweather', serif;
@@ -13,18 +9,63 @@ body {
     color: #e0e0e0;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    padding: 15px;
+    flex-direction: column; /* Para a navbar ficar no topo */
 }
 
-/* O container principal usa Flexbox */
+/* =========================================
+   BARRA DE NAVEGAÇÃO (MENU SUPERIOR)
+   ========================================= */
+.navbar {
+    background-color: #1a1816;
+    border-bottom: 2px solid #4a3c31;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #d4af37;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: transparent;
+    color: #a89f91;
+    border: 1px solid #4a3c31;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: #d4af37;
+    color: #121212;
+    border-color: #d4af37;
+}
+
+/* CONTAINER PRINCIPAL */
 .app-container {
     display: flex;
-    flex-direction: row; /* Lado a lado no PC */
+    flex-direction: row;
     gap: 20px;
     max-width: 1000px;
     width: 100%;
-    align-items: flex-start; /* Não estica as colunas verticalmente */
+    margin: 20px auto;
+    padding: 0 15px;
 }
 
 /* Colunas */
@@ -37,16 +78,8 @@ body {
     flex-direction: column;
     gap: 15px;
 }
-
-.coluna-rolagem {
-    flex: 1; /* Ocupa 1 parte do espaço */
-    max-width: 450px;
-}
-
-.coluna-historico {
-    flex: 1; /* Ocupa 1 parte do espaço */
-    min-height: 400px;
-}
+.coluna-rolagem { flex: 1; max-width: 450px; }
+.coluna-historico { flex: 1; min-height: 400px; }
 
 h2, h3 {
     font-family: 'Cinzel', serif;
@@ -58,84 +91,45 @@ h2, h3 {
     font-size: 1.2rem;
 }
 
-/* Inputs */
+/* Inputs e Botões */
 .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .row-inputs { display: flex; gap: 10px; }
 label { font-size: 0.75rem; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; }
 
 input, .espectro-select {
-    padding: 12px; /* Maior para dedos no celular */
-    border-radius: 6px; 
-    border: 1px solid #4a3c31;
-    background-color: #222; 
-    color: #d4af37; 
-    font-size: 1rem; 
-    font-family: 'Cinzel', serif; 
-    width: 100%;
+    padding: 12px; border-radius: 6px; border: 1px solid #4a3c31;
+    background-color: #222; color: #d4af37; font-size: 1rem; 
+    font-family: 'Cinzel', serif; width: 100%;
 }
-
 input:focus, .espectro-select:focus { outline: none; border-color: #d4af37; }
 
-/* Botões de alternância */
 .toggle-group { display: flex; gap: 10px; }
 .toggle {
-    flex: 1; 
-    padding: 12px; 
-    background: #222; 
-    color: #a89f91;
-    border: 1px solid #4a3c31; 
-    border-radius: 6px; 
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    flex: 1; padding: 12px; background: #222; color: #a89f91;
+    border: 1px solid #4a3c31; border-radius: 6px; cursor: pointer;
+    font-size: 0.9rem; transition: all 0.2s;
 }
-.toggle.active { 
-    background: #d4af37; 
-    color: #121212; 
-    font-weight: bold; 
-    border-color: #d4af37;
-}
+.toggle.active { background: #d4af37; color: #121212; font-weight: bold; border-color: #d4af37; }
 
-/* Botão Rolar */
 #btn-rolar {
-    padding: 15px; 
-    font-size: 1.1rem; 
-    font-family: 'Cinzel', serif; 
-    font-weight: bold;
-    background-color: #d4af37; 
-    color: #121212;
-    border: none; 
-    border-radius: 6px; 
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 5px;
+    padding: 15px; font-size: 1.1rem; font-family: 'Cinzel', serif; font-weight: bold;
+    background-color: #d4af37; color: #121212;
+    border: none; border-radius: 6px; cursor: pointer; margin-top: 5px;
 }
 #btn-rolar:hover { background-color: #fce07a; }
 
-/* Área de Resultados */
+/* Resultados */
 #resultado-container {
-    padding: 15px; 
-    text-align: center; 
-    background: #1e1e1e;
-    border-radius: 8px; 
-    border: 1px solid #333;
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 15px;
+    padding: 15px; text-align: center; background: #1e1e1e;
+    border-radius: 8px; border: 1px solid #333;
+    display: flex; flex-direction: column; align-items: center; gap: 15px;
 }
 
 .dice-box { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    padding: 15px; 
-    border-radius: 8px; 
-    width: 90px; 
-    background: #222; 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 15px; border-radius: 8px; width: 90px; background: #222; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-
 .principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
 .secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
 .dice-value { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: bold; }
@@ -160,31 +154,17 @@ input:focus, .espectro-select:focus { outline: none; border-color: #d4af37; }
 
 /* Histórico */
 #lista-historico-global {
-    list-style: none; 
-    padding: 0; 
-    margin: 0;
-    display: flex; 
-    flex-direction: column; 
-    gap: 10px;
-    overflow-y: auto; 
-    max-height: 500px; /* Limita a altura para não vazar */
+    list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;
+    overflow-y: auto; max-height: 500px;
 }
-
 #lista-historico-global li {
-    padding: 12px; 
-    background: #222; 
-    border-radius: 6px;
-    border-left: 5px solid #555; 
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
-    animation: slideIn 0.3s ease;
+    padding: 12px; background: #222; border-radius: 6px;
+    border-left: 5px solid #555; display: flex; justify-content: space-between;
+    align-items: center; animation: slideIn 0.3s ease;
 }
-
 #lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
 #lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); }
 #lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
-
 .hist-total { font-size: 1.2rem; font-weight: bold; color: #d4af37; }
 .hist-detalhe { color: #888; font-size: 0.8rem; }
 
@@ -194,23 +174,66 @@ input:focus, .espectro-select:focus { outline: none; border-color: #d4af37; }
 }
 
 /* =========================================
-   RESPONSIVIDADE PARA CELULAR (A MÁGICA ACONTECE AQUI)
+   ESTILO DOS MODAIS DE REGRAS
+   ========================================= */
+.modal {
+    display: none; /* Escondido por padrão */
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.8); /* Fundo escurecido */
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: #1a1816;
+    margin: 10% auto;
+    padding: 25px;
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    color: #e0e0e0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    position: relative;
+}
+
+.modal-content h2 {
+    border-bottom: 1px solid #4a3c31;
+    margin-bottom: 15px;
+    color: #d4af37;
+}
+
+.modal-body p, .modal-body li {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: #ccc;
+}
+
+.modal-body strong {
+    color: #d4af37;
+}
+
+.close-btn {
+    color: #aaa;
+    position: absolute;
+    top: 10px; right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close-btn:hover { color: #ff4d4d; }
+
+/* =========================================
+   RESPONSIVIDADE PARA CELULAR
    ========================================= */
 @media (max-width: 768px) {
-    .app-container {
-        flex-direction: column; /* Empilha as colunas no celular */
-    }
-
-    .coluna-rolagem, .coluna-historico {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .coluna-historico {
-        min-height: auto;
-    }
-
-    #lista-historico-global {
-        max-height: 300px; /* Histórico menor no celular */
-    }
+    .app-container { flex-direction: column; }
+    .coluna-rolagem, .coluna-historico { width: 100%; max-width: 100%; }
+    #lista-historico-global { max-height: 300px; }
+    .navbar { flex-direction: column; align-items: flex-start; }
+    .nav-links { width: 100%; justify-content: space-between; }
+    .nav-btn { flex: 1; text-align: center; padding: 8px 5px; font-size: 0.8rem; }
 }
