@@ -12,7 +12,7 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM
+// 1. SALVAR ITEM (MONSTRO/ARMA/HABILIDADE)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
@@ -32,13 +32,12 @@ function configurarFormulario() {
             data: Date.now()
         };
 
-        // Campos para Monstros
+        // Verifica quais campos existem na tela para salvar
         if (colecaoAtual === "monstros") {
             payload.vida = document.getElementById('form-vida').value;
             payload.ta = document.getElementById('form-ta').value;
             payload.dominante = document.getElementById('form-dominante').value;
             
-            // Salva o valor do select do Espectro
             const selectEspectro = document.getElementById('form-espectro');
             payload.espectro = selectEspectro ? selectEspectro.value : 'padrao';
             
@@ -48,15 +47,13 @@ function configurarFormulario() {
                 let desc = document.getElementById(`form-hab${i}-desc`).value;
                 if(desc) payload.habilidades.push({ custo: custo, desc: desc });
             }
-        } 
-        // Campos para Armas
-        else if (colecaoAtual === "armas") {
+        } else if (colecaoAtual === "armas") {
             payload.categoria = document.getElementById('form-categoria').value;
+            payload.dano = document.getElementById('form-dano').value;
+            payload.critico = document.getElementById('form-critico').value;
             payload.efeito = document.getElementById('form-efeito').value;
             payload.descarte = document.getElementById('form-descarte').value;
-        } 
-        // Campos para Habilidades
-        else if (colecaoAtual === "habilidades") {
+        } else if (colecaoAtual === "habilidades") {
             payload.tipo = document.getElementById('form-tipo').value;
             payload.custo = document.getElementById('form-custo').value;
             payload.descarte = document.getElementById('form-descarte').value;
@@ -93,7 +90,7 @@ function carregarCartas() {
 
             const card = document.createElement('div');
             
-            // APLICA A CLASSE DO ESPECTRO NA CARTA AQUI
+            // Aplica a classe do espectro na carta
             const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
             card.className = `carta-tcg ${classeEspectro}`;
             card.onclick = () => abrirModal(item, id);
@@ -102,7 +99,11 @@ function carregarCartas() {
             if (colecaoAtual === "monstros") {
                 statusHtml = `<div class="carta-status"><span>PV: ${item.vida}</span><span>TA: ${item.ta}</span></div>`;
             } else if (colecaoAtual === "armas") {
-                statusHtml = `<div class="carta-status"><span>CAT: ${item.categoria}</span></div>`;
+                // Mostra o Dano e o Crítico na carta
+                statusHtml = `<div class="carta-status" style="justify-content: flex-start; gap: 10px;">
+                    <span style="color: var(--gold);">Dano: ${item.dano || '1d6'}</span>
+                    <span style="color: #888;">Crít: ${item.critico || '+1d6'}</span>
+                </div>`;
             }
 
             let habsHtml = "";
@@ -151,14 +152,15 @@ function abrirModal(item, id) {
 
     const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
     
-    // APLICA A CLASSE DO ESPECTRO NO MODAL AQUI
     const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
     
+    // Monta a string de status
     let sub = `<strong>${item.autor}</strong>`;
     if(colecaoAtual === "monstros") sub += ` | PV: ${item.vida} | TA: ${item.ta} | Dom: ${item.dominante}`;
-    if(colecaoAtual === "armas") sub += ` | ${item.categoria} | Efeito: ${item.efeito}`;
+    if(colecaoAtual === "armas") sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico} | Efeito: ${item.efeito}`;
     if(colecaoAtual === "habilidades") sub += ` | ${item.tipo} | Custo: ${item.custo}`;
 
+    // Monta as habilidades
     let habsModal = "";
     if (item.habilidades && item.habilidades.length > 0) {
         habsModal = `<div style="background:#111; padding:10px; margin:15px 0; border-radius:4px;"><strong>Habilidades:</strong><ul style="margin-left:20px;">`;
@@ -290,6 +292,16 @@ function prepararEdicao() {
                     document.getElementById(`form-hab${i}-desc`).value = h.desc;
                 }
             }
+        } else if (colecaoAtual === "armas") {
+            document.getElementById('form-categoria').value = item.categoria;
+            document.getElementById('form-dano').value = item.dano || "";
+            document.getElementById('form-critico').value = item.critico || "";
+            document.getElementById('form-efeito').value = item.efeito || "";
+            document.getElementById('form-descarte').value = item.descarte || "";
+        } else if (colecaoAtual === "habilidades") {
+            document.getElementById('form-tipo').value = item.tipo;
+            document.getElementById('form-custo').value = item.custo || "";
+            document.getElementById('form-descarte').value = item.descarte || "";
         }
 
         fecharModalCartas();
