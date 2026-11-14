@@ -5,7 +5,10 @@
   "author": "Seu Nome",
   "background_url": "/",
   "action": {
-    "title": "Rolar Dados",
-    "icon": "/icon.svg"
+    "title": "Abrir Rolagem",
+    "icon": "/icon.svg",
+    "popover": "/",
+    "height": 600,
+    "width": 400
   }
 }
