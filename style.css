@@ -5,169 +5,125 @@ body {
     background-color: #121212;
     background-image: radial-gradient(circle at 50% 0%, #2a221b 0%, transparent 70%);
     color: #e0e0e0;
-    padding: 15px;
     margin: 0;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.coluna-rolagem {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    box-sizing: border-box;
+    background: #1a1816;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #4a3c31;
 }
 
-h2 {
+.coluna-historico {
+    flex: 1;
+    background: #1a1816;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #4a3c31;
+    display: flex;
+    flex-direction: column;
+}
+
+h2, h3 {
     font-family: 'Cinzel', serif;
-    margin: 0 0 5px 0;
     color: #d4af37;
     text-align: center;
-    letter-spacing: 2px;
     border-bottom: 1px solid #4a3c31;
     padding-bottom: 10px;
+    margin-top: 0;
 }
 
 .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .row-inputs { display: flex; gap: 10px; }
-label { font-size: 0.8em; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; }
+label { font-size: 0.8em; color: #a89f91; text-transform: uppercase; }
 
-input {
+input, .espectro-select {
     padding: 8px; border-radius: 4px; border: 1px solid #4a3c31;
-    background-color: #1a1816; color: #d4af37; font-size: 1em; 
+    background-color: #222; color: #d4af37; font-size: 1em; 
     font-family: 'Cinzel', serif; width: 100%; box-sizing: border-box;
 }
 
-input:focus { outline: none; border-color: #d4af37; }
-
 .toggle-group { display: flex; gap: 10px; }
 .toggle {
-    flex: 1; padding: 8px; font-size: 0.85em; background-color: #1a1816; color: #a89f91;
-    border: 1px solid #4a3c31; border-radius: 4px; cursor: pointer; font-family: 'Cinzel', serif;
+    flex: 1; padding: 8px; background: #222; color: #a89f91;
+    border: 1px solid #4a3c31; border-radius: 4px; cursor: pointer;
 }
-.toggle.active { background-color: #2b231d; color: #d4af37; border-color: #d4af37; box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2); }
+.toggle.active { background: #d4af37; color: #121212; font-weight: bold; }
 
 #btn-rolar {
-    padding: 12px; font-size: 1.1em; font-family: 'Cinzel', serif; font-weight: bold; letter-spacing: 1px;
-    background-color: #d4af37; color: #121212; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;
+    padding: 12px; font-size: 1.1em; font-family: 'Cinzel', serif; font-weight: bold;
+    background-color: #d4af37; color: #121212;
+    border: none; border-radius: 4px; cursor: pointer;
 }
-#btn-rolar:hover { background-color: #fce07a; }
 
 #resultado-container {
-    padding: 15px; border-radius: 8px; text-align: center;
-    background-color: #1a1816; border: 1px solid #4a3c31;
+    padding: 15px; text-align: center; background: #1e1e1e;
+    border-radius: 8px; border: 1px solid #333;
     display: flex; flex-direction: column; align-items: center; gap: 15px;
-    transition: all 0.3s;
 }
 
-.dice-box {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 15px; border-radius: 8px; background: #222;
-    width: 80px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
+.dice-box { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: 6px; width: 80px; background: #222; }
+.principal { border: 2px solid #3d5a80; background: #1a222c; }
+.secundario { border: 2px solid #5c2a72; background: #221a26; }
+.dice-value { font-family: 'Cinzel', serif; font-size: 2em; font-weight: bold; }
+.dice-label { font-size: 0.7em; text-transform: uppercase; color: #888; }
 
-/* D12 PRINCIPAL - Padrão */
-.dice-box.principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
-.dice-box.principal .dice-value { color: #8eb1d9; }
-.dice-box.principal .dice-label { color: #3d5a80; }
+#total-box { padding-top: 10px; border-top: 1px dashed #444; width: 100%; }
+#total-visual { font-size: 1em; color: #d4af37; font-weight: bold; }
 
-/* DADOS SECUNDÁRIOS - Padrão */
-.dice-box.secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
-.dice-box.secundario .dice-value { color: #b285c9; }
-.dice-box.secundario .dice-label { color: #5c2a72; }
-
-.dice-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
-.dice-value { font-family: 'Cinzel', serif; font-size: 2.5em; font-weight: bold; line-height: 1; }
-
-#total-box { padding-top: 15px; border-top: 1px dashed #4a3c31; width: 100%; }
-
-/* O TOTAL EM AMARELO DOURADO */
-#total-visual {
-    font-size: 1.2em;
-    color: #d4af37; 
-    font-weight: bold;
-    font-family: 'Cinzel', serif;
-}
-
-#regra-texto {
-    font-size: 0.85em; font-style: italic; color: #fff; background: rgba(255, 255, 255, 0.05);
-    padding: 10px; border-radius: 4px; display: none; width: 100%; border-left: 3px solid #888; box-sizing: border-box;
-}
-
-/* =========================================
-   CORES DOS RESULTADOS ABSOLUTOS (1, 6, 12)
-   ========================================= */
-.resultado-1 .dice-box.principal { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
-.resultado-1 .dice-box.principal .dice-value { color: #ff4d4d; }
-.resultado-1 #regra-texto { display: block; border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff9999;}
-
-.resultado-6 .dice-box.principal { border-color: #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.3); }
-.resultado-6 .dice-box.principal .dice-value { color: #ff9800; }
-.resultado-6 #regra-texto { display: block; border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); color: #ffcc80;}
-
-.resultado-12 .dice-box.principal { border-color: #4caf50; box-shadow: 0 0 20px rgba(76, 175, 80, 0.5); animation: pulse-lendario 2s infinite; }
-.resultado-12 .dice-box.principal .dice-value { color: #4caf50; }
-.resultado-12 #regra-texto { display: block; border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); color: #a5d6a7;}
-
-@keyframes pulse-lendario {
-    0% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
-    50% { box-shadow: 0 0 25px rgba(76, 175, 80, 0.8); }
-    100% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
-}
-
-/* ====== HISTÓRICO ====== */
-#historico-container { margin-top: 5px; border-top: 1px solid #4a3c31; padding-top: 10px; }
-#historico-container h3 { font-family: 'Cinzel', serif; font-size: 0.8em; color: #a89f91; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-#lista-historico { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
-#lista-historico li {
-    font-size: 0.85em; padding: 8px; background: #1a1816; border-radius: 4px;
-    border-left: 3px solid #444; display: flex; justify-content: space-between; align-items: center;
-}
-#lista-historico li.hist-1 { border-left-color: #ff4d4d; }
-#lista-historico li.hist-6 { border-left-color: #ff9800; }
-#lista-historico li.hist-12 { border-left-color: #4caf50; }
-.hist-total { font-weight: bold; color: #d4af37; font-size: 1.1em;}
-.hist-detalhe { color: #888; font-size: 0.85em; margin-left: 5px;}
-
-/* Estilo do seletor para combinar com o tema */
-.espectro-select {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #4a3c31;
-    background-color: #1a1816;
-    color: #d4af37;
-    font-size: 1em;
-    font-family: 'Cinzel', serif;
-    width: 100%;
-    box-sizing: border-box;
-}
-.espectro-select:focus { outline: none; border-color: #d4af37; }
-
-/* =========================================
-   CORES DOS ESPECTROS DO ÍMPETO (D12)
-   ========================================= */
-
-/* Ígneo (Vermelho) */
-.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: linear-gradient(135deg, #2c1a1a, #222); box-shadow: 0 0 10px rgba(255, 77, 77, 0.2); }
+/* Cores dos Espectros */
+.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: #2c1a1a; }
 .espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
-.espectro-igneo .dice-box.principal .dice-label { color: #ff4d4d; }
-
-/* Celeste (Azul) */
-.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
+.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: #1a222c; }
 .espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
-.espectro-celeste .dice-box.principal .dice-label { color: #3d5a80; }
-
-/* Viridiano (Verde) */
-.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: linear-gradient(135deg, #1a2c1a, #222); box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); }
+.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: #1a2c1a; }
 .espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
-.espectro-viridiano .dice-box.principal .dice-label { color: #4caf50; }
-
-/* Solar (Amarelo/Dourado) */
-.espectro-solar .dice-box.principal { border-color: #fbc02d; background: linear-gradient(135deg, #2c2a1a, #222); box-shadow: 0 0 10px rgba(251, 192, 45, 0.2); }
+.espectro-solar .dice-box.principal { border-color: #fbc02d; background: #2c2a1a; }
 .espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
-.espectro-solar .dice-box.principal .dice-label { color: #fbc02d; }
-
-/* Índigo (Roxo) */
-.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
+.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: #221a26; }
 .espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
-.espectro-indigo .dice-box.principal .dice-label { color: #5c2a72; }
-
-/* Alabastro (Branco/Prata) */
-.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: linear-gradient(135deg, #2a2a2a, #222); box-shadow: 0 0 10px rgba(224, 224, 224, 0.2); }
+.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: #2a2a2a; }
 .espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
-.espectro-alabastro .dice-box.principal .dice-label { color: #e0e0e0; }
+
+/* Histórico Global */
+#lista-historico-global {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    overflow-y: auto; flex: 1;
+}
+
+#lista-historico-global li {
+    padding: 15px; background: #222; border-radius: 4px;
+    border-left: 5px solid #555; display: flex; justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+}
+
+#lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
+#lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); }
+#lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
+
+.hist-total { font-size: 1.4em; font-weight: bold; color: #d4af37; }
+.hist-detalhe { color: #888; font-size: 0.85em; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}

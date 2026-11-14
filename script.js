@@ -1,6 +1,29 @@
+// 1. Importações do Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+// 2. Suas configurações
+const firebaseConfig = {
+  apiKey: "AIzaSyDVpq__JyU5KTQ6p6zB6DTqey4k2jaEFZo",
+  authDomain: "b5at-44d1d.firebaseapp.com",
+  databaseURL: "https://b5at-44d1d-default-rtdb.firebaseio.com/", // <--- ATENÇÃO AQUI (Passo 3)
+  projectId: "b5at-44d1d",
+  storageBucket: "b5at-44d1d.firebasestorage.app",
+  messagingSenderId: "394788459759",
+  appId: "1:394788459759:web:7050aa055cec655b88b71a"
+};
+
+// 3. Inicia o Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ==========================================
+// 4. ELEMENTOS DA TELA
+// ==========================================
 const btnRolar = document.getElementById('btn-rolar');
+const inputSala = document.getElementById('sala-id');
 const inputNome = document.getElementById('nome-jogador');
-const selectEspectro = document.getElementById('espectro'); // NOVO
+const selectEspectro = document.getElementById('espectro');
 const inputQtd = document.getElementById('qtd-dados');
 const inputVolume = document.getElementById('volume');
 const dadoD12 = document.getElementById('dado-d12');
@@ -10,11 +33,14 @@ const totalVisual = document.getElementById('total-visual');
 const regraTexto = document.getElementById('regra-texto');
 const container = document.getElementById('resultado-container');
 const toggles = document.querySelectorAll('.toggle');
-const listaHistorico = document.getElementById('lista-historico');
+const listaHistorico = document.getElementById('lista-historico-global');
 
 let tipoRolagem = 'atributo'; 
-let historicoRolagens = [];
+let salaAtual = inputSala.value;
 
+// ==========================================
+// 5. LÓGICA VISUAL
+// ==========================================
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
@@ -40,34 +66,58 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-function renderizarHistorico() {
-    listaHistorico.innerHTML = ''; 
-    const recentes = historicoRolagens.slice(-4).reverse();
-
-    recentes.forEach(item => {
-        const li = document.createElement('li');
-        if (item.d12 === 1) li.classList.add('hist-1');
-        if (item.d12 === 6) li.classList.add('hist-6');
-        if (item.d12 === 12) li.classList.add('hist-12');
-
-        li.innerHTML = `
-            <span>
-                <strong>${item.nome}</strong> 
-                <span class="hist-detalhe">(${item.d12} + ${item.outros} + ${item.vol})</span>
-            </span>
-            <span class="hist-total">${item.total}</span>
-        `;
-        listaHistorico.appendChild(li);
+// ==========================================
+// 6. CONEXÃO EM TEMPO REAL COM O BANCO
+// ==========================================
+function conectarSala(idSala) {
+    listaHistorico.innerHTML = ''; // Limpa a tela ao trocar de sala
+    salaAtual = idSala;
+    
+    // Cria a referência para a sala específica, pegando apenas as últimas 20 rolagens
+    const salaRef = query(ref(db, 'salas/' + idSala), limitToLast(20));
+    
+    // Escuta quando uma nova rolagem é adicionada
+    onChildAdded(salaRef, (snapshot) => {
+        const dados = snapshot.val();
+        adicionarHistoricoNaTela(dados);
     });
 }
 
+// Inicia a conexão com a sala padrão
+conectarSala(inputSala.value);
+
+// Se o usuário mudar o ID da sala, reconecta
+inputSala.addEventListener('change', () => conectarSala(inputSala.value));
+
+// ==========================================
+// 7. MOSTRAR NO HISTÓRICO
+// ==========================================
+function adicionarHistoricoNaTela(dados) {
+    const li = document.createElement('li');
+    if (dados.d12 === 1) li.classList.add('hist-1');
+    if (dados.d12 === 6) li.classList.add('hist-6');
+    if (dados.d12 === 12) li.classList.add('hist-12');
+
+    li.innerHTML = `
+        <div>
+            <strong>${dados.nome}</strong> 
+            <div class="hist-detalhe">${dados.d12} (d12) + ${dados.outros} + ${dados.vol} (Vol)</div>
+        </div>
+        <div class="hist-total">${dados.total}</div>
+    `;
+    
+    listaHistorico.prepend(li);
+}
+
+// ==========================================
+// 8. CLIQUE DO BOTÃO DE ROLAR
+// ==========================================
 btnRolar.addEventListener('click', () => {
-    // 1. Limpa as classes anteriores
     container.className = 'resultado-container'; 
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
 
-    // 2. APLICA A COR DO ESPECTRO SELECIONADO
+    // Aplica a cor do Espectro
     if (selectEspectro && selectEspectro.value !== 'padrao') {
         container.classList.add(`espectro-${selectEspectro.value}`);
     }
@@ -83,34 +133,30 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // 3. Atualiza os números
+    // Atualiza a interface local
     dadoD12.textContent = rolagemD12;
     dadosOutros.textContent = somaDados;
-    
-    totalVisual.innerHTML = `
-        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
-        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
-    `;
+    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
 
-    // 4. Resultados Absolutos (Sobrescreve a cor do Espectro temporariamente para indicar perigo/sucesso)
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
         regraTexto.style.display = 'block';
-        
         if (rolagemD12 === 1) container.classList.add('resultado-1');
         if (rolagemD12 === 6) container.classList.add('resultado-6');
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // Histórico e Chat
-    const novaRolagem = { nome, d12: rolagemD12, outros: somaDados, vol: volume, total };
-    historicoRolagens.push(novaRolagem);
-    if (historicoRolagens.length > 4) historicoRolagens.shift();
-    renderizarHistorico();
-
-    if (typeof OBR !== 'undefined' && OBR.chat) {
-        let msg = `🎲 **${nome}** rolou: **${total}** (d12: ${rolagemD12}, dados: ${somaDados}, Vol: ${volume})`;
-        if (REGRAS[rolagemD12]) msg += `\n*${REGRAS[rolagemD12]}*`;
-        OBR.chat.postMessage(msg).catch(e => console.log("Chat indisponível."));
-    }
+    // ENVIA PARA O BANCO DE DADOS (GLOBAL)
+    const rolagemRef = ref(db, 'salas/' + salaAtual);
+    push(rolagemRef, {
+        nome: nome,
+        d12: rolagemD12,
+        outros: somaDados,
+        vol: volume,
+        total: total,
+        timestamp: Date.now()
+    }).catch((error) => {
+        console.error("Erro ao enviar rolagem:", error);
+        alert("Erro de conexão com o banco. Verifique a 'databaseURL' e as Regras.");
+    });
 });
