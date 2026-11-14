@@ -23,7 +23,7 @@ let idJogadorAtual = null;
 let fichaRef = null;
 let salaAtual = "sala-padrao";
 
-// Estado dos dados do personagem
+// Estado dos dados do personagem (AGORA TODOS COMEÇAM EM 0)
 let dadosPersonagem = {
     vigor: 0, dinamismo: 0, razao: 0, determinacao: 0,
     barganha: 0, combate: 0, tecnologia: 0, resistencia: 0,
@@ -78,6 +78,19 @@ window.rolarTeste = function(nomeExibicao, nomeChave, faces) {
     const vol = parseInt(fVolume.value) || 1;
     const d12 = Math.floor(Math.random() * 12) + 1;
     
+    // REGRA DO SISTEMA: Se tiver 0 dados, rola Desafiar o Destino (2d12)
+    if (qtd === 0) {
+        let d12_1 = Math.floor(Math.random() * 12) + 1;
+        let d12_2 = Math.floor(Math.random() * 12) + 1;
+        let d12_desafio = Math.max(d12_1, d12_2);
+        
+        const total = d12_desafio + vol;
+        exibirResultado(d12_desafio, 0, vol, total, `${nomeExibicao} (0 dados)`, true, d12_1, d12_2);
+        enviarParaHistorico(`${nomeExibicao} (Desafio)`, d12_desafio, 0, vol, total);
+        return;
+    }
+
+    // Rolagem normal
     let soma = 0;
     for(let i=0; i<qtd; i++) {
         soma += Math.floor(Math.random() * faces) + 1;
@@ -89,7 +102,7 @@ window.rolarTeste = function(nomeExibicao, nomeChave, faces) {
 };
 
 // ==========================================
-// 5. DESAFIAR O DESTINO (2d12)
+// 5. DESAFIAR O DESTINO MANUAL (2d12)
 // ==========================================
 if (btnDesafiar) {
     btnDesafiar.addEventListener('click', () => {
@@ -104,7 +117,7 @@ if (btnDesafiar) {
         let d12 = Math.max(d12_1, d12_2);
         
         const total = d12 + vol;
-        exibirResultado(d12, 0, vol, total, "Desafio", true, d12_1, d12_2);
+        exibirResultado(d12, 0, vol, total, "Desafio Manual", true, d12_1, d12_2);
         enviarParaHistorico("Desafiar o Destino", d12, 0, vol, total);
     });
 }
@@ -129,7 +142,7 @@ function exibirResultado(d12, soma, vol, total, labelDado, isDesafio = false, d1
 
     if (isDesafio) {
         outrosBox.textContent = "-";
-        labelOutros.textContent = "Desafio";
+        labelOutros.textContent = "Desafio (2d12)";
         totalVisual.innerHTML += `<br><small style="color:#888;">Rolou ${d1} e ${d2}. Manteve ${d12}</small>`;
     } else {
         outrosBox.textContent = soma;
@@ -142,7 +155,6 @@ function exibirResultado(d12, soma, vol, total, labelDado, isDesafio = false, d1
 }
 
 function adicionarHistoricoNaTela(dados) {
-    // 👇 ESSA É A LINHA NOVA: Esconde o aviso de "Nenhuma rolagem" assim que chega a primeira
     const aviso = document.getElementById('aviso-historico-vazio');
     if (aviso) aviso.style.display = 'none';
 
@@ -179,7 +191,6 @@ function enviarParaHistorico(nomeAcao, d12, soma, vol, total) {
 function conectarSala(idSala) {
     listaHistorico.innerHTML = '';
     
-    // Garante que o aviso apareça se a sala estiver vazia
     const aviso = document.getElementById('aviso-historico-vazio');
     if (aviso) aviso.style.display = 'block';
 
@@ -244,6 +255,7 @@ function iniciarFicha() {
             
             if (dados.dadosPersonagem) {
                 dadosPersonagem = dados.dadosPersonagem;
+                // Atualiza a interface com os valores salvos
                 for (let chave in dadosPersonagem) {
                     let el = document.getElementById(`val-${chave}`);
                     if (el) el.textContent = dadosPersonagem[chave];
