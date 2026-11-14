@@ -9,19 +9,18 @@
 </head>
 <body>
 
-    <!-- MENU LATERAL -->
     <button id="btn-menu" class="menu-toggle">☰ Arquivos</button>
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h2>Arquivos</h2>
+            <h2>Arquivos da Biblioteca</h2>
             <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
         </div>
         <div class="sidebar-links">
-            <button class="nav-btn" onclick="abrirModal('modal-regras')">📖 Regras de Rolagem</button>
+            <button class="nav-btn" onclick="abrirModal('modal-regras')">📜 Regras da Rolagem</button>
             <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros do Ímpeto</button>
-            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos (Combate)</button>
-            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações (Investigação)</button>
+            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos</button>
+            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações</button>
         </div>
         <div class="sidebar-footer">
             <p>Bestiário das Almas</p>
@@ -30,9 +29,8 @@
 
     <div id="overlay" class="overlay"></div>
 
-    <!-- CONTEÚDO PRINCIPAL: APENAS ROLAGEM -->
+    <!-- ÁREA PRINCIPAL DE ROLAGEM -->
     <div class="app-container">
-        <!-- Rolagem -->
         <div class="coluna-rolagem">
             <h2>Registro de Rolagem</h2>
             
@@ -96,7 +94,6 @@
             </div>
         </div>
         
-        <!-- Histórico -->
         <div class="coluna-historico">
             <h3>Crônica da Mesa</h3>
             <ul id="lista-historico-global"></ul>
@@ -104,7 +101,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAIS DE CONSULTA RÁPIDA (OS RESUMOS) -->
+    <!-- MODAIS DE CONSULTA (TEXTOS INTEGRAIS) -->
     <!-- ========================================== -->
 
     <!-- Modal Regras -->
@@ -113,12 +110,26 @@
             <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
             <h2>📜 A Arte da Rolagem</h2>
             <div class="modal-body">
-                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>. Igual ou maior que a TA, sucesso.</p>
+                <p>Toda história começa com uma escolha. Você estende a mão, lança o dado e, por um instante, existem vários caminhos diante de você. Na Biblioteca da 5ª Avenida, o destino não está escrito de antemão. Ele nasce do encontro entre aquilo que seu Arquivista é capaz de fazer e aquilo que os dados decidiram contar.</p>
+                
+                <h3>O d12: O Coração Narrativo</h3>
+                <p>Sempre que o resultado de uma ação for incerto ou perigoso, o d12 entra em cena. Você o lança, observa suas faces e descobre qual caminho a história tomou. Ao resultado do dado, some os modificadores de Atributo ou Perícia, quando aplicáveis, e o bônus correspondente ao seu Volume.</p>
+                <p>O resultado final é então comparado à <strong>TA (Taxa de Acerto)</strong> definida pelo Guardião. Se o valor atingir ou superar a TA, a ação é bem-sucedida. Caso contrário, ela falha.</p>
+                
                 <hr>
-                <h3>Resultados Absolutos</h3>
-                <p><strong>1 — Catástrofe Definitiva:</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</p>
-                <p><strong>6 — Falha Absoluta:</strong> A ação falha, mesmo superando a TA.</p>
-                <p><strong>12 — Momento Lendário:</strong> O resultado soma normalmente. Se vencer, ação lendária.</p>
+                <h3>Os Três Resultados Absolutos</h3>
+                <p>O d12 possui três faces especiais: <strong>1, 6 e 12</strong>. Elas não substituem o resultado da rolagem nem alteram a comparação com a TA. Em vez disso, acrescentam uma camada narrativa ao que aconteceu.</p>
+                
+                <p><strong>1 — Catástrofe Definitiva:</strong> Quando o d12 mostra 1, algo terrível acontece. A ação falha automaticamente, independentemente do total obtido. Não importa quantos bônus você tenha somado: o destino decidiu que aquele momento pertencia à ruína. Além disso, o Guardião ganha 1 Dado de Descartes para sua própria Pilha.</p>
+                
+                <p><strong>6 — Falha Absoluta:</strong> Quando o d12 mostra 6, a ação falha, mesmo que o total supere a TA. O personagem pode ter sido rápido demais, confiante demais ou simplesmente azarado. A história segue, mas aquele caminho foi fechado.</p>
+                
+                <p><strong>12 — Momento Lendário:</strong> Quando o d12 mostra 12, algo extraordinário acontece. O resultado continua sendo somado normalmente e comparado à TA. Se a ação funcionar, o sucesso ganha uma dimensão lendária. Se a ação falhar, o Arquivista ainda não consegue realizar aquilo que pretendia, mas algo positivo surge dessa tentativa. <strong>Um 12 não garante o sucesso. Ele garante que o momento será lembrado.</strong></p>
+
+                <hr>
+                <h3>Desafiar o Destino</h3>
+                <p>Mesmo que você não tenha dados em um Atributo, a Biblioteca não fecha as portas para você. Quando realizar um teste usando um Atributo no qual possui 0d4, ou não possuir a Perícia exigida, você ainda pode rolar. Role <strong>2d12</strong>, mantenha o maior resultado e descarte o menor. Some o Volume ao resultado final e compare com a TA.</p>
+                <p>Apenas o dado escolhido conta para os resultados absolutos. Contudo, falhar em um teste de Desafiar o Destino é mais severo: o Guardião pode adicionar uma complicação narrativa imediata ou ganhar 1 Dado de Descartes adicional para sua Pilha.</p>
             </div>
         </div>
     </div>
@@ -127,14 +138,39 @@
     <div id="modal-espectros" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
-            <h2>🔥 Espectros do Ímpeto</h2>
+            <h2>🔥 Os Espectros do Ímpeto</h2>
             <div class="modal-body">
-                <div class="espectro-item"><h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3><p>Sacrifício e Ambição.</p></div>
-                <div class="espectro-item"><h3 style="color:#8eb1d9">Celeste (Azul)</h3><p>Controle e Razão.</p></div>
-                <div class="espectro-item"><h3 style="color:#4caf50">Viridiano (Verde)</h3><p>Vida e Perseverança.</p></div>
-                <div class="espectro-item"><h3 style="color:#fbc02d">Solar (Amarelo)</h3><p>Liberdade e Movimento.</p></div>
-                <div class="espectro-item"><h3 style="color:#b285c9">Índigo (Roxo)</h3><p>Criatividade e Conhecimento.</p></div>
-                <div class="espectro-item"><h3 style="color:#ffffff">Alabastro (Branco)</h3><p>Equilíbrio e Justiça.</p></div>
+                <p>O Espectro não define sua profissão, sua personalidade ou a forma como você luta. Ele representa a razão pela qual seu Arquivista continua caminhando, mesmo quando tudo parece perdido. O Espectro revela por que você age, não quem você é.</p>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3>
+                    <p>Ofensiva, sacrifício e ambição. O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece. Ele consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo. <em>"O que você está disposto a sacrificar?"</em></p>
+                </div>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#8eb1d9">Celeste (Azul)</h3>
+                    <p>Controle, ordem e precisão. O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Onde há conflito, procuram compreensão antes do confronto. <em>"Como você pretende alcançar seu objetivo?"</em></p>
+                </div>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#4caf50">Viridiano (Verde)</h3>
+                    <p>Vida, perseverança e crescimento. O Ímpeto Verde é a essência da Vida, da Perseverança e do Crescimento. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo. <em>"Por que continuar mesmo após cair?"</em></p>
+                </div>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#fbc02d">Solar (Amarelo)</h3>
+                    <p>Liberdade, mobilidade e adaptação. O Ímpeto Solar é a manifestação da Liberdade, do Movimento e da Mudança. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar. <em>"O que existe além do horizonte?"</em></p>
+                </div>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#b285c9">Índigo (Roxo)</h3>
+                    <p>Criatividade, conhecimento e imaginação. O Ímpeto Violeta é a manifestação do Conhecimento e da Criatividade. Ele pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem apenas o impossível. <em>"E se tudo pudesse ser diferente?"</em></p>
+                </div>
+                
+                <div class="espectro-item">
+                    <h3 style="color:#ffffff">Alabastro (Branco)</h3>
+                    <p>Equilíbrio, proteção e união. O Ímpeto Alabastro é a manifestação da Ordem, do Equilíbrio e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição. Sua missão não é favorecer um lado, mas garantir que nenhum deles prevaleça. <em>"Como impedir que um extremo destrua todos os outros?"</em></p>
+                </div>
             </div>
         </div>
     </div>
@@ -145,11 +181,17 @@
             <span class="close-btn" onclick="fecharModal('modal-caminhos')">&times;</span>
             <h2>⚔️ Caminhos (Combate)</h2>
             <div class="modal-body">
-                <p><strong>Guerreiro:</strong> Linha de frente, foco em Vida.</p>
-                <p><strong>Mago:</strong> Mestre do Ímpeto e das Palavras.</p>
-                <p><strong>Suporte:</strong> Cura e proteção dos aliados.</p>
-                <p><strong>Assassino:</strong> Dano massivo e furtividade.</p>
-                <p><strong>Atirador:</strong> Precisão à distância.</p>
+                <p>Todo Arquivista atravessa as portas da Biblioteca movido por um propósito, mas é o Caminho que define como ele enfrentará os desafios dessa jornada. Mais do que uma profissão ou um estilo de combate, um Caminho representa sua vocação, sua filosofia e a maneira como transforma o Ímpeto em ação.</p>
+                
+                <p><strong>Guerreiro:</strong> Os Guerreiros enfrentam os perigos da Biblioteca na linha de frente. Sua força não vem apenas das armas, mas da determinação de continuar lutando quando qualquer outro já teria recuado. Cada batalha fortalece sua convicção de que nenhuma muralha resiste àqueles que se recusam a desistir.</p>
+                
+                <p><strong>Mago:</strong> Os Magos dedicam suas vidas ao estudo do Ímpeto, tratando cada Palavra de Afirmação como parte da linguagem que sustenta a realidade. Enquanto outros utilizam o poder como ferramenta, eles buscam compreendê-lo, aperfeiçoá-lo e, por alguns instantes, reescrever as regras do mundo.</p>
+                
+                <p><strong>Suporte:</strong> Os Suportes sabem que nenhuma grande história é escrita sozinho. Enquanto seus aliados enfrentam os perigos da Biblioteca, eles fortalecem, protegem e criam oportunidades para que o grupo supere qualquer desafio. Sua maior força não está em derrotar inimigos, mas em garantir que ninguém fique para trás.</p>
+                
+                <p><strong>Assassino:</strong> Os Assassinos vencem batalhas antes mesmo do primeiro golpe. Especialistas em furtividade e precisão, aguardam o momento perfeito para atacar, transformando cada descuido do inimigo em uma oportunidade fatal.</p>
+                
+                <p><strong>Atirador:</strong> Os Atiradores transformam distância em vantagem. Especialistas em precisão e paciência, aguardam o momento ideal para agir, fazendo de cada disparo uma oportunidade decisiva.</p>
             </div>
         </div>
     </div>
@@ -160,12 +202,19 @@
             <span class="close-btn" onclick="fecharModal('modal-vocacoes')">&times;</span>
             <h2>🔍 Vocações (Investigação)</h2>
             <div class="modal-body">
-                <p><strong>Cronista:</strong> Altera como o mundo é lembrado.</p>
-                <p><strong>Selador:</strong> Contém anomalias perigosas.</p>
-                <p><strong>Guardião de Memórias:</strong> Preserva o conhecimento.</p>
-                <p><strong>Investigador:</strong> Enxerga o oculto.</p>
-                <p><strong>Cartógrafo:</strong> Dobra o espaço.</p>
-                <p><strong>Ecoísta:</strong> Invoca ecos do passado.</p>
+                <p>Nem todo Arquivista enfrenta o desconhecido com uma lâmina em mãos. Para aqueles que preferem a investigação e a manipulação da realidade, existem as Vocações — que funcionam como os Caminhos, mas com foco em habilidades narrativas, de memória e de utilidade. Elas são para quem acredita que uma boa pergunta vale mais do que uma espada.</p>
+                
+                <p><strong>Cronista:</strong> Os Cronistas não vencem batalhas pela força, mas pela memória. São Arquivistas que estudam acontecimentos, registram verdades e entendem que uma história bem escrita pode mudar o destino de quem a vive. Enquanto outros alteram o mundo com o Ímpeto, os Cronistas alteram a forma como esse mundo é lembrado.</p>
+                
+                <p><strong>Selador:</strong> Nem todo conhecimento deve permanecer livre. Os Seladores dedicam suas vidas a conter anomalias, aprisionar horrores e impedir que histórias perigosas escapem das páginas da Biblioteca. Onde outros veem monstros, eles enxergam capítulos que jamais deveriam ser reabertos.</p>
+                
+                <p><strong>Guardião de Memórias:</strong> Os Guardiões de Memórias preservam aquilo que nenhuma espada é capaz de proteger: as lembranças. Eles caminham entre páginas esquecidas, restaurando identidades perdidas, fortalecendo a mente de seus aliados e impedindo que o medo, a loucura ou o esquecimento apaguem suas histórias.</p>
+                
+                <p><strong>Investigador das Sombras:</strong> Enquanto outros Arquivistas observam o que está diante dos olhos, os Investigadores das Sombras aprendem a enxergar aquilo que foi escondido. Rastros de Ímpeto, portas secretas, mentiras e pequenas inconsistências compõem o verdadeiro mapa da Biblioteca.</p>
+                
+                <p><strong>Cartógrafo de Realidades:</strong> Para um Cartógrafo de Realidades, cada corredor da Biblioteca existe apenas porque alguém o registrou primeiro. Eles estudam distorções espaciais, caminhos impossíveis e rotas que desafiam a lógica, transformando mapas em ferramentas capazes de dobrar o espaço ao redor dos Arquivistas.</p>
+                
+                <p><strong>Ecoísta:</strong> Os Ecoístas estudam os rastros deixados por tudo o que existe. Cada palavra pronunciada, cada golpe desferido e cada escolha realizada deixa um eco na Biblioteca. Com treinamento suficiente, eles aprendem a invocar essas lembranças, reproduzindo movimentos, objetos e acontecimentos que já existiram.</p>
             </div>
         </div>
     </div>
@@ -173,7 +222,6 @@
     <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Lógica do Menu Lateral
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const btnMenu = document.getElementById('btn-menu');
@@ -182,14 +230,8 @@
         function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
         btnMenu.addEventListener('click', toggleMenu);
         btnFecharMenu.addEventListener('click', toggleMenu);
-        
-        overlay.addEventListener('click', () => { 
-            sidebar.classList.remove('active'); 
-            overlay.classList.remove('active'); 
-            fecharTodosModais();
-        });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); fecharTodosModais(); });
 
-        // Controle dos Modais
         function abrirModal(id) {
             sidebar.classList.remove('active');
             document.getElementById(id).style.display = "block";
