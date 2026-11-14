@@ -12,99 +12,124 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (COM TESTE DE FOGO)
+// 1. SALVAR ITEM (COM UPLOAD DE ARQUIVO)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
-        // 1. Verifica o Login
-        if (!idJogadorAtual) { 
-            alert("VOCÊ NÃO ESTÁ LOGADO. Faça login com o Google primeiro!"); 
-            return; 
-        }
-
+        if (!idJogadorAtual) { alert("Faça login com o Google para salvar!"); return; }
+        
         const titulo = document.getElementById('form-titulo')?.value.trim() || "";
-        if (titulo.length < 3) { 
-            alert("O NOME PRECISA TER PELO MENOS 3 LETRAS."); 
-            return; 
-        }
+        if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
 
-        try {
-            const texto = document.getElementById('form-texto')?.value.trim() || "";
-            const imagem = document.getElementById('form-imagem')?.value.trim() || "";
+        const btnSalvar = document.getElementById('btn-salvar-form');
+        btnSalvar.textContent = "Salvando...";
+        btnSalvar.disabled = true;
 
-            let payload = {
-                autor: auth.currentUser?.displayName || "Arquivista",
-                titulo: titulo,
-                texto: texto,
-                imagem: imagem,
-                data: Date.now()
-            };
-
-            // Pega os campos de acordo com a aba
-            if (colecaoAtual === "monstros") {
-                payload.vida = document.getElementById('form-vida')?.value || 10;
-                payload.ta = document.getElementById('form-ta')?.value || 12;
-                payload.dominante = document.getElementById('form-dominante')?.value || "Vigor";
-                payload.espectro = document.getElementById('form-espectro')?.value || 'padrao';
+        // Função interna para montar o objeto e salvar no Firebase
+        const salvarNoBanco = (imagemFinal) => {
+            try {
+                const texto = document.getElementById('form-texto')?.value.trim() || "";
                 
-                payload.habilidades = [];
-                for(let i=1; i<=3; i++) {
-                    let custoEl = document.getElementById(`form-hab${i}-custo`);
-                    let descEl = document.getElementById(`form-hab${i}-desc`);
-                    let custo = custoEl ? custoEl.value : "";
-                    let desc = descEl ? descEl.value : "";
-                    if(desc && desc.trim() !== "") {
-                        payload.habilidades.push({ custo: custo, desc: desc });
+                let payload = {
+                    autor: auth.currentUser?.displayName || "Arquivista",
+                    titulo: titulo,
+                    texto: texto,
+                    imagem: imagemFinal, // Pode ser o link ou o Base64
+                    data: Date.now()
+                };
+
+                if (colecaoAtual === "monstros") {
+                    payload.vida = document.getElementById('form-vida')?.value || 10;
+                    payload.ta = document.getElementById('form-ta')?.value || 12;
+                    payload.dominante = document.getElementById('form-dominante')?.value || "Vigor";
+                    payload.espectro = document.getElementById('form-espectro')?.value || 'padrao';
+                    payload.habilidades = [];
+                    for(let i=1; i<=3; i++) {
+                        let custo = document.getElementById(`form-hab${i}-custo`)?.value || "";
+                        let desc = document.getElementById(`form-hab${i}-desc`)?.value || "";
+                        if(desc.trim() !== "") payload.habilidades.push({ custo, desc });
                     }
+                } else if (colecaoAtual === "armas") {
+                    payload.categoria = document.getElementById('form-categoria')?.value || "Média";
+                    payload.dano = document.getElementById('form-dano')?.value || "1d6";
+                    payload.critico = document.getElementById('form-critico')?.value || "+1d6";
+                    payload.efeito = document.getElementById('form-efeito')?.value.trim() || "Nenhum";
+                    payload.descarte = document.getElementById('form-descarte')?.value.trim() || "Nenhum";
+                } else if (colecaoAtual === "habilidades") {
+                    payload.tipo = document.getElementById('form-tipo')?.value || "Palavra";
+                    payload.custo = document.getElementById('form-custo')?.value || "";
+                    payload.descarte = document.getElementById('form-descarte')?.value || "";
                 }
-            } else if (colecaoAtual === "armas") {
-                payload.categoria = document.getElementById('form-categoria')?.value || "Média";
-                payload.dano = document.getElementById('form-dano')?.value || "1d6";
-                payload.critico = document.getElementById('form-critico')?.value || "+1d6";
-                payload.efeito = document.getElementById('form-efeito')?.value.trim() || "Nenhum";
-                payload.descarte = document.getElementById('form-descarte')?.value.trim() || "Nenhum";
-            } else if (colecaoAtual === "habilidades") {
-                payload.tipo = document.getElementById('form-tipo')?.value || "Palavra";
-                payload.custo = document.getElementById('form-custo')?.value || "";
-                payload.descarte = document.getElementById('form-descarte')?.value || "";
-            }
 
-            // Prepara o caminho no banco
-            const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
-            const caminhoDB = `salas/${salaAtual}/${colecaoAtual}/${idGerado}`;
-            const itemRef = ref(db, caminhoDB);
+                const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
+                const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${idGerado}`);
 
-            // 2. Tenta salvar no Firebase
-            set(itemRef, payload).then(() => {
-                const status = document.getElementById('status-form');
-                if (status) {
+                set(itemRef, payload).then(() => {
+                    const status = document.getElementById('status-form');
                     status.textContent = "✅ Salvo com sucesso!";
                     status.style.color = "#4caf50";
-                    setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
-                }
-                
-                // Limpa os campos
-                document.getElementById('form-titulo').value = "";
-                if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
-                if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = "";
-                if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = "";
-                
-                itemAbertoId = null;
-            }).catch((error) => {
-                console.error("Erro do Firebase:", error);
-                // 3. Se o Firebase bloquear, avisa na tela!
-                alert("ERRO NO FIREBASE: Verifique se as Regras do Realtime Database estão como 'true'.\n\nCódigo do erro: " + error.message);
-            });
+                    
+                    document.getElementById('form-titulo').value = "";
+                    if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
+                    if(document.getElementById('form-arquivo')) document.getElementById('form-arquivo').value = "";
+                    if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = "";
+                    
+                    itemAbertoId = null;
+                    btnSalvar.textContent = "Salvar";
+                    btnSalvar.disabled = false;
 
-        } catch (erro) {
-            console.error("Erro de JavaScript:", erro);
-            alert("ERRO INTERNO NO SITE: " + erro.message);
+                    setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
+                }).catch((error) => {
+                    console.error("Erro Firebase:", error);
+                    alert("Erro ao salvar no banco.");
+                    btnSalvar.textContent = "Salvar";
+                    btnSalvar.disabled = false;
+                });
+            } catch (e) {
+                console.error("Erro JS:", e);
+                btnSalvar.textContent = "Salvar";
+                btnSalvar.disabled = false;
+            }
+        };
+
+        // Lógica para ler a imagem
+        const arquivoInput = document.getElementById('form-arquivo');
+        const urlInput = document.getElementById('form-imagem')?.value.trim() || "";
+
+        if (arquivoInput && arquivoInput.files.length > 0) {
+            const arquivo = arquivoInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Cria uma imagem virtual para redimensionar
+                const img = new Image();
+                img.onload = function() {
+                    // Redimensiona para no máximo 500px (para não pesar no banco)
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500;
+                    const scale = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scale;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Converte para Base64 comprimido
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                    salvarNoBanco(base64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(arquivo);
+        } else {
+            // Se não tem arquivo, usa o link da URL
+            salvarNoBanco(urlInput);
         }
     });
 }
 
 // ==========================================
-// 2. DESENHAR AS CARTAS
+// 2. DESENHAR AS CARTAS (MANTIDO)
 // ==========================================
 function carregarCartas() {
     const lista = document.getElementById('lista-cartas');
@@ -138,9 +163,7 @@ function carregarCartas() {
             let habsHtml = "";
             if (item.habilidades && item.habilidades.length > 0) {
                 habsHtml = `<div class="carta-habilidades"><ul>`;
-                item.habilidades.forEach(h => {
-                    habsHtml += `<li><strong>${h.custo ? h.custo+':' : ''}</strong> ${h.desc}</li>`;
-                });
+                item.habilidades.forEach(h => { habsHtml += `<li><strong>${h.custo ? h.custo+':' : ''}</strong> ${h.desc}</li>`; });
                 habsHtml += `</ul></div>`;
             }
 
@@ -167,7 +190,7 @@ function carregarCartas() {
 }
 
 // ==========================================
-// 3. MODAL (LEITURA, LIKES E COMENTÁRIOS)
+// 3, 4 e 5. MODAL, LIKES, COMENTÁRIOS E EDIÇÃO (MANTIDOS)
 // ==========================================
 function abrirModal(item, id) {
     itemAbertoId = id;
@@ -235,18 +258,12 @@ function abrirModal(item, id) {
     carregarComentarios(id);
 }
 
-function fecharModalCartas() {
-    document.getElementById('modal-dinamico').style.display = 'none';
-}
+function fecharModalCartas() { document.getElementById('modal-dinamico').style.display = 'none'; }
 
-// ==========================================
-// 4. CURTIDAS E COMENTÁRIOS
-// ==========================================
 function atualizarBotaoLike() {
     const btn = document.getElementById('btn-like');
-    const qtdSpan = document.getElementById('qtd-likes');
     if(!btn) return;
-    qtdSpan.textContent = curtidasDoItem.length;
+    document.getElementById('qtd-likes').textContent = curtidasDoItem.length;
     btn.className = (idJogadorAtual && curtidasDoItem.includes(idJogadorAtual)) ? 'btn-curtir curtido' : 'btn-curtir';
 }
 
@@ -256,8 +273,7 @@ async function alternarLike() {
     if (novas.includes(idJogadorAtual)) novas = novas.filter(id => id !== idJogadorAtual);
     else novas.push(idJogadorAtual);
 
-    const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`);
-    await update(itemRef, { curtidas: novas });
+    await update(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`), { curtidas: novas });
     curtidasDoItem = novas;
     atualizarBotaoLike();
 }
@@ -265,38 +281,25 @@ async function alternarLike() {
 function carregarComentarios(itemId) {
     const lista = document.getElementById('lista-comentarios');
     if(!lista) return;
-
     onValue(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemId}/comentarios`), (snapshot) => {
         lista.innerHTML = '';
         const dados = snapshot.val();
         if (!dados) { lista.innerHTML = '<p style="font-size:0.8rem; color:#666;">Nenhum comentário.</p>'; return; }
-        
         Object.values(dados).forEach(c => {
-            lista.innerHTML += `
-                <div class="comentario-item">
-                    <div class="comentario-autor">${c.autor}</div>
-                    <div class="comentario-texto">${c.texto}</div>
-                </div>
-            `;
+            lista.innerHTML += `<div class="comentario-item"><div class="comentario-autor">${c.autor}</div><div class="comentario-texto">${c.texto}</div></div>`;
         });
         lista.scrollTop = lista.scrollHeight;
     });
 }
 
 async function enviarComentario() {
-    if (!idJogadorAtual) { alert("Faça login para comentar!"); return; }
+    if (!idJogadorAtual) { alert("Faça login!"); return; }
     const input = document.getElementById('input-comentario');
-    const texto = input.value.trim();
-    if(!texto) return;
-
-    const comentarioRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}/comentarios`);
-    await push(comentarioRef, { autor: auth.currentUser.displayName || "Arquivista", texto: texto });
+    if(!input.value.trim()) return;
+    await push(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}/comentarios`), { autor: auth.currentUser.displayName || "Arquivista", texto: input.value.trim() });
     input.value = '';
 }
 
-// ==========================================
-// 5. EDIÇÃO
-// ==========================================
 function prepararEdicao() {
     get(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`)).then((snapshot) => {
         const item = snapshot.val();
@@ -304,15 +307,14 @@ function prepararEdicao() {
 
         document.getElementById('form-titulo').value = item.titulo;
         if(document.getElementById('form-texto')) document.getElementById('form-texto').value = item.texto || "";
-        if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = item.imagem || "";
+        if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = item.imagem.startsWith('data:image') ? "" : item.imagem; 
+        // Nota: se for Base64, não mostra o texto gigante no input.
 
         if (colecaoAtual === "monstros") {
             document.getElementById('form-vida').value = item.vida;
             document.getElementById('form-ta').value = item.ta;
             document.getElementById('form-dominante').value = item.dominante;
-            if(document.getElementById('form-espectro')) {
-                document.getElementById('form-espectro').value = item.espectro || "padrao";
-            }
+            if(document.getElementById('form-espectro')) document.getElementById('form-espectro').value = item.espectro || "padrao";
             if(item.habilidades) {
                 for(let i=1; i<=3; i++) {
                     let h = item.habilidades[i-1] || { custo: "", desc: "" };
@@ -324,12 +326,8 @@ function prepararEdicao() {
             document.getElementById('form-categoria').value = item.categoria;
             document.getElementById('form-dano').value = item.dano || "";
             document.getElementById('form-critico').value = item.critico || "";
-            
-            let efeito = item.efeito === "Nenhum" ? "" : item.efeito;
-            let descarte = item.descarte === "Nenhum" ? "" : item.descarte;
-            
-            if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = efeito || "";
-            if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = descarte || "";
+            if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = item.efeito === "Nenhum" ? "" : item.efeito;
+            if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = item.descarte === "Nenhum" ? "" : item.descarte;
         } else if (colecaoAtual === "habilidades") {
             document.getElementById('form-tipo').value = item.tipo;
             document.getElementById('form-custo').value = item.custo || "";

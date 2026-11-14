@@ -60,8 +60,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem (Opcional)</label>
-                    <input type="url" id="form-imagem" placeholder="Link da imagem">
+                    <label>Imagem do Item (Opcional)</label>
+                    <!-- O input agora aceita arquivos de imagem -->
+                    <input type="file" id="form-arquivo" accept="image/*" style="background: #111; color: #ccc; padding: 8px; border: 1px solid #333; border-radius: 4px;">
+                    <small style="color: #888; font-size: 0.7rem; margin-top: 5px;">Ou cole um link:</small>
+                    <input type="url" id="form-imagem" placeholder="Link da imagem (Opcional)">
                 </div>
 
                 <div class="input-group">
