@@ -13,6 +13,7 @@ const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
 let historicoRolagens = [];
+const CANAL = "com.biblioteca5a.rolagens.global";
 
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
@@ -65,6 +66,62 @@ function renderizarHistorico() {
     });
 }
 
+// --- INICIALIZAÇÃO E ESCUTA GLOBAL ---
+if (typeof OBR !== 'undefined') {
+    OBR.onReady(() => {
+        console.log("Owlbear Pronto. Escutando rolagens...");
+        
+        // Escuta as mensagens de outros jogadores
+        OBR.broadcast.onMessage(CANAL, (event) => {
+            const dados = event.data;
+            
+            // Se a mensagem NÃO for minha, atualiza a tela
+            if (dados.senderId !== OBR.player.id) {
+                console.log("Recebi rolagem de outro jogador:", dados);
+                
+                // Atualiza o histórico local
+                historicoRolagens.push(dados);
+                if (historicoRolagens.length > 4) historicoRolagens.shift();
+                renderizarHistorico();
+
+                // Cria um alerta visual na tela (mais garantido que OBR.notification)
+                const alerta = document.createElement('div');
+                alerta.style.position = 'fixed';
+                alerta.style.top = '20px';
+                alerta.style.left = '50%';
+                alerta.style.transform = 'translateX(-50%)';
+                alerta.style.backgroundColor = '#d4af37';
+                alerta.style.color = '#121212';
+                alerta.style.padding = '15px 30px';
+                alerta.style.borderRadius = '8px';
+                alerta.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+                alerta.style.zIndex = '9999';
+                alerta.style.fontFamily = 'serif';
+                alerta.style.textAlign = 'center';
+                alerta.style.fontSize = '1.2em';
+                
+                let texto = `<strong>${dados.nome}</strong> rolou: <br>`;
+                texto += `${dados.d12} (d12) + ${dados.outros} (dados) + ${dados.vol} (Vol) = <strong>${dados.total}</strong>`;
+                
+                if (REGRAS[dados.d12]) {
+                    alerta.style.backgroundColor = dados.d12 === 1 ? '#ff4d4d' : (dados.d12 === 6 ? '#ff9800' : '#4caf50');
+                    alerta.style.color = '#fff';
+                    texto += `<br><small>${REGRAS[dados.d12]}</small>`;
+                }
+
+                alerta.innerHTML = texto;
+                document.body.appendChild(alerta);
+
+                // Remove o alerta após 5 segundos
+                setTimeout(() => {
+                    if (alerta.parentNode) alerta.parentNode.removeChild(alerta);
+                }, 5000);
+            }
+        });
+    });
+}
+
+// --- CLIQUE DO BOTÃO ---
 btnRolar.addEventListener('click', () => {
     container.className = '';
     regraTexto.style.display = 'none';
@@ -81,7 +138,7 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // 1. Atualiza a interface local
+    // UI Local
     dadoD12.textContent = rolagemD12;
     dadosOutros.textContent = somaDados;
     totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
@@ -93,32 +150,23 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // 2. Atualiza o histórico local
+    // Histórico Local
     const novaRolagem = {
+        senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
         nome: nome,
         d12: rolagemD12,
         outros: somaDados,
         vol: volume,
         total: total
     };
+
     historicoRolagens.push(novaRolagem);
     if (historicoRolagens.length > 4) historicoRolagens.shift();
     renderizarHistorico();
 
-    // 3. A MÁGICA GLOBAL SIMPLES: Notificação Nativa do Owlbear
+    // --- ENVIO GLOBAL ---
     if (typeof OBR !== 'undefined') {
-        let mensagem = `${nome} rolou ${rolagemD12}(d12) + ${somaDados} + ${volume} = ${total}`;
-        let tipoNotificacao = "INFO";
-        
-        if (rolagemD12 === 1) tipoNotificacao = "ERROR";
-        if (rolagemD12 === 6) tipoNotificacao = "WARNING";
-        if (rolagemD12 === 12) tipoNotificacao = "SUCCESS";
-
-        if (REGRAS[rolagemD12]) {
-            mensagem = `${REGRAS[rolagemD12]} ${nome} rolou: ${total}`;
-        }
-
-        // O Owlbear mostra isso no topo da tela de TODOS na sala
-        OBR.notification.show(mensagem, tipoNotificacao);
+        console.log("Enviando rolagem para a mesa...");
+        OBR.broadcast.sendMessage(CANAL, novaRolagem, { destination: 'ALL' });
     }
 });
