@@ -25,8 +25,10 @@ let salaAtual = "sala-padrao";
 
 // Estado dos dados do personagem
 let dadosPersonagem = {
-    vigor: 1, dinamismo: 1, razao: 1, determinacao: 1,
-    combate: 1, investigacao: 1, arcanismo: 1, furtividade: 1
+    vigor: 0, dinamismo: 0, razao: 0, determinacao: 0,
+    barganha: 0, combate: 0, tecnologia: 0, resistencia: 0,
+    intuicao: 0, medicina: 0, investigar: 0, invasao: 0,
+    pesquisa: 0, arcanismo: 0, imaginacao: 0, historia: 0
 };
 
 // ==========================================

@@ -130,10 +130,20 @@
 
         <!-- COLUNA DO MEIO: PERÍCIAS E ROLAGEM -->
         <div class="coluna-meio">
-            <!-- Tabela de Perícias -->
-            <div class="secao-ficha">
+            <!-- Tabela de Perícias Completa -->
+            <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
                 <h3>Perícias (d6)</h3>
                 <div class="lista-rolagens">
+                    <!-- 1. Barganha -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button>
+                            <span id="val-barganha" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button>
+                    </div>
+                    <!-- 2. Combate -->
                     <div class="linha-rolagem">
                         <div class="controle-dados">
                             <button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button>
@@ -142,14 +152,70 @@
                         </div>
                         <button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button>
                     </div>
+                    <!-- 3. Tecnologia -->
                     <div class="linha-rolagem">
                         <div class="controle-dados">
-                            <button class="btn-ajuste" onclick="ajustarDado('investigacao', -1)">-</button>
-                            <span id="val-investigacao" class="valor-dado">1</span>
-                            <button class="btn-ajuste" onclick="ajustarDado('investigacao', 1)">+</button>
+                            <button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button>
+                            <span id="val-tecnologia" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button>
                         </div>
-                        <button class="btn-rolar-nome" onclick="rolarTeste('Investigação', 'investigacao', 6)">Investigação</button>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button>
                     </div>
+                    <!-- 4. Resistência -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('resistencia', -1)">-</button>
+                            <span id="val-resistencia" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('resistencia', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Resistência', 'resistencia', 6)">Resistência</button>
+                    </div>
+                    <!-- 5. Intuição -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('intuicao', -1)">-</button>
+                            <span id="val-intuicao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('intuicao', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Intuição', 'intuicao', 6)">Intuição</button>
+                    </div>
+                    <!-- 6. Medicina -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('medicina', -1)">-</button>
+                            <span id="val-medicina" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('medicina', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Medicina', 'medicina', 6)">Medicina</button>
+                    </div>
+                    <!-- 7. Investigar -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('investigar', -1)">-</button>
+                            <span id="val-investigar" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('investigar', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Investigar', 'investigar', 6)">Investigar</button>
+                    </div>
+                    <!-- 8. Invasão -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('invasao', -1)">-</button>
+                            <span id="val-invasao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('invasao', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Invasão', 'invasao', 6)">Invasão</button>
+                    </div>
+                    <!-- 9. Pesquisa -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('pesquisa', -1)">-</button>
+                            <span id="val-pesquisa" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('pesquisa', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Pesquisa', 'pesquisa', 6)">Pesquisa</button>
+                    </div>
+                    <!-- 10. Arcanismo -->
                     <div class="linha-rolagem">
                         <div class="controle-dados">
                             <button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button>
@@ -158,13 +224,23 @@
                         </div>
                         <button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button>
                     </div>
+                    <!-- 11. Imaginação -->
                     <div class="linha-rolagem">
                         <div class="controle-dados">
-                            <button class="btn-ajuste" onclick="ajustarDado('furtividade', -1)">-</button>
-                            <span id="val-furtividade" class="valor-dado">1</span>
-                            <button class="btn-ajuste" onclick="ajustarDado('furtividade', 1)">+</button>
+                            <button class="btn-ajuste" onclick="ajustarDado('imaginacao', -1)">-</button>
+                            <span id="val-imaginacao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('imaginacao', 1)">+</button>
                         </div>
-                        <button class="btn-rolar-nome" onclick="rolarTeste('Furtividade', 'furtividade', 6)">Furtividade</button>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Imaginação', 'imaginacao', 6)">Imaginação</button>
+                    </div>
+                    <!-- 12. História -->
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('historia', -1)">-</button>
+                            <span id="val-historia" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('historia', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('História', 'historia', 6)">História</button>
                     </div>
                 </div>
             </div>
