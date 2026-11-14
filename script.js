@@ -13,6 +13,7 @@ const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
 const CANAL_ROLAGEM = "com.biblioteca5a.rolagens.global";
+const MY_EXTENSION_ID = "com.biblioteca5a.rolagens";
 let historicoRolagens = [];
 
 function atualizarLabel() {
@@ -45,7 +46,6 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função para desenhar a lista de histórico na sua tela
 function renderizarHistorico() {
     listaHistorico.innerHTML = ''; 
     const recentes = historicoRolagens.slice(-4).reverse();
@@ -67,32 +67,12 @@ function renderizarHistorico() {
     });
 }
 
-// Função para notificar os outros jogadores (Alerta na tela)
-function mostrarAlertaGlobal(dados) {
-    let texto = `${dados.nome} rolou: ${dados.d12}(d12) + ${dados.soma}(dados) + ${dados.vol}(Vol) = ${dados.total}`;
-    let variant = "INFO";
-    let title = "Rolagem Global";
-
-    if (dados.d12 === 1) { variant = "ERROR"; title = "Catástrofe Definitiva!"; }
-    else if (dados.d12 === 6) { variant = "WARNING"; title = "Falha Absoluta!"; }
-    else if (dados.d12 === 12) { variant = "SUCCESS"; title = "Momento Lendário!"; }
-
-    if (typeof OBR !== 'undefined') {
-        OBR.notification.show(`${title} - ${texto}`, variant);
-    }
-}
-
-// Escuta o broadcast e integra com o histórico
+// Escuta broadcast local (para quem estiver com o painel aberto)
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
         OBR.broadcast.onMessage(CANAL_ROLAGEM, (event) => {
             const dados = event.data;
-            // Se for de outro jogador
             if (dados.senderId !== OBR.player.id) {
-                // 1. Mostra o alerta na tela
-                mostrarAlertaGlobal(dados);
-                
-                // 2. Adiciona ao seu histórico local (se o seu painel estiver aberto)
                 historicoRolagens.push(dados);
                 if (historicoRolagens.length > 4) historicoRolagens.shift();
                 renderizarHistorico();
@@ -118,7 +98,7 @@ btnRolar.addEventListener('click', async () => {
         const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
         const total = rolagemD12 + somaDados + volume;
 
-        // Atualiza a interface local
+        // UI Local
         dadoD12.textContent = rolagemD12;
         if (qtdDados > 0) {
             dadosOutros.textContent = somaDados;
@@ -140,7 +120,7 @@ btnRolar.addEventListener('click', async () => {
             if (rolagemD12 === 12) container.classList.add('resultado-12');
         }
 
-        // Prepara os dados
+        // Histórico Local
         const novaRolagem = {
             senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
             nome: nome,
@@ -151,32 +131,32 @@ btnRolar.addEventListener('click', async () => {
             total: total
         };
 
-        // Adiciona ao SEU histórico local
         historicoRolagens.push(novaRolagem);
         if (historicoRolagens.length > 4) historicoRolagens.shift();
         renderizarHistorico();
 
-        // Envia para os outros jogadores (Broadcast)
+        // --- INTEGRAÇÃO GLOBAL COM A DICE+ ---
         if (typeof OBR !== 'undefined') {
-            await OBR.broadcast.sendMessage(CANAL_ROLAGEM, novaRolagem, { destination: 'ALL' });
+            // 1. Envia para o seu próprio broadcast (para outros painéis abertos)
+            OBR.broadcast.sendMessage(CANAL_ROLAGEM, novaRolagem, { destination: 'ALL' });
 
-            // --- INTEGRAÇÃO COM DICE+ (Opcional e Recomendado) ---
-            // Isso faz a rolagem aparecer no chat global da Dice+
+            // 2. Envia para a Dice+ (Isso faz aparecer no histórico global de todos!)
             let notacao = `1d12`;
             if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
             if (volume > 0) notacao += ` + ${volume}`;
+
+            const rollId = `roll_${Date.now()}`;
             
-            // Tenta enviar para a Dice+ (se ela estiver instalada)
             OBR.broadcast.sendMessage("dice-plus/roll-request", {
-                rollId: `roll_${Date.now()}`,
+                rollId: rollId,
                 playerId: OBR.player.id,
                 playerName: nome,
-                rollTarget: 'everyone',
+                rollTarget: 'everyone', // Todos veem
                 diceNotation: notacao,
-                showResults: true,
+                showResults: true, // Mostra o popup da Dice+
                 timestamp: Date.now(),
-                source: "com.biblioteca5a.rolagens"
-            }, { destination: 'ALL' }).catch(() => console.log("Dice+ não instalada."));
+                source: MY_EXTENSION_ID
+            }, { destination: 'ALL' });
         }
 
     } catch (erro) {
