@@ -12,7 +12,7 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (COM LOGS DE ERRO)
+// 1. SALVAR ITEM (SÓ O TÍTULO É OBRIGATÓRIO)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
@@ -20,14 +20,17 @@ function configurarFormulario() {
         if (!salaAtual) { alert("Erro: ID da Sala inválido."); return; }
         
         try {
-            const titulo = document.getElementById('form-titulo').value.trim();
-            const texto = document.getElementById('form-texto').value.trim();
-            const imagem = document.getElementById('form-imagem').value.trim();
+            const titulo = document.getElementById('form-titulo')?.value.trim() || "";
             
+            // A ÚNICA COISA OBRIGATÓRIA É O NOME (TÍTULO)
             if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
 
+            // O resto é opcional. Se estiver vazio, salva como string vazia.
+            const texto = document.getElementById('form-texto')?.value.trim() || "";
+            const imagem = document.getElementById('form-imagem')?.value.trim() || "";
+
             let payload = {
-                autor: auth.currentUser.displayName || "Arquivista",
+                autor: auth.currentUser?.displayName || "Arquivista",
                 titulo: titulo,
                 texto: texto,
                 imagem: imagem,
@@ -35,41 +38,52 @@ function configurarFormulario() {
             };
 
             if (colecaoAtual === "monstros") {
-                payload.vida = document.getElementById('form-vida').value;
-                payload.ta = document.getElementById('form-ta').value;
-                payload.dominante = document.getElementById('form-dominante').value;
-                const selectEspectro = document.getElementById('form-espectro');
-                payload.espectro = selectEspectro ? selectEspectro.value : 'padrao';
+                payload.vida = document.getElementById('form-vida')?.value || 10;
+                payload.ta = document.getElementById('form-ta')?.value || 12;
+                payload.dominante = document.getElementById('form-dominante')?.value || "Vigor";
+                payload.espectro = document.getElementById('form-espectro')?.value || 'padrao';
                 
                 payload.habilidades = [];
                 for(let i=1; i<=3; i++) {
-                    let custo = document.getElementById(`form-hab${i}-custo`).value;
-                    let desc = document.getElementById(`form-hab${i}-desc`).value;
-                    if(desc) payload.habilidades.push({ custo: custo, desc: desc });
+                    let custoEl = document.getElementById(`form-hab${i}-custo`);
+                    let descEl = document.getElementById(`form-hab${i}-desc`);
+                    let custo = custoEl ? custoEl.value : "";
+                    let desc = descEl ? descEl.value : "";
+                    if(desc && desc.trim() !== "") {
+                        payload.habilidades.push({ custo: custo, desc: desc });
+                    }
                 }
             } else if (colecaoAtual === "armas") {
-                payload.categoria = document.getElementById('form-categoria').value;
-                payload.dano = document.getElementById('form-dano').value;
-                payload.critico = document.getElementById('form-critico').value;
-                payload.efeito = document.getElementById('form-efeito').value;
-                payload.descarte = document.getElementById('form-descarte').value;
+                payload.categoria = document.getElementById('form-categoria')?.value || "Média";
+                payload.dano = document.getElementById('form-dano')?.value || "1d6";
+                payload.critico = document.getElementById('form-critico')?.value || "+1d6";
+                // Salva vazio ou "Nenhum" se não preencher
+                payload.efeito = document.getElementById('form-efeito')?.value.trim() || "Nenhum";
+                payload.descarte = document.getElementById('form-descarte')?.value.trim() || "Nenhum";
             } else if (colecaoAtual === "habilidades") {
-                payload.tipo = document.getElementById('form-tipo').value;
-                payload.custo = document.getElementById('form-custo').value;
-                payload.descarte = document.getElementById('form-descarte').value;
+                payload.tipo = document.getElementById('form-tipo')?.value || "Palavra";
+                payload.custo = document.getElementById('form-custo')?.value || "";
+                payload.descarte = document.getElementById('form-descarte')?.value || "";
             }
 
             const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
             const caminhoDB = `salas/${salaAtual}/${colecaoAtual}/${idGerado}`;
-            console.log("Tentando salvar no caminho:", caminhoDB); // LOG DE DEPURAÇÃO
-
             const itemRef = ref(db, caminhoDB);
 
             set(itemRef, payload).then(() => {
-                document.getElementById('status-form').textContent = "✅ Salvo com sucesso!";
+                const status = document.getElementById('status-form');
+                if (status) {
+                    status.textContent = "✅ Salvo com sucesso!";
+                    status.style.color = "#4caf50";
+                    setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
+                }
                 document.getElementById('form-titulo').value = "";
+                // Limpa outros campos se existirem para facilitar
+                if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
+                if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = "";
+                if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = "";
+                
                 itemAbertoId = null;
-                setTimeout(() => document.getElementById('status-form').textContent = "", 3000);
             }).catch((error) => {
                 console.error("Erro do Firebase ao salvar:", error);
                 alert("Erro ao salvar no banco de dados. Verifique o console (F12).");
@@ -123,6 +137,9 @@ function carregarCartas() {
                 habsHtml += `</ul></div>`;
             }
 
+            // Corta o texto de forma segura se ele existir
+            const textoResumo = item.texto ? item.texto.substring(0, 80) + '...' : '';
+
             card.innerHTML = `
                 <div class="carta-img-container">
                     <img src="${imgFinal}" class="carta-img" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80'">
@@ -130,11 +147,11 @@ function carregarCartas() {
                 </div>
                 <div class="carta-corpo">
                     ${statusHtml}
-                    <div class="carta-descricao">${item.texto.substring(0, 80)}...</div>
+                    <div class="carta-descricao">${textoResumo}</div>
                     ${habsHtml}
                     <div class="carta-rodape">
                         <span>❤️ ${qtdLikes}</span>
-                        <span>Por: ${item.autor.split(' ')[0]}</span>
+                        <span>Por: ${item.autor ? item.autor.split(' ')[0] : 'Anônimo'}</span>
                     </div>
                 </div>
             `;
@@ -163,7 +180,13 @@ function abrirModal(item, id) {
     
     let sub = `<strong>${item.autor}</strong>`;
     if(colecaoAtual === "monstros") sub += ` | PV: ${item.vida} | TA: ${item.ta} | Dom: ${item.dominante}`;
-    if(colecaoAtual === "armas") sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico} | Efeito: ${item.efeito}`;
+    
+    if(colecaoAtual === "armas") {
+        sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico}`;
+        // Só mostra o efeito e o descarte se não for "Nenhum"
+        if (item.efeito && item.efeito !== "Nenhum") sub += ` | Efeito: ${item.efeito}`;
+        if (item.descarte && item.descarte !== "Nenhum") sub += ` | Descarte: ${item.descarte}`;
+    }
     if(colecaoAtual === "habilidades") sub += ` | ${item.tipo} | Custo: ${item.custo}`;
 
     let habsModal = "";
@@ -182,7 +205,7 @@ function abrirModal(item, id) {
             <div class="modal-carta-body">
                 <h2 style="color:var(--gold); font-family:'Bebas Neue'; font-size:2.5rem; margin-bottom:5px; line-height:1;">${item.titulo}</h2>
                 <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">${sub}</p>
-                <p style="white-space:pre-wrap; line-height:1.5; margin-bottom:15px;">${item.texto}</p>
+                <p style="white-space:pre-wrap; line-height:1.5; margin-bottom:15px;">${item.texto || ''}</p>
                 ${habsModal}
                 
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -276,8 +299,8 @@ function prepararEdicao() {
         if (!item) return;
 
         document.getElementById('form-titulo').value = item.titulo;
-        document.getElementById('form-texto').value = item.texto;
-        document.getElementById('form-imagem').value = item.imagem || "";
+        if(document.getElementById('form-texto')) document.getElementById('form-texto').value = item.texto || "";
+        if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = item.imagem || "";
 
         if (colecaoAtual === "monstros") {
             document.getElementById('form-vida').value = item.vida;
@@ -297,8 +320,13 @@ function prepararEdicao() {
             document.getElementById('form-categoria').value = item.categoria;
             document.getElementById('form-dano').value = item.dano || "";
             document.getElementById('form-critico').value = item.critico || "";
-            document.getElementById('form-efeito').value = item.efeito || "";
-            document.getElementById('form-descarte').value = item.descarte || "";
+            
+            // Se for "Nenhum", deixa o campo vazio para não escrever a palavra "Nenhum" no input
+            let efeito = item.efeito === "Nenhum" ? "" : item.efeito;
+            let descarte = item.descarte === "Nenhum" ? "" : item.descarte;
+            
+            if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = efeito || "";
+            if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = descarte || "";
         } else if (colecaoAtual === "habilidades") {
             document.getElementById('form-tipo').value = item.tipo;
             document.getElementById('form-custo').value = item.custo || "";

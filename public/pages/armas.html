@@ -24,13 +24,13 @@
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
                 
                 <div class="input-group">
-                    <label>Nome da Arma</label>
+                    <label>Nome da Arma (Obrigatório)</label>
                     <input type="text" id="form-titulo" placeholder="Ex: Lâmina da Tempestade">
                 </div>
                 
                 <div class="row-inputs">
                     <div class="input-group">
-                        <label>Categoria</label>
+                        <label>Categoria (Obrigatório)</label>
                         <select id="form-categoria" onchange="atualizarDadosArma()">
                             <option value="Leve">Leve</option>
                             <option value="Média">Média</option>
@@ -50,22 +50,22 @@
                 
                 <div class="row-inputs">
                     <div class="input-group">
-                        <label>Efeito (Descarte)</label>
-                        <input type="text" id="form-descarte" placeholder="Ex: +1d6 por dado descartado">
+                        <label>Efeito (Opcional)</label>
+                        <input type="text" id="form-efeito" placeholder="Ex: +2 de dano">
                     </div>
                     <div class="input-group">
-                        <label>Outros Efeitos</label>
-                        <input type="text" id="form-efeito" placeholder="Ex: +2 de dano">
+                        <label>Descarte (Opcional)</label>
+                        <input type="text" id="form-descarte" placeholder="Ex: +1d6 por dado">
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem da Arma</label>
+                    <label>URL da Imagem (Opcional)</label>
                     <input type="url" id="form-imagem" placeholder="Link da imagem">
                 </div>
 
                 <div class="input-group">
-                    <label>Descrição / Lore</label>
+                    <label>Descrição / Lore (Opcional)</label>
                     <textarea id="form-texto" rows="3" placeholder="De onde ela veio?"></textarea>
                 </div>
                 
