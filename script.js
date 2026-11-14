@@ -13,7 +13,6 @@ const toggles = document.querySelectorAll('.toggle');
 let tipoRolagem = 'atributo'; 
 const CANAL_ROLAGEM = "com.biblioteca5a.rolagens.global";
 
-// Função para atualizar o label
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
@@ -44,51 +43,36 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função que exibe o alerta na tela de quem recebeu
+// Função que exibe o alerta usando o sistema nativo do Owlbear
 function mostrarAlertaGlobal(dados) {
-    // Cria um elemento visual temporário para o alerta
-    const alerta = document.createElement('div');
-    alerta.style.position = 'fixed';
-    alerta.style.top = '20px';
-    alerta.style.left = '50%';
-    alerta.style.transform = 'translateX(-50%)';
-    alerta.style.backgroundColor = '#d4af37';
-    alerta.style.color = '#121212';
-    alerta.style.padding = '15px 30px';
-    alerta.style.borderRadius = '8px';
-    alerta.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
-    alerta.style.zIndex = '9999';
-    alerta.style.fontFamily = 'serif';
-    alerta.style.textAlign = 'center';
-    alerta.style.fontSize = '1.2em';
-    
-    let texto = `<strong>${dados.nome}</strong> rolou: <br>`;
-    texto += `${dados.d12} (d12) + ${dados.soma} (dados) + ${dados.vol} (Vol) = <strong>${dados.total}</strong>`;
-    
-    if (REGRAS[dados.d12]) {
-        alerta.style.backgroundColor = dados.d12 === 1 ? '#ff4d4d' : (dados.d12 === 6 ? '#ff9800' : '#4caf50');
-        alerta.style.color = '#fff';
-        texto += `<br><small>${REGRAS[dados.d12]}</small>`;
+    let texto = `${dados.nome} rolou: ${dados.d12}(d12) + ${dados.soma}(dados) + ${dados.vol}(Vol) = ${dados.total}`;
+    let variant = "INFO"; // Padrão
+    let title = "Rolagem Global";
+
+    // Destaca resultados absolutos
+    if (dados.d12 === 1) {
+        variant = "ERROR";
+        title = "Catástrofe Definitiva!";
+    } else if (dados.d12 === 6) {
+        variant = "WARNING";
+        title = "Falha Absoluta!";
+    } else if (dados.d12 === 12) {
+        variant = "SUCCESS";
+        title = "Momento Lendário!";
     }
 
-    alerta.innerHTML = texto;
-    document.body.appendChild(alerta);
-
-    // Remove o alerta após 5 segundos
-    setTimeout(() => {
-        if (alerta.parentNode) {
-            alerta.parentNode.removeChild(alerta);
-        }
-    }, 5000);
+    // Usa a API de notificação do Owlbear
+    if (typeof OBR !== 'undefined') {
+        OBR.notification.show(`${title} - ${texto}`, variant);
+    }
 }
 
 // Configura a escuta de mensagens globais
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
-        // Escuta as rolagens de todos os jogadores
         OBR.broadcast.onMessage(CANAL_ROLAGEM, (event) => {
             const dados = event.data;
-            // Se a mensagem não for de mim mesmo (para não duplicar)
+            // Se a mensagem não for de mim mesmo
             if (dados.senderId !== OBR.player.id) {
                 mostrarAlertaGlobal(dados);
             }
@@ -113,7 +97,7 @@ btnRolar.addEventListener('click', async () => {
         const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
         const total = rolagemD12 + somaDados + volume;
 
-        // Atualiza a interface local (como antes)
+        // Atualiza a interface local
         dadoD12.textContent = rolagemD12;
         if (qtdDados > 0) {
             dadosOutros.textContent = somaDados;
@@ -137,9 +121,8 @@ btnRolar.addEventListener('click', async () => {
 
         // --- ENVIO GLOBAL PARA TODOS ---
         if (typeof OBR !== 'undefined') {
-            // Prepara os dados para enviar
             const dadosRolagem = {
-                senderId: OBR.player.id, // Para não exibir o alerta para quem rolou
+                senderId: OBR.player.id,
                 nome: nome,
                 d12: rolagemD12,
                 soma: somaDados,
@@ -147,7 +130,7 @@ btnRolar.addEventListener('click', async () => {
                 total: total
             };
 
-            // Envia a mensagem para todos na mesa
+            // Envia para todos
             await OBR.broadcast.sendMessage(CANAL_ROLAGEM, dadosRolagem, { destination: 'ALL' });
         }
 
