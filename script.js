@@ -12,7 +12,6 @@ const toggles = document.querySelectorAll('.toggle');
 const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
-const MY_EXTENSION_ID = "com.biblioteca5a.rolagens"; // ID único da sua extensão
 let historicoRolagens = [];
 
 function atualizarLabel() {
@@ -32,9 +31,9 @@ toggles.forEach(btn => {
 });
 
 const REGRAS = {
-    1: "Catástrofe Definitiva! Falha automática. O Guardião ganha 1 Dado de Descartes.",
-    6: "Falha Absoluta! A ação falha, mesmo que o total supere a TA.",
-    12: "Momento Lendário! O resultado soma normalmente. Se vencer, sucesso lendário. Se perder, algo positivo surge."
+    1: "Catástrofe Definitiva!",
+    6: "Falha Absoluta!",
+    12: "Momento Lendário!"
 };
 
 function rolarDados(quantidade, faces) {
@@ -66,125 +65,60 @@ function renderizarHistorico() {
     });
 }
 
-// Função oficial da Dice+ para verificar se ela está pronta [citation:1]
-async function checkDicePlusReady() {
-    if (typeof OBR === 'undefined') return false;
-    
-    const requestId = crypto.randomUUID();
-    return new Promise((resolve) => {
-        const unsubscribe = OBR.broadcast.onMessage("dice-plus/isReady", (event) => {
-            const data = event.data;
-            if ('ready' in data && data.requestId === requestId) {
-                unsubscribe();
-                resolve(true);
-            }
-        });
-        OBR.broadcast.sendMessage("dice-plus/isReady", {
-            requestId,
-            timestamp: Date.now()
-        }, { destination: 'ALL' });
-        setTimeout(() => {
-            unsubscribe();
-            resolve(false);
-        }, 1000);
-    });
-}
+btnRolar.addEventListener('click', () => {
+    container.className = '';
+    regraTexto.style.display = 'none';
+    regraTexto.textContent = '';
 
-// Escuta o resultado que a Dice+ devolve para a sua extensão [citation:1]
-if (typeof OBR !== 'undefined') {
-    OBR.onReady(() => {
-        OBR.broadcast.onMessage(`${MY_EXTENSION_ID}/roll-result`, (event) => {
-            const result = event.data;
-            console.log("Resultado da Dice+ recebido:", result);
-            // Aqui você poderia atualizar o histórico local com o resultado oficial da Dice+
-        });
-    });
-}
+    const nome = inputNome.value.trim() || "Arquivista";
+    const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
+    const volume = Math.max(1, Math.min(8, parseInt(inputVolume.value) || 1));
+    const faces = tipoRolagem === 'atributo' ? 4 : 6;
+    const nomeDado = tipoRolagem === 'atributo' ? 'd4' : 'd6';
 
-btnRolar.addEventListener('click', async () => {
-    try {
-        container.className = '';
-        regraTexto.style.display = 'none';
-        regraTexto.textContent = '';
+    const rolagemD12 = Math.floor(Math.random() * 12) + 1;
+    const resultadosDados = rolarDados(qtdDados, faces);
+    const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
+    const total = rolagemD12 + somaDados + volume;
 
-        const nome = inputNome.value.trim() || "Anônimo";
-        const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
-        const volume = Math.max(1, Math.min(8, parseInt(inputVolume.value) || 1));
-        const faces = tipoRolagem === 'atributo' ? 4 : 6;
-        const nomeDado = tipoRolagem === 'atributo' ? 'd4' : 'd6';
+    // 1. Atualiza a interface local
+    dadoD12.textContent = rolagemD12;
+    dadosOutros.textContent = somaDados;
+    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
 
-        const rolagemD12 = Math.floor(Math.random() * 12) + 1;
-        const resultadosDados = rolarDados(qtdDados, faces);
-        const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
-        const total = rolagemD12 + somaDados + volume;
+    if (REGRAS[rolagemD12]) {
+        regraTexto.textContent = REGRAS[rolagemD12];
+        if (rolagemD12 === 1) container.classList.add('resultado-1');
+        if (rolagemD12 === 6) container.classList.add('resultado-6');
+        if (rolagemD12 === 12) container.classList.add('resultado-12');
+    }
 
-        // UI Local
-        dadoD12.textContent = rolagemD12;
-        if (qtdDados > 0) {
-            dadosOutros.textContent = somaDados;
-            dadosOutros.title = `Dados: [${resultadosDados.join(', ')}]`;
-        } else {
-            dadosOutros.textContent = '0';
-            dadosOutros.title = "Desafiar o Destino";
-        }
+    // 2. Atualiza o histórico local
+    const novaRolagem = {
+        nome: nome,
+        d12: rolagemD12,
+        outros: somaDados,
+        vol: volume,
+        total: total
+    };
+    historicoRolagens.push(novaRolagem);
+    if (historicoRolagens.length > 4) historicoRolagens.shift();
+    renderizarHistorico();
 
-        totalVisual.innerHTML = `
-            <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
-            ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
-        `;
+    // 3. A MÁGICA GLOBAL SIMPLES: Notificação Nativa do Owlbear
+    if (typeof OBR !== 'undefined') {
+        let mensagem = `${nome} rolou ${rolagemD12}(d12) + ${somaDados} + ${volume} = ${total}`;
+        let tipoNotificacao = "INFO";
+        
+        if (rolagemD12 === 1) tipoNotificacao = "ERROR";
+        if (rolagemD12 === 6) tipoNotificacao = "WARNING";
+        if (rolagemD12 === 12) tipoNotificacao = "SUCCESS";
 
         if (REGRAS[rolagemD12]) {
-            regraTexto.textContent = REGRAS[rolagemD12];
-            if (rolagemD12 === 1) container.classList.add('resultado-1');
-            if (rolagemD12 === 6) container.classList.add('resultado-6');
-            if (rolagemD12 === 12) container.classList.add('resultado-12');
+            mensagem = `${REGRAS[rolagemD12]} ${nome} rolou: ${total}`;
         }
 
-        // Histórico Local
-        const novaRolagem = {
-            senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
-            nome: nome,
-            d12: rolagemD12,
-            soma: somaDados,
-            outros: somaDados, 
-            vol: volume,
-            total: total
-        };
-
-        historicoRolagens.push(novaRolagem);
-        if (historicoRolagens.length > 4) historicoRolagens.shift();
-        renderizarHistorico();
-
-        // --- INTEGRAÇÃO GLOBAL COM A DICE+ (SEGUNDO DOCUMENTAÇÃO) ---
-        if (typeof OBR !== 'undefined') {
-            const dicePlusReady = await checkDicePlusReady();
-            
-            if (dicePlusReady) {
-                let notacao = `1d12`;
-                if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
-                if (volume > 0) notacao += ` + ${volume}`;
-
-                const rollId = `roll_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-                
-                // Envia para a Dice+ no formato oficial [citation:1]
-                await OBR.broadcast.sendMessage("dice-plus/roll-request", {
-                    rollId: rollId,
-                    playerId: OBR.player.id,
-                    playerName: nome,
-                    rollTarget: 'everyone',
-                    diceNotation: notacao,
-                    showResults: true, // Mostra o popup da Dice+ na tela de todos
-                    timestamp: Date.now(),
-                    source: MY_EXTENSION_ID // Campo obrigatório [citation:1]
-                }, { destination: 'ALL' });
-
-                console.log("Rolagem enviada para a Dice+ com sucesso!");
-            } else {
-                console.error("Dice+ não encontrada ou não está pronta na sala. Verifique se está ativada.");
-            }
-        }
-
-    } catch (erro) {
-        console.error("Erro na rolagem:", erro);
+        // O Owlbear mostra isso no topo da tela de TODOS na sala
+        OBR.notification.show(mensagem, tipoNotificacao);
     }
 });
