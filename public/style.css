@@ -183,8 +183,32 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 .btn-primario:hover { background-color: #dfc28c; }
 
 /* Responsividade Básica */
+/* Responsividade Básica */
 @media (max-width: 900px) {
-    .top-nav { flex-direction: column; height: auto; padding: 15px; gap: 10px; }
-    .logo-principal { max-width: 220px; } /* No celular fica um pouco menor */
-    .conteudo-texto { padding: 20px; margin-top: 120px; }
+    .top-nav { 
+        flex-direction: column; 
+        height: auto; 
+        padding: 15px; 
+        gap: 10px; 
+    }
+    
+    /* Aumenta o espaço do topo para o conteúdo não ficar embaixo da navbar */
+    .home-container {
+        padding-top: 180px; 
+    }
+
+    .logo-principal { 
+        max-width: 220px; 
+        margin-bottom: 10px;
+    } 
+    
+    .home-subtitulo {
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    .conteudo-texto { 
+        padding: 20px; 
+        margin-top: 150px; /* Ajusta as páginas de texto também */
+    }
 }
