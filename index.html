@@ -8,16 +8,28 @@
 </head>
 <body>
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR -->
-    <nav class="navbar">
-        <div class="logo">Biblioteca da 5ª Avenida</div>
-        <div class="nav-links">
-            <button class="nav-btn" onclick="abrirModal('modal-regras')">Regras</button>
-            <button class="nav-btn" onclick="abrirModal('modal-espectros')">Espectros</button>
-            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">Caminhos</button>
-            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">Vocações</button>
+    <!-- BOTÃO DE ABRIR O MENU LATERAL -->
+    <button id="btn-menu" class="menu-toggle">☰ Arquivos</button>
+
+    <!-- MENU LATERAL (SIDEBAR) -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Arquivos da Biblioteca</h2>
+            <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
         </div>
-    </nav>
+        <div class="sidebar-links">
+            <button class="nav-btn" onclick="abrirModal('modal-regras')">📜 Regras da Rolagem</button>
+            <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros do Ímpeto</button>
+            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos (Combate)</button>
+            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações (Investigação)</button>
+        </div>
+        <div class="sidebar-footer">
+            <p>Bestiário das Almas</p>
+        </div>
+    </div>
+
+    <!-- FUNDO ESCURO QUANDO O MENU OU MODAL ABRE -->
+    <div id="overlay" class="overlay"></div>
 
     <div class="app-container">
         <!-- Coluna da Esquerda: Rolagem -->
@@ -87,96 +99,114 @@
         <!-- Coluna da Direita: Histórico Global -->
         <div class="coluna-historico">
             <h3>Crônica da Mesa</h3>
-            <ul id="lista-historico-global">
-                <!-- As rolagens de todos aparecerão aqui -->
-            </ul>
+            <ul id="lista-historico-global"></ul>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAIS DE CONSULTA RÁPIDA -->
+    <!-- MODAIS DE CONSULTA (ESTILO GRIMÓRIO) -->
     <!-- ========================================== -->
 
-    <!-- Modal de Regras -->
     <div id="modal-regras" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
-            <h2>Regras Básicas</h2>
+            <h2>📜 Regras da Rolagem</h2>
             <div class="modal-body">
-                <p><strong>Rolagem:</strong> 1d12 + Dados de Atributo/Perícia + Volume.</p>
-                <p><strong>Resultados Absolutos:</strong></p>
-                <ul>
-                    <li><strong>1 (Catástrofe):</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</li>
-                    <li><strong>6 (Falha Absoluta):</strong> Falha automática, mesmo que o total supere a TA.</li>
-                    <li><strong>12 (Momento Lendário):</strong> Soma normal, mas se vencer, o sucesso é épico.</li>
-                </ul>
-                <p><strong>Desafiar o Destino:</strong> Rolar 2d12 e pegar o maior (sem ter o dado/perícia).</p>
+                <p><strong>Rolagem Base:</strong> 1d12 + Dados de Atributo (d4) ou Perícia (d6) + Volume.</p>
+                <hr>
+                <h3>Resultados Absolutos</h3>
+                <p><strong>1 - Catástrofe Definitiva:</strong> Falha automática. O Guardião ganha 1 Dado de Descartes para sua Pilha.</p>
+                <p><strong>6 - Falha Absoluta:</strong> A ação falha, mesmo que a soma total ultrapasse a TA (Taxa de Acerto).</p>
+                <p><strong>12 - Momento Lendário:</strong> Soma normalmente. Se vencer, o sucesso é épico. Se falhar, uma reviravolta positiva acontece.</p>
+                <hr>
+                <h3>Desafiar o Destino</h3>
+                <p>Sem o dado ou perícia exigida, role <strong>2d12</strong> e mantenha o maior resultado. O descartado é ignorado. Falhar causa complicações severas.</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Espectros -->
     <div id="modal-espectros" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
-            <h2>Espectros do Ímpeto</h2>
+            <h2>🔥 Espectros do Ímpeto</h2>
             <div class="modal-body">
-                <p><strong>Ígneo (Vermelho):</strong> Sacrifício e Ambição. <em>"O que você está disposto a sacrificar?"</em></p>
-                <p><strong>Celeste (Azul):</strong> Controle e Razão. <em>"Como você pretende alcançar seu objetivo?"</em></p>
-                <p><strong>Viridiano (Verde):</strong> Vida e Perseverança. <em>"Por que continuar mesmo após cair?"</em></p>
-                <p><strong>Solar (Amarelo):</strong> Liberdade e Movimento. <em>"O que existe além do horizonte?"</em></p>
-                <p><strong>Índigo (Roxo):</strong> Criatividade e Conhecimento. <em>"E se tudo pudesse ser diferente?"</em></p>
-                <p><strong>Alabastro (Branco):</strong> Equilíbrio e Justiça. <em>"Como impedir que um extremo destrua os outros?"</em></p>
+                <div class="espectro-item"><h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3><p>Sacrifício e Ambição. <em>"O que você está disposto a sacrificar?"</em></p></div>
+                <div class="espectro-item"><h3 style="color:#8eb1d9">Celeste (Azul)</h3><p>Controle e Razão. <em>"Como você pretende alcançar seu objetivo?"</em></p></div>
+                <div class="espectro-item"><h3 style="color:#4caf50">Viridiano (Verde)</h3><p>Vida e Perseverança. <em>"Por que continuar mesmo após cair?"</em></p></div>
+                <div class="espectro-item"><h3 style="color:#fbc02d">Solar (Amarelo)</h3><p>Liberdade e Movimento. <em>"O que existe além do horizonte?"</em></p></div>
+                <div class="espectro-item"><h3 style="color:#b285c9">Índigo (Roxo)</h3><p>Criatividade e Conhecimento. <em>"E se tudo pudesse ser diferente?"</em></p></div>
+                <div class="espectro-item"><h3 style="color:#ffffff">Alabastro (Branco)</h3><p>Equilíbrio e Justiça. <em>"Como impedir que um extremo destrua os outros?"</em></p></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Caminhos -->
     <div id="modal-caminhos" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-caminhos')">&times;</span>
-            <h2>Caminhos (Combate)</h2>
+            <h2>⚔️ Caminhos (Combate)</h2>
             <div class="modal-body">
-                <p><strong>Guerreiro:</strong> Linha de frente. Foco em Vida e resistência.</p>
-                <p><strong>Mago:</strong> Estudo do Ímpeto. Foco em Palavras e Ímpeto máximo.</p>
-                <p><strong>Suporte:</strong> Proteção e cura. Foco em auxiliar os aliados.</p>
-                <p><strong>Assassino:</strong> Furtividade e dano massivo em alvos desprevenidos.</p>
-                <p><strong>Atirador:</strong> Precisão à distância e controle de área.</p>
+                <p><strong>Guerreiro:</strong> A linha de frente indestrutível. Foco em vida, armas pesadas e resistência física.</p>
+                <p><strong>Mago:</strong> O mestre do Ímpeto. Foco em Palavras de Afirmação e controle da realidade.</p>
+                <p><strong>Suporte:</strong> O pilar da equipe. Foco em curar, proteger e conceder vantagens táticas.</p>
+                <p><strong>Assassino:</strong> A sombra fatal. Especialista em se ocultar e causar dano massivo em um único golpe.</p>
+                <p><strong>Atirador:</strong> O olho de águia. Domina o campo de batalha à distância com precisão cirúrgica.</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Vocações -->
     <div id="modal-vocacoes" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-vocacoes')">&times;</span>
-            <h2>Vocações (Investigação)</h2>
+            <h2>🔍 Vocações (Investigação)</h2>
             <div class="modal-body">
-                <p><strong>Cronista:</strong> Altera a forma como o mundo é lembrado.</p>
-                <p><strong>Selador:</strong> Contém anomalias e histórias perigosas.</p>
-                <p><strong>Guardião de Memórias:</strong> Preserva lembranças e cura mentes.</p>
-                <p><strong>Investigador das Sombras:</strong> Enxerga o que está oculto nas entrelinhas.</p>
-                <p><strong>Cartógrafo de Realidades:</strong> Dobra o espaço e encontra caminhos impossíveis.</p>
-                <p><strong>Ecoísta:</strong> Invoca ecos de ações e objetos do passado.</p>
+                <p><strong>Cronista:</strong> Altera a forma como as histórias e eventos são lembrados e registrados.</p>
+                <p><strong>Selador:</strong> Especialista em conter anomalias e impedir que horrores se espalhem.</p>
+                <p><strong>Guardião de Memórias:</strong> Protege mentes, cura traumas e resgata lembranças perdidas.</p>
+                <p><strong>Investigador das Sombras:</strong> Enxerga pistas ocultas, mentiras e passagens secretas.</p>
+                <p><strong>Cartógrafo de Realidades:</strong> Dobra o espaço, encontra atalhos impossíveis e mapeia anomalias.</p>
+                <p><strong>Ecoísta:</strong> Invoca ecos do passado para replicar ações, movimentos e objetos.</p>
             </div>
         </div>
     </div>
 
-    <!-- Firebase e Script -->
+    <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Funções simples para abrir e fechar os modais
-        function abrirModal(id) {
-            document.getElementById(id).style.display = "block";
+        // Lógica do Menu Lateral
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const btnMenu = document.getElementById('btn-menu');
+        const btnFecharMenu = document.getElementById('btn-fechar-menu');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
+
+        btnMenu.addEventListener('click', toggleMenu);
+        btnFecharMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            fecharTodosModais();
+        });
+
+        // Lógica dos Modais
+        function abrirModal(id) {
+            // Fecha o menu lateral primeiro
+            sidebar.classList.remove('active');
+            // Abre o modal
+            document.getElementById(id).style.display = "block";
+            overlay.classList.add('active');
+        }
+
         function fecharModal(id) {
             document.getElementById(id).style.display = "none";
+            overlay.classList.remove('active');
         }
-        // Fecha o modal se clicar fora dele
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
+
+        function fecharTodosModais() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
     </script>
 </body>
