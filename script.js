@@ -12,8 +12,10 @@ const toggles = document.querySelectorAll('.toggle');
 const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
-const ITEM_HISTORICO_NOME = "Historico_B5A"; // Nome do item invisível na cena
+let historicoRolagens = [];
+const CANAL = "com.biblioteca5a.rolagens.global";
 
+// Atualiza o texto "2d4", "1d6", etc.
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
@@ -21,6 +23,7 @@ function atualizarLabel() {
 
 inputQtd.addEventListener('input', atualizarLabel);
 
+// Botões de Atributo/Perícia
 toggles.forEach(btn => {
     btn.addEventListener('click', () => {
         toggles.forEach(b => b.classList.remove('active'));
@@ -36,6 +39,7 @@ const REGRAS = {
     12: "Momento Lendário!"
 };
 
+// Rola X dados de N faces
 function rolarDados(quantidade, faces) {
     const resultados = [];
     for (let i = 0; i < quantidade; i++) {
@@ -44,59 +48,45 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função para ler o histórico do Owlbear e desenhar na tela
-async function sincronizarHistorico() {
-    if (typeof OBR === 'undefined') return;
+// Desenha o histórico na tela
+function renderizarHistorico() {
+    listaHistorico.innerHTML = ''; 
+    const recentes = historicoRolagens.slice(-4).reverse();
 
-    try {
-        const items = await OBR.scene.items.getItems();
-        // Procura o nosso item invisível
-        const itemHistorico = items.find(i => i.name === ITEM_HISTORICO_NOME);
+    recentes.forEach(item => {
+        const li = document.createElement('li');
+        if (item.d12 === 1) li.classList.add('hist-1');
+        if (item.d12 === 6) li.classList.add('hist-6');
+        if (item.d12 === 12) li.classList.add('hist-12');
 
-        if (itemHistorico && itemHistorico.metadata && itemHistorico.metadata.historico) {
-            const historico = itemHistorico.metadata.historico;
-            listaHistorico.innerHTML = '';
-            
-            // Pega os 4 últimos
-            const recentes = historico.slice(-4).reverse();
-
-            recentes.forEach(item => {
-                const li = document.createElement('li');
-                if (item.d12 === 1) li.classList.add('hist-1');
-                if (item.d12 === 6) li.classList.add('hist-6');
-                if (item.d12 === 12) li.classList.add('hist-12');
-
-                li.innerHTML = `
-                    <span>
-                        <strong>${item.nome}</strong> 
-                        <span class="hist-detalhe">(${item.d12} + ${item.outros} + ${item.vol})</span>
-                    </span>
-                    <span class="hist-total">${item.total}</span>
-                `;
-                listaHistorico.appendChild(li);
-            });
-        }
-    } catch (e) {
-        console.log("Aguardando cena carregar...", e);
-    }
+        li.innerHTML = `
+            <span>
+                <strong>${item.nome}</strong> 
+                <span class="hist-detalhe">(${item.d12} + ${item.outros} + ${item.vol})</span>
+            </span>
+            <span class="hist-total">${item.total}</span>
+        `;
+        listaHistorico.appendChild(li);
+    });
 }
 
-// Inicia a leitura quando o Owlbear estiver pronto
+// Escuta as mensagens dos outros jogadores
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
-        // Escuta mudanças na cena para atualizar o histórico em tempo real
-        OBR.scene.onReadyChange((ready) => {
-            if (ready) {
-                OBR.scene.items.onChange(() => {
-                    sincronizarHistorico();
-                });
-                sincronizarHistorico();
+        OBR.broadcast.onMessage(CANAL, (event) => {
+            const dados = event.data;
+            if (dados.senderId !== OBR.player.id) {
+                // Adiciona ao histórico local de quem recebeu
+                historicoRolagens.push(dados);
+                if (historicoRolagens.length > 4) historicoRolagens.shift();
+                renderizarHistorico();
             }
         });
     });
 }
 
-btnRolar.addEventListener('click', async () => {
+// O CLIQUE DO BOTÃO
+btnRolar.addEventListener('click', () => {
     container.className = '';
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
@@ -112,10 +102,20 @@ btnRolar.addEventListener('click', async () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // Atualiza a SUA interface visual
+    // 1. Atualiza a interface visual
     dadoD12.textContent = rolagemD12;
-    dadosOutros.textContent = somaDados;
-    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
+    if (qtdDados > 0) {
+        dadosOutros.textContent = somaDados;
+        dadosOutros.title = `Dados: [${resultadosDados.join(', ')}]`;
+    } else {
+        dadosOutros.textContent = '0';
+        dadosOutros.title = "Desafiar o Destino";
+    }
+
+    totalVisual.innerHTML = `
+        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
+        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
+    `;
 
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
@@ -125,56 +125,31 @@ btnRolar.addEventListener('click', async () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // --- SALVANDO NO OWLBEAR (GLOBAL) ---
-    if (typeof OBR === 'undefined') return;
+    // 2. Adiciona ao histórico local
+    const novaRolagem = {
+        senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
+        nome: nome,
+        d12: rolagemD12,
+        outros: somaDados,
+        vol: volume,
+        total: total
+    };
+    
+    historicoRolagens.push(novaRolagem);
+    if (historicoRolagens.length > 4) historicoRolagens.shift();
+    renderizarHistorico();
 
-    try {
-        const items = await OBR.scene.items.getItems();
-        let itemHistorico = items.find(i => i.name === ITEM_HISTORICO_NOME);
+    // 3. Tenta enviar para os outros (Notificação Nativa)
+    if (typeof OBR !== 'undefined') {
+        // Envia a mensagem no canal
+        OBR.broadcast.sendMessage(CANAL, novaRolagem, { destination: 'ALL' });
         
-        let historicoAtual = [];
-        if (itemHistorico && itemHistorico.metadata && itemHistorico.metadata.historico) {
-            historicoAtual = itemHistorico.metadata.historico;
-        }
-
-        // Cria o novo registro
-        const novaRolagem = {
-            nome: nome,
-            d12: rolagemD12,
-            outros: somaDados,
-            vol: volume,
-            total: total
-        };
-
-        historicoAtual.push(novaRolagem);
-        // Mantém apenas as 10 últimas para não pesar a cena
-        if (historicoAtual.length > 10) historicoAtual.shift();
-
-        if (itemHistorico) {
-            // Atualiza o item existente
-            await OBR.scene.items.updateItems([itemHistorico], (items) => {
-                items[0].metadata.historico = historicoAtual;
-            });
-        } else {
-            // Cria o item invisível pela primeira vez
-            const novoItem = {
-                name: ITEM_HISTORICO_NOME,
-                type: "IMAGE",
-                position: { x: 0, y: 0 },
-                scale: { x: 1, y: 1 },
-                visible: false, // Invisível no mapa!
-                layer: "NOTE",
-                metadata: {
-                    historico: historicoAtual
-                }
-            };
-            await OBR.scene.items.addItems([novoItem]);
-        }
-
-        // Atualiza a tela local imediatamente
-        sincronizarHistorico();
-
-    } catch (error) {
-        console.error("Erro ao salvar no mapa:", error);
+        // Mostra a notificação nativa na sua tela também
+        let tipoNotificacao = "INFO";
+        if (rolagemD12 === 1) tipoNotificacao = "ERROR";
+        if (rolagemD12 === 6) tipoNotificacao = "WARNING";
+        if (rolagemD12 === 12) tipoNotificacao = "SUCCESS";
+        
+        OBR.notification.show(`${nome} rolou ${total} (d12: ${rolagemD12})`, tipoNotificacao);
     }
 });
