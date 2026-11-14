@@ -19,13 +19,12 @@
     </nav>
 
     <div class="comunidade-container">
-        <!-- FORMULÁRIO -->
         <div class="painel-escrita">
             <h2>Registrar Monstro</h2>
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
                 
                 <div class="input-group">
-                    <label>Nome do Monstro</label>
+                    <label>Nome do Monstro (Obrigatório)</label>
                     <input type="text" id="form-titulo" placeholder="Ex: O Tirano de Cinzas">
                 </div>
                 
@@ -65,12 +64,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem</label>
+                    <label>URL da Imagem (Opcional)</label>
                     <input type="url" id="form-imagem" placeholder="Cole o link de uma imagem">
                 </div>
 
                 <div class="input-group">
-                    <label>Descrição Principal</label>
+                    <label>Descrição Principal (Opcional)</label>
                     <textarea id="form-texto" rows="3" placeholder="Descreva a criatura..."></textarea>
                 </div>
 
@@ -94,7 +93,6 @@
             </div>
         </div>
 
-        <!-- FEED -->
         <div class="painel-feed">
             <h2>Bestiário</h2>
             <div id="lista-cartas" class="grid-cartas"></div>
@@ -103,6 +101,15 @@
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/motor_cartas.js"></script>
-    <script>iniciarCartas("monstros");</script>
+    <script>
+        // Aguarda o carregamento completo da página e dos módulos
+        window.onload = () => {
+            if (typeof iniciarCartas === 'function') {
+                iniciarCartas("monstros");
+            } else {
+                setTimeout(() => iniciarCartas("monstros"), 500); // Tenta novamente se demorar
+            }
+        };
+    </script>
 </body>
 </html>

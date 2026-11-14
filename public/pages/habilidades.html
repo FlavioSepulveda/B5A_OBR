@@ -24,7 +24,7 @@
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
                 
                 <div class="input-group">
-                    <label>Nome da Habilidade</label>
+                    <label>Nome da Habilidade (Obrigatório)</label>
                     <input type="text" id="form-titulo" placeholder="Ex: Lâmina Definitiva">
                 </div>
                 
@@ -49,12 +49,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem</label>
+                    <label>URL da Imagem (Opcional)</label>
                     <input type="url" id="form-imagem" placeholder="Link da imagem">
                 </div>
 
                 <div class="input-group">
-                    <label>Efeito / Descrição</label>
+                    <label>Efeito / Descrição (Opcional)</label>
                     <textarea id="form-texto" rows="4" placeholder="O que essa habilidade faz?"></textarea>
                 </div>
                 
@@ -71,6 +71,14 @@
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/motor_cartas.js"></script>
-    <script>iniciarCartas("habilidades");</script>
+    <script>
+        window.onload = () => {
+            if (typeof iniciarCartas === 'function') {
+                iniciarCartas("habilidades");
+            } else {
+                setTimeout(() => iniciarCartas("habilidades"), 500);
+            }
+        };
+    </script>
 </body>
 </html>

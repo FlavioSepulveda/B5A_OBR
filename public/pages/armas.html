@@ -100,8 +100,14 @@
             inputCritico.value = valores.critico;
         };
 
-        iniciarCartas("armas");
-        atualizarDadosArma();
+        window.onload = () => {
+            if (typeof iniciarCartas === 'function') {
+                iniciarCartas("armas");
+                atualizarDadosArma();
+            } else {
+                setTimeout(() => { iniciarCartas("armas"); atualizarDadosArma(); }, 500);
+            }
+        };
     </script>
 </body>
 </html>
