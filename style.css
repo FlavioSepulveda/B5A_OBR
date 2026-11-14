@@ -165,3 +165,63 @@ input:focus, select:focus { border-color: var(--gold); }
     .coluna-ficha { max-width: 100%; }
     .grid-atributos { grid-template-columns: 1fr 1fr; }
 }
+
+/* Estilos para as novas listas de rolagem */
+.lista-rolagens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.linha-rolagem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-input);
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.controle-dados {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-ajuste {
+    background: var(--border-color);
+    color: #fff;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-ajuste:hover { background: var(--gold); color: #000; }
+
+.valor-dado {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    width: 30px;
+    text-align: center;
+}
+
+.btn-rolar-nome {
+    flex: 1;
+    margin-left: 15px;
+    background: transparent;
+    color: var(--text-main);
+    border: none;
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.btn-rolar-nome:hover { color: var(--gold); }

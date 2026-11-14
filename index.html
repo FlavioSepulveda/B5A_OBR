@@ -9,44 +9,31 @@
 </head>
 <body>
 
-    <!-- MENU LATERAL -->
     <button id="btn-menu" class="menu-toggle">☰ Menu</button>
 
     <div id="sidebar" class="sidebar">
-<div class="sidebar-header">
-    <h2>Opções</h2>
-    <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
-</div>
+        <div class="sidebar-header">
+            <h2>Opções</h2>
+            <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
+        </div>
+        
+        <div style="padding: 15px; border-bottom: 1px solid #333;">
+            <button id="btn-login" style="width: 100%; padding: 10px; background: #c7a86b; color: #000; border: none; border-radius: 4px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer;">
+                Entrar com Google
+            </button>
+            <p id="status-login" style="font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center;">Faça login para salvar</p>
+        </div>
 
-<!-- ADICIONE ESTE BLOCO DE LOGIN AQUI -->
-<div style="padding: 15px; border-bottom: 1px solid #333;">
-    <button id="btn-login" style="width: 100%; padding: 10px; background: #c7a86b; color: #000; border: none; border-radius: 4px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer;">
-        Entrar com Google
-    </button>
-    <p id="status-login" style="font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center;">Faça login para salvar</p>
-</div>
-<!-- FIM DO BLOCO DE LOGIN -->
-
-<div class="sidebar-links">
-    <!-- ... seus botões de regras ... -->
-</div>
         <div class="sidebar-links">
             <button class="nav-btn" onclick="abrirModal('modal-regras')">📜 Regras de Rolagem</button>
             <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros</button>
-            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos</button>
-            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações</button>
-        </div>
-        <div class="sidebar-footer" style="margin-top: auto; padding: 20px;">
-            <p id="status-login" style="font-size: 0.8rem; color: #888;">Conectando...</p>
         </div>
     </div>
 
     <div id="overlay" class="overlay"></div>
 
-    <!-- LAYOUT PRINCIPAL: 2 COLUNAS (Ficha e Histórico) -->
     <div class="mesa-container">
-        
-        <!-- COLUNA ESQUERDA: FICHA DO JOGADOR -->
+        <!-- COLUNA ESQUERDA: FICHA -->
         <div class="coluna-ficha">
             <div class="cabecalho-ficha">
                 <h2>Ficha do Arquivista</h2>
@@ -103,61 +90,95 @@
                 </div>
             </div>
 
-            <!-- Atributos -->
+            <!-- Tabela de Atributos -->
             <div class="secao-ficha">
-                <h3>Atributos</h3>
-                <div class="grid-atributos">
-                    <div class="attr-box">
-                        <label>Vigor</label>
-                        <input type="text" id="f-vigor" value="0d4" class="input-dado">
+                <h3>Atributos (d4)</h3>
+                <div class="lista-rolagens">
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button>
+                            <span id="val-vigor" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button>
                     </div>
-                    <div class="attr-box">
-                        <label>Dinamismo</label>
-                        <input type="text" id="f-dinamismo" value="0d4" class="input-dado">
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button>
+                            <span id="val-dinamismo" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button>
                     </div>
-                    <div class="attr-box">
-                        <label>Razão</label>
-                        <input type="text" id="f-razao" value="0d4" class="input-dado">
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button>
+                            <span id="val-razao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button>
                     </div>
-                    <div class="attr-box">
-                        <label>Determinação</label>
-                        <input type="text" id="f-determinacao" value="0d4" class="input-dado">
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button>
+                            <span id="val-determinacao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Rolagem Rápida (Baseada nos Atributos/Perícias) -->
+            <!-- Tabela de Perícias (Apenas 4) -->
             <div class="secao-ficha">
-                <h3>Rolagem Rápida</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Use os dados da sua ficha acima ou role manualmente.</p>
-                <div class="row-inputs">
-                    <div class="input-group">
-                        <label>Tipo</label>
-                        <div class="toggle-group">
-                            <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
-                            <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
+                <h3>Perícias (d6)</h3>
+                <div class="lista-rolagens">
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button>
+                            <span id="val-combate" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button>
                         </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button>
+                    </div>
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('investigacao', -1)">-</button>
+                            <span id="val-investigacao" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('investigacao', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Investigação', 'investigacao', 6)">Investigação</button>
+                    </div>
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button>
+                            <span id="val-arcanismo" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('arcanismo', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button>
+                    </div>
+                    <div class="linha-rolagem">
+                        <div class="controle-dados">
+                            <button class="btn-ajuste" onclick="ajustarDado('furtividade', -1)">-</button>
+                            <span id="val-furtividade" class="valor-dado">1</span>
+                            <button class="btn-ajuste" onclick="ajustarDado('furtividade', 1)">+</button>
+                        </div>
+                        <button class="btn-rolar-nome" onclick="rolarTeste('Furtividade', 'furtividade', 6)">Furtividade</button>
                     </div>
                 </div>
-                <div class="row-inputs" style="margin-top: 10px;">
-                    <div class="input-group">
-                        <label>Qtd. Dados</label>
-                        <input type="number" id="qtd-dados" min="0" max="10" value="2">
-                    </div>
-                    <div class="input-group">
-                        <label>Vol.</label>
-                        <input type="number" id="volume" min="1" max="8" value="1">
-                    </div>
-                </div>
-                <button id="btn-rolar" class="btn-primario" style="margin-top: 15px;">Lançar Dados</button>
+            </div>
+
+            <!-- Botão de Desafiar o Destino e Resultado -->
+            <div class="secao-ficha">
+                <button id="btn-desafiar" class="btn-primario" style="background: #a83232; margin-bottom: 15px;">Desafiar o Destino (2d12)</button>
                 
-                <div id="resultado-container" style="margin-top: 15px;">
+                <div id="resultado-container">
                     <div id="d12-box" class="dice-box principal">
                         <span class="dice-label">d12</span>
                         <span id="dado-d12" class="dice-value">-</span>
                     </div>
                     <div id="outros-dados-box" class="dice-box secundario">
-                        <span id="label-outros" class="dice-label">2d4</span>
+                        <span id="label-outros" class="dice-label">d4</span>
                         <span id="dados-outros" class="dice-value">-</span>
                     </div>
                     <div id="total-box">
@@ -167,32 +188,27 @@
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: HISTÓRICO GLOBAL -->
+        <!-- COLUNA DIREITA: HISTÓRICO -->
         <div class="coluna-historico">
             <h3>Crônica da Mesa (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
             
             <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
-                <label style="color: #c7a86b;">ID da Sala (Mude para entrar em outra mesa)</label>
+                <label style="color: #c7a86b;">ID da Sala</label>
                 <input type="text" id="sala-id" value="sala-padrao">
             </div>
 
             <ul id="lista-historico-global"></ul>
         </div>
-
     </div>
 
-    <!-- Modais -->
+    <!-- Modais (Ocultos para não poluir) -->
     <div id="modal-regras" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
-            <h2>📜 A Arte da Rolagem</h2>
-            <div class="modal-body">
-                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>. Igual ou maior que a TA, sucesso.</p>
-                <p><strong>1:</strong> Catástrofe. <strong>6:</strong> Falha Absoluta. <strong>12:</strong> Momento Lendário.</p>
-            </div>
+            <h2>📜 Regras</h2>
+            <div class="modal-body"><p>...</p></div>
         </div>
     </div>
-    <!-- (Os outros modais de Espectros, Caminhos e Vocações continuam iguais, ocultei para não ficar gigante) -->
 
     <script type="module" src="script.js"></script>
     <script>

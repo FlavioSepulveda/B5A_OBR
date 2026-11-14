@@ -2,7 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getDatabase, ref, push, onChildAdded, query, limitToLast, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-// SUA CONFIGURAÇÃO DO FIREBASE
+// ==========================================
+// 1. CONFIGURAÇÃO DO FIREBASE
+// ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDVpq__JyU5KTQ6p6zB6DTqey4k2jaEFZo",
   authDomain: "b5at-44d1d.firebaseapp.com",
@@ -21,15 +23,20 @@ let idJogadorAtual = null;
 let fichaRef = null;
 let salaAtual = "sala-padrao";
 
+// Estado dos dados do personagem
+let dadosPersonagem = {
+    vigor: 1, dinamismo: 1, razao: 1, determinacao: 1,
+    combate: 1, investigacao: 1, arcanismo: 1, furtividade: 1
+};
+
 // ==========================================
-// ELEMENTOS DO DOM (FICHA E ROLAGEM)
+// 2. ELEMENTOS DO DOM
 // ==========================================
 const salaInput = document.getElementById('sala-id');
 const statusLogin = document.getElementById('status-login');
 const nomeSalaExibicao = document.getElementById('nome-sala-exibicao');
 const btnLogin = document.getElementById('btn-login');
 
-// Elementos da Ficha
 const fNome = document.getElementById('f-nome');
 const fEspectro = document.getElementById('f-espectro');
 const fVolume = document.getElementById('f-volume');
@@ -37,52 +44,100 @@ const fPvAtual = document.getElementById('f-pv-atual');
 const fPvMax = document.getElementById('f-pv-max');
 const fPiAtual = document.getElementById('f-pi-atual');
 const fPiMax = document.getElementById('f-pi-max');
-const fVigor = document.getElementById('f-vigor');
-const fDinamismo = document.getElementById('f-dinamismo');
-const fRazao = document.getElementById('f-razao');
-const fDeterminacao = document.getElementById('f-determinacao');
 
-// Elementos da Rolagem
-const btnRolar = document.getElementById('btn-rolar');
-const inputQtd = document.getElementById('qtd-dados');
-const inputVolume = document.getElementById('volume');
-const dadoD12 = document.getElementById('dado-d12');
-const dadosOutros = document.getElementById('dados-outros');
-const labelOutros = document.getElementById('label-outros');
-const totalVisual = document.getElementById('total-visual');
-const regraTexto = document.getElementById('regra-texto');
-const container = document.getElementById('resultado-container');
-const toggles = document.querySelectorAll('.toggle');
+const btnDesafiar = document.getElementById('btn-desafiar');
+const containerResultado = document.getElementById('resultado-container');
 const listaHistorico = document.getElementById('lista-historico-global');
 
-let tipoRolagem = 'atributo'; 
+// ==========================================
+// 3. CONTROLE DE DADOS (+ e -)
+// ==========================================
+window.ajustarDado = function(nomeChave, valor) {
+    // Limite de 0 a 10 dados
+    let novoValor = dadosPersonagem[nomeChave] + valor;
+    if (novoValor < 0) novoValor = 0;
+    if (novoValor > 10) novoValor = 10; 
+    
+    dadosPersonagem[nomeChave] = novoValor;
+    document.getElementById(`val-${nomeChave}`).textContent = novoValor;
+    
+    salvarFicha();
+};
 
 // ==========================================
-// LÓGICA DE ROLAGEM E CORES
+// 4. ROLAGEM CLICÁVEL (Atributos e Perícias)
 // ==========================================
-function atualizarLabel() {
-    const qtd = inputQtd.value || 0;
-    labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
-}
-if (inputQtd) inputQtd.addEventListener('input', atualizarLabel);
-
-toggles.forEach(btn => {
-    btn.addEventListener('click', () => {
-        toggles.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        tipoRolagem = btn.dataset.tipo;
-        atualizarLabel();
-    });
-});
-
-const REGRAS = { 1: "Catástrofe Definitiva!", 6: "Falha Absoluta!", 12: "Momento Lendário!" };
-
-function rolarDados(quantidade, faces) {
-    const resultados = [];
-    for (let i = 0; i < quantidade; i++) {
-        resultados.push(Math.floor(Math.random() * faces) + 1);
+window.rolarTeste = function(nomeExibicao, nomeChave, faces) {
+    if (!idJogadorAtual) {
+        alert("Faça login com o Google para rolar os dados!");
+        return;
     }
-    return resultados;
+
+    const qtd = dadosPersonagem[nomeChave];
+    const vol = parseInt(fVolume.value) || 1;
+    const d12 = Math.floor(Math.random() * 12) + 1;
+    
+    let soma = 0;
+    for(let i=0; i<qtd; i++) {
+        soma += Math.floor(Math.random() * faces) + 1;
+    }
+
+    const total = d12 + soma + vol;
+    exibirResultado(d12, soma, vol, total, `${qtd}d${faces}`);
+    enviarParaHistorico(nomeExibicao, d12, soma, vol, total);
+};
+
+// ==========================================
+// 5. DESAFIAR O DESTINO (2d12)
+// ==========================================
+if (btnDesafiar) {
+    btnDesafiar.addEventListener('click', () => {
+        if (!idJogadorAtual) {
+            alert("Faça login com o Google para rolar os dados!");
+            return;
+        }
+
+        const vol = parseInt(fVolume.value) || 1;
+        let d12_1 = Math.floor(Math.random() * 12) + 1;
+        let d12_2 = Math.floor(Math.random() * 12) + 1;
+        let d12 = Math.max(d12_1, d12_2);
+        
+        const total = d12 + vol;
+        exibirResultado(d12, 0, vol, total, "Desafio", true, d12_1, d12_2);
+        enviarParaHistorico("Desafiar o Destino", d12, 0, vol, total);
+    });
+}
+
+// ==========================================
+// 6. EXIBIÇÃO E HISTÓRICO
+// ==========================================
+function exibirResultado(d12, soma, vol, total, labelDado, isDesafio = false, d1 = 0, d2 = 0) {
+    const d12Box = document.getElementById('dado-d12');
+    const outrosBox = document.getElementById('dados-outros');
+    const labelOutros = document.getElementById('label-outros');
+    const totalVisual = document.getElementById('total-visual');
+
+    containerResultado.className = 'resultado-container';
+    
+    if (fEspectro.value !== 'padrao') {
+        containerResultado.classList.add(`espectro-${fEspectro.value}`);
+    }
+
+    d12Box.textContent = d12;
+    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
+
+    if (isDesafio) {
+        outrosBox.textContent = "-";
+        labelOutros.textContent = "Desafio";
+        totalVisual.innerHTML += `<br><small style="color:#888;">Rolou ${d1} e ${d2}. Manteve ${d12}</small>`;
+    } else {
+        outrosBox.textContent = soma;
+        labelOutros.textContent = labelDado;
+    }
+
+    if (d12 === 1) totalVisual.innerHTML += `<br><span style="color:#ff4d4d; font-weight:bold;">Catástrofe!</span>`;
+    if (d12 === 6) totalVisual.innerHTML += `<br><span style="color:#ff9800; font-weight:bold;">Falha Absoluta!</span>`;
+    if (d12 === 12) totalVisual.innerHTML += `<br><span style="color:#4caf50; font-weight:bold;">Lendário!</span>`;
 }
 
 function adicionarHistoricoNaTela(dados) {
@@ -101,15 +156,32 @@ function adicionarHistoricoNaTela(dados) {
     listaHistorico.prepend(li);
 }
 
+function enviarParaHistorico(nomeAcao, d12, soma, vol, total) {
+    const nome = fNome.value.trim() || "Arquivista";
+    const rolagemRef = ref(db, `salas/${salaAtual}/rolagens`);
+    push(rolagemRef, { 
+        nome: `${nome} (${nomeAcao})`, 
+        d12: d12, 
+        outros: soma, 
+        vol: vol, 
+        total: total 
+    });
+}
+
+// ==========================================
+// 7. CONEXÃO COM AS SALAS
+// ==========================================
 function conectarSala(idSala) {
     listaHistorico.innerHTML = '';
     salaAtual = idSala;
     if (nomeSalaExibicao) nomeSalaExibicao.textContent = idSala;
-    const salaRef = query(ref(db, `salas/${idSala}/rolagens`), limitToLast(20));
     
+    const salaRef = query(ref(db, `salas/${idSala}/rolagens`), limitToLast(20));
     onChildAdded(salaRef, (snapshot) => {
         adicionarHistoricoNaTela(snapshot.val());
     });
+    
+    if (idJogadorAtual) iniciarFicha();
 }
 
 if (salaInput) {
@@ -118,54 +190,15 @@ if (salaInput) {
     });
 }
 
-if (btnRolar) {
-    btnRolar.addEventListener('click', () => {
-        // 1. RESETAR E APLICAR COR DO ESPECTRO
-        container.className = 'resultado-container'; 
-        regraTexto.style.display = 'none';
-        
-        // AQUI ESTÁ A CORREÇÃO DAS CORES: Pega o valor do dropdown de Espectro
-        if (fEspectro && fEspectro.value !== 'padrao') {
-            container.classList.add(`espectro-${fEspectro.value}`);
-        }
-
-        const nome = fNome.value.trim() || "Arquivista";
-        const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
-        const volume = Math.max(1, Math.min(8, parseInt(inputVolume.value) || 1));
-        const faces = tipoRolagem === 'atributo' ? 4 : 6;
-        const nomeDado = tipoRolagem === 'atributo' ? 'd4' : 'd6';
-
-        const rolagemD12 = Math.floor(Math.random() * 12) + 1;
-        const resultadosDados = rolarDados(qtdDados, faces);
-        const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
-        const total = rolagemD12 + somaDados + volume;
-
-        // 2. ATUALIZAR A TELA
-        dadoD12.textContent = rolagemD12;
-        dadosOutros.textContent = somaDados;
-        totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
-
-        // 3. VERIFICAR RESULTADOS ABSOLUTOS
-        if (REGRAS[rolagemD12]) {
-            regraTexto.textContent = REGRAS[rolagemD12];
-            regraTexto.style.display = 'block';
-        }
-
-        // 4. SALVAR NO HISTÓRICO GLOBAL
-        const rolagemRef = ref(db, `salas/${salaAtual}/rolagens`);
-        push(rolagemRef, { nome: nome, d12: rolagemD12, outros: somaDados, vol: volume, total: total });
-    });
-}
-
 // ==========================================
-// LÓGICA DE LOGIN E FICHA
+// 8. LOGIN E FICHA (FIREBASE)
 // ==========================================
 if (btnLogin) {
     btnLogin.addEventListener('click', () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider).catch((error) => {
-            console.error("Erro no login com Google:", error);
-            alert("Não foi possível fazer login. Verifique se o Google está ativado no Firebase.");
+            console.error("Erro no login:", error);
+            alert("Não foi possível fazer login. Verifique o domínio autorizado no Firebase.");
         });
     });
 }
@@ -178,7 +211,7 @@ onAuthStateChanged(auth, (user) => {
         iniciarFicha();
     } else {
         idJogadorAtual = null;
-        statusLogin.textContent = "🔴 Faça login para salvar sua ficha";
+        statusLogin.textContent = "🔴 Faça login para salvar";
         if (btnLogin) btnLogin.style.display = 'block'; 
     }
 });
@@ -194,14 +227,22 @@ function iniciarFicha() {
             fNome.value = dados.nome || '';
             fEspectro.value = dados.espectro || 'padrao';
             fVolume.value = dados.volume || 1;
-            fPvAtual.textContent = dados.pvAtual || 0;
+            fPvAtual.textContent = dados.pvAtual || 10;
             fPvMax.value = dados.pvMax || 10;
-            fPiAtual.textContent = dados.piAtual || 0;
+            fPiAtual.textContent = dados.piAtual || 5;
             fPiMax.value = dados.piMax || 5;
-            fVigor.value = dados.vigor || '0d4';
-            fDinamismo.value = dados.dinamismo || '0d4';
-            fRazao.value = dados.razao || '0d4';
-            fDeterminacao.value = dados.determinacao || '0d4';
+            
+            if (dados.dadosPersonagem) {
+                dadosPersonagem = dados.dadosPersonagem;
+                // Atualiza a interface com os valores salvos
+                for (let chave in dadosPersonagem) {
+                    let el = document.getElementById(`val-${chave}`);
+                    if (el) el.textContent = dadosPersonagem[chave];
+                }
+            }
+        } else {
+            fNome.value = auth.currentUser.displayName || "Arquivista";
+            salvarFicha();
         }
     });
 }
@@ -213,24 +254,23 @@ function salvarFicha() {
         espectro: fEspectro.value,
         volume: parseInt(fVolume.value) || 1,
         pvAtual: parseInt(fPvAtual.textContent) || 0,
-        pvMax: parseInt(fPvMax.value) || 0,
+        pvMax: parseInt(fPvMax.value) || 10,
         piAtual: parseInt(fPiAtual.textContent) || 0,
-        piMax: parseInt(fPiMax.value) || 0,
-        vigor: fVigor.value,
-        dinamismo: fDinamismo.value,
-        razao: fRazao.value,
-        determinacao: fDeterminacao.value
+        piMax: parseInt(fPiMax.value) || 5,
+        dadosPersonagem: dadosPersonagem
     };
     set(fichaRef, dados).catch(e => console.error("Erro ao salvar:", e));
 }
 
-document.querySelectorAll('.coluna-ficha input, .coluna-ficha select').forEach(el => {
-    el.addEventListener('change', salvarFicha);
+// Salva automaticamente quando muda Nome, Espectro ou Volume
+[fNome, fEspectro, fVolume].forEach(el => {
+    if (el) el.addEventListener('change', salvarFicha);
 });
 
+// Controle de Vida e Ímpeto
 window.alterarRecurso = function(recurso, valor) {
     if (!idJogadorAtual) {
-        alert("Faça login com o Google para salvar sua ficha!");
+        alert("Faça login com o Google para salvar!");
         return;
     }
     
@@ -249,5 +289,7 @@ window.alterarRecurso = function(recurso, valor) {
     salvarFicha();
 };
 
-// Inicia a sala padrão
+// ==========================================
+// 9. INICIALIZAÇÃO
+// ==========================================
 conectarSala("sala-padrao");
