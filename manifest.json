@@ -3,5 +3,11 @@
   "version": "1.0.0",
   "manifest_version": 1,
   "author": "Seu Nome",
-  "background_url": "/index.html"
+  "action": {
+    "title": "Rolar D12",
+    "icon": "/icon.svg",
+    "popover": "/",
+    "height": 600,
+    "width": 400
+  }
 }
