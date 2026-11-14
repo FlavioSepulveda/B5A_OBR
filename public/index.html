@@ -23,7 +23,11 @@
             <p id="status-login" style="font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center;">Faça login para salvar</p>
         </div>
         <div class="sidebar-links">
+            <!-- NOVOS BOTÕES AQUI -->
             <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
+            <button class="nav-btn" onclick="mudarAba('aba-guia')">📖 Guia Rápido</button>
+            <button class="nav-btn" onclick="mudarAba('aba-comunidade')">🌍 Crônicas da Comunidade</button>
+            <hr style="border-color:#333; margin: 10px 0;">
             <button class="nav-btn" onclick="mudarAba('aba-regras')">📖 Regras de Rolagem</button>
             <button class="nav-btn" onclick="mudarAba('aba-espectros')">🔥 Espectros</button>
             <button class="nav-btn" onclick="mudarAba('aba-caminhos')">⚔️ Caminhos</button>
@@ -156,14 +160,12 @@
 
                 <!-- Coluna 3: Resultado e Histórico -->
                 <div class="coluna-historico">
-                    <!-- RESULTADO EM CIMA -->
                     <div id="resultado-container">
                         <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
                         <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
                         <div id="total-box"><span id="total-visual">Aguardando...</span></div>
                     </div>
 
-                    <!-- HISTÓRICO EMBAIXO -->
                     <div class="historico-wrapper">
                         <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
                         <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
@@ -179,7 +181,45 @@
             </div>
         </div>
 
-        <!-- ABA 2: REGRAS -->
+        <!-- ABA 2: GUIA RÁPIDO -->
+        <div id="aba-guia" class="aba">
+            <div class="conteudo-texto">
+                <h1>📖 Guia Rápido do Arquivista</h1>
+                <p>Bem-vindo à Biblioteca da 5ª Avenida. Este guia foi feito para que você possa jogar sem precisar ler o livro de regras inteiro.</p>
+                <h3>1. Criando seu Personagem</h3>
+                <p>Na aba <strong>Minha Ficha</strong>, preencha seu Nome e escolha um <strong>Espectro</strong>. Você começa com <strong>0 dados</strong> em todos os Atributos e Perícias. Converse com o Guardião para distribuir seus pontos iniciais clicando nos botões "+".</p>
+                <h3>2. Como Rolar Dados</h3>
+                <p>A base do jogo é <strong>1d12 + Dados de Atributo/Perícia + seu Volume</strong>. Para rolar, ajuste a quantidade de dados na ficha e clique no <strong>nome</strong> do Atributo ou Perícia. O resultado vai direto para a Crônica da Mesa.</p>
+                <h3>3. Os Três Destinos Absolutos</h3>
+                <p><strong style="color:#ff4d4d;">1 (Catástrofe):</strong> Falha automática. O Guardião ganha um Dado de Descartes.</p>
+                <p><strong style="color:#ff9800;">6 (Falha Absoluta):</strong> Falha, mesmo que o total seja alto.</p>
+                <p><strong style="color:#4caf50;">12 (Lendário):</strong> O sucesso é épico!</p>
+                <h3>4. Desafiar o Destino</h3>
+                <p>Se você tiver <strong>0 dados</strong> em algo, pode tentar mesmo assim. Clique no nome do Atributo que está zerado, e o site vai rolar automaticamente 2d12 (mantendo o maior).</p>
+            </div>
+        </div>
+
+        <!-- ABA 3: COMUNIDADE -->
+        <div id="aba-comunidade" class="aba">
+            <div class="conteudo-texto">
+                <h1>🌍 Crônicas da Comunidade</h1>
+                <p>Todo Arquivista tem um Prólogo. De onde você veio? O que perdeu antes de atravessar as portas da Biblioteca? Escreva a história do seu personagem abaixo para que outros jogadores a leiam.</p>
+                
+                <div class="input-group" style="margin-bottom: 20px; background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold);">
+                    <label style="color: var(--gold); margin-bottom: 5px; display: block;">Escreva seu Prólogo (Salvo em tempo real):</label>
+                    <textarea id="cronica-texto" rows="5" style="width: 100%; resize: vertical; padding: 10px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-family: 'Merriweather';" placeholder="A primeira vez que a Biblioteca chamou por mim, eu estava..."></textarea>
+                    <button id="btn-salvar-cronica" class="btn-primario" style="margin-top: 10px; font-size: 1rem; padding: 10px;">Salvar na Crônica</button>
+                    <p id="status-cronica" style="font-size: 0.8rem; color: #888; margin-top: 5px; text-align: center;"></p>
+                </div>
+
+                <h3>Relatos dos Arquivistas</h3>
+                <div id="lista-cronicas" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- As histórias vão aparecer aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 4: REGRAS -->
         <div id="aba-regras" class="aba">
             <div class="conteudo-texto">
                 <h1>📜 A Arte da Rolagem</h1>
@@ -197,7 +237,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: ESPECTROS -->
+        <!-- ABA 5: ESPECTROS -->
         <div id="aba-espectros" class="aba">
             <div class="conteudo-texto">
                 <h1>🔥 Os Espectros do Ímpeto</h1>
@@ -217,7 +257,7 @@
             </div>
         </div>
 
-        <!-- ABA 4: CAMINHOS -->
+        <!-- ABA 6: CAMINHOS -->
         <div id="aba-caminhos" class="aba">
             <div class="conteudo-texto">
                 <h1>⚔️ Caminhos (Combate)</h1>
@@ -236,7 +276,6 @@
         </div>
 
     </div>
-
    
     <script type="module" src="./js/firebase.js"></script>
     <script type="module" src="./js/ficha.js"></script>
