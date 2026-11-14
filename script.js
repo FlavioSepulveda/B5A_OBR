@@ -13,7 +13,6 @@ const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
 let historicoRolagens = [];
-const CANAL = "com.biblioteca5a.rolagens.global";
 
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
@@ -66,63 +65,7 @@ function renderizarHistorico() {
     });
 }
 
-// --- INICIALIZAÇÃO E ESCUTA GLOBAL ---
-if (typeof OBR !== 'undefined') {
-    OBR.onReady(() => {
-        console.log("Owlbear Pronto. Escutando rolagens...");
-        
-        // Escuta as mensagens de outros jogadores
-        OBR.broadcast.onMessage(CANAL, (event) => {
-            const dados = event.data;
-            
-            // Se a mensagem NÃO for minha, atualiza a tela
-            if (dados.senderId !== OBR.player.id) {
-                console.log("Recebi rolagem de outro jogador:", dados);
-                
-                // Atualiza o histórico local
-                historicoRolagens.push(dados);
-                if (historicoRolagens.length > 4) historicoRolagens.shift();
-                renderizarHistorico();
-
-                // Cria um alerta visual na tela (mais garantido que OBR.notification)
-                const alerta = document.createElement('div');
-                alerta.style.position = 'fixed';
-                alerta.style.top = '20px';
-                alerta.style.left = '50%';
-                alerta.style.transform = 'translateX(-50%)';
-                alerta.style.backgroundColor = '#d4af37';
-                alerta.style.color = '#121212';
-                alerta.style.padding = '15px 30px';
-                alerta.style.borderRadius = '8px';
-                alerta.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
-                alerta.style.zIndex = '9999';
-                alerta.style.fontFamily = 'serif';
-                alerta.style.textAlign = 'center';
-                alerta.style.fontSize = '1.2em';
-                
-                let texto = `<strong>${dados.nome}</strong> rolou: <br>`;
-                texto += `${dados.d12} (d12) + ${dados.outros} (dados) + ${dados.vol} (Vol) = <strong>${dados.total}</strong>`;
-                
-                if (REGRAS[dados.d12]) {
-                    alerta.style.backgroundColor = dados.d12 === 1 ? '#ff4d4d' : (dados.d12 === 6 ? '#ff9800' : '#4caf50');
-                    alerta.style.color = '#fff';
-                    texto += `<br><small>${REGRAS[dados.d12]}</small>`;
-                }
-
-                alerta.innerHTML = texto;
-                document.body.appendChild(alerta);
-
-                // Remove o alerta após 5 segundos
-                setTimeout(() => {
-                    if (alerta.parentNode) alerta.parentNode.removeChild(alerta);
-                }, 5000);
-            }
-        });
-    });
-}
-
-// --- CLIQUE DO BOTÃO ---
-btnRolar.addEventListener('click', () => {
+btnRolar.addEventListener('click', async () => {
     container.className = '';
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
@@ -140,8 +83,18 @@ btnRolar.addEventListener('click', () => {
 
     // UI Local
     dadoD12.textContent = rolagemD12;
-    dadosOutros.textContent = somaDados;
-    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
+    if (qtdDados > 0) {
+        dadosOutros.textContent = somaDados;
+        dadosOutros.title = `Dados: [${resultadosDados.join(', ')}]`;
+    } else {
+        dadosOutros.textContent = '0';
+        dadosOutros.title = "Desafiar o Destino";
+    }
+
+    totalVisual.innerHTML = `
+        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
+        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
+    `;
 
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
@@ -152,21 +105,38 @@ btnRolar.addEventListener('click', () => {
 
     // Histórico Local
     const novaRolagem = {
-        senderId: typeof OBR !== 'undefined' ? OBR.player.id : "local", 
         nome: nome,
         d12: rolagemD12,
         outros: somaDados,
         vol: volume,
         total: total
     };
-
     historicoRolagens.push(novaRolagem);
     if (historicoRolagens.length > 4) historicoRolagens.shift();
     renderizarHistorico();
 
-    // --- ENVIO GLOBAL ---
+    // --- INTEGRAÇÃO COM O WITCHDICE ---
     if (typeof OBR !== 'undefined') {
-        console.log("Enviando rolagem para a mesa...");
-        OBR.broadcast.sendMessage(CANAL, novaRolagem, { destination: 'ALL' });
+        try {
+            // Monta a string da rolagem exatamente como o Witchdice espera
+            let rolagemStr = `1d12 + ${qtdDados}d${faces} + ${volume}`;
+            let nomeExibicao = `${nome} (Biblioteca)`;
+            
+            // Se for Momento Lendário, coloca um destaque no nome
+            if (rolagemD12 === 12) nomeExibicao = `🌟 ${nome} (LENDÁRIO!)`;
+            if (rolagemD12 === 1) nomeExibicao = `💀 ${nome} (CATÁSTROFE!)`;
+
+            // O Witchdice escuta nesse canal e joga no chat global dele
+            await OBR.broadcast.sendMessage("witchdice/roll-request", {
+                id: crypto.randomUUID(),
+                playerName: nomeExibicao,
+                roll: rolagemStr,
+                timestamp: Date.now()
+            }, { destination: 'ALL' });
+            
+            console.log("Enviado para o Witchdice:", rolagemStr);
+        } catch (e) {
+            console.log("Erro ao enviar para Witchdice", e);
+        }
     }
 });
