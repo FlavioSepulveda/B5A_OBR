@@ -1,14 +1,13 @@
 {
-  "name": "Biblioteca 5ª Avenida - Rolagem",
+  "name": "B5A - Rolagem Global",
   "version": "1.0.0",
   "manifest_version": 1,
-  "author": "Seu Nome",
+  "background_url": "/",
   "action": {
-    "title": "Rolar D12",
+    "title": "Abrir Rolagem",
     "icon": "/icon.svg",
     "popover": "/",
     "height": 600,
     "width": 400
-  },
-  "background_url": "/"
+  }
 }
