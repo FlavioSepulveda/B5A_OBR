@@ -53,7 +53,6 @@ const listaHistorico = document.getElementById('lista-historico-global');
 // 3. CONTROLE DE DADOS (+ e -)
 // ==========================================
 window.ajustarDado = function(nomeChave, valor) {
-    // Limite de 0 a 10 dados
     let novoValor = dadosPersonagem[nomeChave] + valor;
     if (novoValor < 0) novoValor = 0;
     if (novoValor > 10) novoValor = 10; 
@@ -141,6 +140,10 @@ function exibirResultado(d12, soma, vol, total, labelDado, isDesafio = false, d1
 }
 
 function adicionarHistoricoNaTela(dados) {
+    // 👇 ESSA É A LINHA NOVA: Esconde o aviso de "Nenhuma rolagem" assim que chega a primeira
+    const aviso = document.getElementById('aviso-historico-vazio');
+    if (aviso) aviso.style.display = 'none';
+
     const li = document.createElement('li');
     if (dados.d12 === 1) li.classList.add('hist-1');
     if (dados.d12 === 6) li.classList.add('hist-6');
@@ -173,6 +176,11 @@ function enviarParaHistorico(nomeAcao, d12, soma, vol, total) {
 // ==========================================
 function conectarSala(idSala) {
     listaHistorico.innerHTML = '';
+    
+    // Garante que o aviso apareça se a sala estiver vazia
+    const aviso = document.getElementById('aviso-historico-vazio');
+    if (aviso) aviso.style.display = 'block';
+
     salaAtual = idSala;
     if (nomeSalaExibicao) nomeSalaExibicao.textContent = idSala;
     
@@ -234,7 +242,6 @@ function iniciarFicha() {
             
             if (dados.dadosPersonagem) {
                 dadosPersonagem = dados.dadosPersonagem;
-                // Atualiza a interface com os valores salvos
                 for (let chave in dadosPersonagem) {
                     let el = document.getElementById(`val-${chave}`);
                     if (el) el.textContent = dadosPersonagem[chave];
@@ -262,12 +269,10 @@ function salvarFicha() {
     set(fichaRef, dados).catch(e => console.error("Erro ao salvar:", e));
 }
 
-// Salva automaticamente quando muda Nome, Espectro ou Volume
 [fNome, fEspectro, fVolume].forEach(el => {
     if (el) el.addEventListener('change', salvarFicha);
 });
 
-// Controle de Vida e Ímpeto
 window.alterarRecurso = function(recurso, valor) {
     if (!idJogadorAtual) {
         alert("Faça login com o Google para salvar!");

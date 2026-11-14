@@ -22,24 +22,50 @@ body {
     overflow-x: hidden;
 }
 
-h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value {
+h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value, .btn-rolar-nome, .valor-dado {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
 }
 
-/* MENU LATERAL (Mantido) */
-.menu-toggle { position: fixed; top: 15px; left: 15px; z-index: 900; background-color: var(--bg-panel); color: var(--gold); border: 1px solid var(--gold); padding: 10px 15px; font-size: 1.2rem; cursor: pointer; }
-.sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background-color: #111; border-right: 1px solid var(--gold); z-index: 1000; transition: left 0.3s ease; display: flex; flex-direction: column; }
+/* =========================================
+   MENU LATERAL
+   ========================================= */
+.menu-toggle { 
+    position: fixed; top: 15px; left: 15px; z-index: 900; 
+    background-color: var(--bg-panel); color: var(--gold); border: 1px solid var(--gold); 
+    padding: 10px 15px; font-size: 1.2rem; cursor: pointer; 
+}
+.menu-toggle:hover { background-color: var(--gold); color: var(--bg-main); }
+
+.sidebar { 
+    position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; 
+    background-color: #111; border-right: 1px solid var(--gold); 
+    z-index: 1000; transition: left 0.3s ease; display: flex; flex-direction: column; 
+}
 .sidebar.active { left: 0; }
+
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color); }
+.sidebar-header h2 { font-size: 1.5rem; color: var(--gold); }
 .close-sidebar { background: none; border: none; color: var(--text-muted); font-size: 2rem; cursor: pointer; }
+.close-sidebar:hover { color: #ff4d4d; }
+
 .sidebar-links { display: flex; flex-direction: column; padding: 20px; gap: 10px; }
-.nav-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 15px; cursor: pointer; font-size: 1.2rem; text-align: left; }
-.nav-btn:hover { color: var(--gold); border-color: var(--gold); }
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 800; display: none; }
+.nav-btn { 
+    background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); 
+    padding: 15px; cursor: pointer; font-size: 1.2rem; text-align: left; transition: 0.2s;
+}
+.nav-btn:hover { color: var(--gold); border-color: var(--gold); padding-left: 20px; }
+
+.overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); 
+    z-index: 800; display: none; 
+}
 .overlay.active { display: block; }
 
-/* LAYOUT DA MESA */
+/* =========================================
+   LAYOUT DA MESA
+   ========================================= */
 .mesa-container {
     display: flex;
     flex-direction: row;
@@ -48,6 +74,7 @@ h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value {
     max-width: 1100px;
     margin: 60px auto 20px auto;
     padding: 0 15px;
+    align-items: flex-start; /* Impede que as colunas estiquem verticalmente */
 }
 
 /* COLUNA DA FICHA */
@@ -59,7 +86,11 @@ h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value {
     max-width: 500px;
 }
 
-.cabecalho-ficha h2 { color: var(--gold); text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; font-size: 2rem; }
+.cabecalho-ficha h2 { 
+    color: var(--gold); text-align: center; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 10px; font-size: 2rem; 
+}
 
 .secao-ficha {
     background: var(--bg-panel);
@@ -99,74 +130,9 @@ input:focus, select:focus { border-color: var(--gold); }
 .separador { color: var(--text-muted); }
 .max-recurso { width: 60px !important; text-align: center; font-size: 1.2rem; }
 
-/* Atributos */
-.grid-atributos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.attr-box { background: var(--bg-input); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; }
-.attr-box label { display: block; margin-bottom: 5px; color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; }
-.input-dado { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #fff; border: none; background: transparent; }
-
-/* Rolagem */
-.toggle-group { display: flex; gap: 10px; }
-.toggle { flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border-color); cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; }
-.toggle.active { background: var(--gold); color: var(--bg-main); border-color: var(--gold); }
-
-.btn-primario { padding: 15px; font-size: 1.5rem; background-color: var(--gold); color: var(--bg-main); border: none; cursor: pointer; width: 100%; border-radius: 4px; }
-.btn-primario:hover { background-color: #dfc28c; }
-
-#resultado-container { padding: 15px; text-align: center; background: #111; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.dice-box { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: 6px; width: 70px; background: #1a1a1a; }
-.principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #141a22, #1a1a1a); }
-.secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #1c141f, #1a1a1a); }
-.dice-value { font-size: 2.5rem; }
-.dice-label { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); }
-#total-visual { font-size: 1rem; color: var(--gold); font-weight: bold; }
-
-/* Cores dos Espectros (Aplicadas ao resultado da rolagem) */
-.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: linear-gradient(135deg, #2c1a1a, #1a1a1a); }
-.espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
-.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: linear-gradient(135deg, #1a222c, #1a1a1a); }
-.espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
-.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: linear-gradient(135deg, #1a2c1a, #1a1a1a); }
-.espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
-.espectro-solar .dice-box.principal { border-color: #fbc02d; background: linear-gradient(135deg, #2c2a1a, #1a1a1a); }
-.espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
-.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: linear-gradient(135deg, #221a26, #1a1a1a); }
-.espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
-.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: linear-gradient(135deg, #2a2a2a, #1a1a1a); }
-.espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
-
-/* COLUNA HISTÓRICO */
-.coluna-historico {
-    flex: 1;
-    background: var(--bg-panel);
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-}
-.coluna-historico h3 { color: var(--gold); font-size: 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
-#lista-historico-global { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 700px; }
-#lista-historico-global li { padding: 12px; background: var(--bg-input); border-radius: 4px; border-left: 4px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-#lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
-#lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.05); }
-#lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.05); }
-.hist-total { font-size: 1.2rem; font-weight: bold; color: var(--gold); font-family: 'Bebas Neue', sans-serif; }
-.hist-detalhe { color: var(--text-muted); font-size: 0.8rem; }
-
-/* Modais */
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); }
-.modal-content { background-color: var(--bg-panel); margin: 10% auto; padding: 30px; border: 1px solid var(--gold); width: 90%; max-width: 600px; position: relative; border-radius: 8px; }
-.close-btn { color: var(--gold); position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; }
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .mesa-container { flex-direction: column; }
-    .coluna-ficha { max-width: 100%; }
-    .grid-atributos { grid-template-columns: 1fr 1fr; }
-}
-
-/* Estilos para as novas listas de rolagem */
+/* =========================================
+   NOVA TABELA DE ROLAGEM (Atributos e Perícias)
+   ========================================= */
 .lista-rolagens {
     display: flex;
     flex-direction: column;
@@ -205,7 +171,6 @@ input:focus, select:focus { border-color: var(--gold); }
 .btn-ajuste:hover { background: var(--gold); color: #000; }
 
 .valor-dado {
-    font-family: 'Bebas Neue', sans-serif;
     font-size: 1.5rem;
     color: var(--gold);
     width: 30px;
@@ -219,9 +184,100 @@ input:focus, select:focus { border-color: var(--gold); }
     color: var(--text-main);
     border: none;
     text-align: left;
-    font-family: 'Bebas Neue', sans-serif;
     font-size: 1.3rem;
     cursor: pointer;
     transition: color 0.2s;
 }
 .btn-rolar-nome:hover { color: var(--gold); }
+
+/* Botão Desafiar e Resultado */
+.btn-primario { 
+    padding: 15px; font-size: 1.5rem; 
+    background-color: var(--gold); color: var(--bg-main); 
+    border: none; cursor: pointer; width: 100%; border-radius: 4px; 
+}
+.btn-primario:hover { background-color: #dfc28c; }
+
+#resultado-container { 
+    padding: 15px; text-align: center; background: #111; 
+    border-radius: 8px; border: 1px solid var(--border-color); 
+    display: flex; flex-direction: column; align-items: center; gap: 15px; 
+    margin-top: 15px;
+}
+
+.dice-box { 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 10px; border-radius: 6px; width: 70px; background: #1a1a1a; 
+}
+.principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #141a22, #1a1a1a); }
+.secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #1c141f, #1a1a1a); }
+.dice-value { font-size: 2.5rem; }
+.dice-label { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); }
+#total-visual { font-size: 1rem; color: var(--gold); font-weight: bold; }
+
+/* Cores dos Espectros (Aplicadas ao resultado da rolagem) */
+.espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: linear-gradient(135deg, #2c1a1a, #1a1a1a); }
+.espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
+.espectro-celeste .dice-box.principal { border-color: #3d5a80; background: linear-gradient(135deg, #1a222c, #1a1a1a); }
+.espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
+.espectro-viridiano .dice-box.principal { border-color: #4caf50; background: linear-gradient(135deg, #1a2c1a, #1a1a1a); }
+.espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
+.espectro-solar .dice-box.principal { border-color: #fbc02d; background: linear-gradient(135deg, #2c2a1a, #1a1a1a); }
+.espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
+.espectro-indigo .dice-box.principal { border-color: #5c2a72; background: linear-gradient(135deg, #221a26, #1a1a1a); }
+.espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
+.espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: linear-gradient(135deg, #2a2a2a, #1a1a1a); }
+.espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
+
+/* =========================================
+   COLUNA HISTÓRICO (CORRIGIDA)
+   ========================================= */
+.coluna-historico {
+    flex: 1;
+    background: var(--bg-panel);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    /* AQUI: Removemos o min-height: 400px e colocamos fit-content */
+    height: fit-content; 
+}
+
+.coluna-historico h3 { 
+    color: var(--gold); font-size: 1.5rem; text-align: center; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 10px; margin-bottom: 15px; 
+}
+
+#lista-historico-global { 
+    list-style: none; padding: 0; margin: 0; 
+    display: flex; flex-direction: column; gap: 10px; 
+    overflow-y: auto; max-height: 600px; 
+}
+
+#lista-historico-global li { 
+    padding: 12px; background: var(--bg-input); border-radius: 4px; 
+    border-left: 4px solid var(--border-color); 
+    display: flex; justify-content: space-between; align-items: center; 
+}
+
+#lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
+#lista-historico-global li.hist-6 { border-left-color: #ff9800; background: rgba(255, 152, 0, 0.05); }
+#lista-historico-global li.hist-12 { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.05); }
+
+.hist-total { font-size: 1.2rem; font-weight: bold; color: var(--gold); font-family: 'Bebas Neue', sans-serif; }
+.hist-detalhe { color: var(--text-muted); font-size: 0.8rem; }
+
+/* =========================================
+   MODAIS E RESPONSIVIDADE
+   ========================================= */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); }
+.modal-content { background-color: var(--bg-panel); margin: 10% auto; padding: 30px; border: 1px solid var(--gold); width: 90%; max-width: 600px; position: relative; border-radius: 8px; }
+.close-btn { color: var(--gold); position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; }
+
+@media (max-width: 768px) {
+    .mesa-container { flex-direction: column; }
+    .coluna-ficha { max-width: 100%; }
+    .grid-atributos { grid-template-columns: 1fr 1fr; }
+}
