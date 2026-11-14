@@ -3,7 +3,6 @@ const inputNome = document.getElementById('nome-jogador');
 const inputQtd = document.getElementById('qtd-dados');
 const inputVolume = document.getElementById('volume');
 const dadoD12 = document.getElementById('dado-d12');
-const d12Box = document.getElementById('d12-box');
 const dadosOutros = document.getElementById('dados-outros');
 const labelOutros = document.getElementById('label-outros');
 const totalVisual = document.getElementById('total-visual');
@@ -15,14 +14,12 @@ const listaHistorico = document.getElementById('lista-historico');
 let tipoRolagem = 'atributo'; 
 let historicoRolagens = [];
 
-// Função para atualizar o label
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
 }
 inputQtd.addEventListener('input', atualizarLabel);
 
-// Alternar Atributo/Perícia
 toggles.forEach(btn => {
     btn.addEventListener('click', () => {
         toggles.forEach(b => b.classList.remove('active'));
@@ -32,11 +29,7 @@ toggles.forEach(btn => {
     });
 });
 
-const REGRAS = {
-    1: "Catástrofe Definitiva!",
-    6: "Falha Absoluta!",
-    12: "Momento Lendário!"
-};
+const REGRAS = { 1: "Catástrofe Definitiva!", 6: "Falha Absoluta!", 12: "Momento Lendário!" };
 
 function rolarDados(quantidade, faces) {
     const resultados = [];
@@ -46,7 +39,6 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Desenha o histórico
 function renderizarHistorico() {
     listaHistorico.innerHTML = ''; 
     const recentes = historicoRolagens.slice(-4).reverse();
@@ -68,21 +60,11 @@ function renderizarHistorico() {
     });
 }
 
-// Clique do botão
 btnRolar.addEventListener('click', () => {
-    container.className = 'resultado-container'; // reseta classes do container
+    // LIMPA AS CLASSES DE COR ANTERIORES
+    container.className = '';
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
-
-    // Pega a cor do Espectro selecionado (se houver)
-    const espectroSelect = document.getElementById('espectro-select');
-    const espectro = espectroSelect ? espectroSelect.value : '';
-
-    // Aplica a classe da cor no box do d12
-    d12Box.className = 'dice-box principal'; // limpa cores antigas
-    if (espectro) {
-        d12Box.classList.add(`espectro-${espectro}`);
-    }
 
     const nome = inputNome.value.trim() || "Arquivista";
     const qtdDados = Math.max(0, parseInt(inputQtd.value) || 0);
@@ -95,32 +77,38 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // Atualiza a UI
+    // Atualiza os números
     dadoD12.textContent = rolagemD12;
     dadosOutros.textContent = somaDados;
-    totalVisual.innerHTML = `Total: <strong>${total}</strong>`;
+    
+    // Total formatado com a conta
+    totalVisual.innerHTML = `
+        <span style="font-size:0.8em; color:#a89f91;">Total</span><br>
+        ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
+    `;
 
+    // APLICA A COR DO RESULTADO ABSOLUTO (1, 6 ou 12)
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
         regraTexto.style.display = 'block';
+        
+        // A classe é aplicada no container para mudar o visual da caixa do d12
         if (rolagemD12 === 1) container.classList.add('resultado-1');
         if (rolagemD12 === 6) container.classList.add('resultado-6');
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // Histórico Local
-    const novaRolagem = {
-        nome: nome, d12: rolagemD12, outros: somaDados, vol: volume, total: total
-    };
+    // Histórico
+    const novaRolagem = { nome, d12: rolagemD12, outros: somaDados, vol: volume, total };
     historicoRolagens.push(novaRolagem);
     if (historicoRolagens.length > 4) historicoRolagens.shift();
     renderizarHistorico();
 
-    // Envia para o Chat do Owlbear
+    // Envia para o chat global do Owlbear
     if (typeof OBR !== 'undefined' && OBR.chat) {
         let msg = `🎲 **${nome}** rolou: **${total}** (d12: ${rolagemD12}, dados: ${somaDados}, Vol: ${volume})`;
         if (REGRAS[rolagemD12]) msg += `\n*${REGRAS[rolagemD12]}*`;
         
-        OBR.chat.postMessage(msg).catch(e => console.log("Chat do Owlbear indisponível."));
+        OBR.chat.postMessage(msg).catch(e => console.log("Chat indisponível."));
     }
 });

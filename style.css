@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Merriweather', serif;
     background-color: #121212;
+    background-image: radial-gradient(circle at 50% 0%, #2a221b 0%, transparent 70%);
     color: #e0e0e0;
     padding: 15px;
     margin: 0;
@@ -11,89 +14,112 @@ body {
 }
 
 h2 {
+    font-family: 'Cinzel', serif;
     margin: 0 0 5px 0;
     color: #d4af37;
     text-align: center;
-    border-bottom: 1px solid #333;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #4a3c31;
     padding-bottom: 10px;
 }
 
 .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .row-inputs { display: flex; gap: 10px; }
-label { font-size: 0.8em; color: #aaa; text-transform: uppercase; }
+label { font-size: 0.8em; color: #a89f91; text-transform: uppercase; letter-spacing: 1px; }
 
 input {
-    padding: 8px; border-radius: 4px; border: 1px solid #444;
-    background-color: #222; color: #fff; font-size: 1em; width: 100%; box-sizing: border-box;
+    padding: 8px; border-radius: 4px; border: 1px solid #4a3c31;
+    background-color: #1a1816; color: #d4af37; font-size: 1em; 
+    font-family: 'Cinzel', serif; width: 100%; box-sizing: border-box;
 }
+
+input:focus { outline: none; border-color: #d4af37; }
 
 .toggle-group { display: flex; gap: 10px; }
 .toggle {
-    flex: 1; padding: 8px; background: #222; color: #aaa;
-    border: 1px solid #444; border-radius: 4px; cursor: pointer;
+    flex: 1; padding: 8px; font-size: 0.85em; background-color: #1a1816; color: #a89f91;
+    border: 1px solid #4a3c31; border-radius: 4px; cursor: pointer; font-family: 'Cinzel', serif;
 }
-.toggle.active { background: #d4af37; color: #111; font-weight: bold; }
+.toggle.active { background-color: #2b231d; color: #d4af37; border-color: #d4af37; box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2); }
 
 #btn-rolar {
-    padding: 12px; font-size: 1.1em; font-weight: bold;
-    background-color: #d4af37; color: #111;
-    border: none; border-radius: 4px; cursor: pointer;
+    padding: 12px; font-size: 1.1em; font-family: 'Cinzel', serif; font-weight: bold; letter-spacing: 1px;
+    background-color: #d4af37; color: #121212; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;
 }
+#btn-rolar:hover { background-color: #fce07a; }
 
 #resultado-container {
-    padding: 15px; text-align: center; background: #1e1e1e;
-    border-radius: 8px; border: 1px solid #333;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 15px; border-radius: 8px; text-align: center;
+    background-color: #1a1816; border: 1px solid #4a3c31;
+    display: flex; flex-direction: column; align-items: center; gap: 15px;
+    transition: all 0.3s;
 }
 
 .dice-box {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 10px; border-radius: 6px; width: 80px;
-    border: 2px solid #444; background: #222;
+    padding: 15px; border-radius: 8px; background: #222;
+    width: 80px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-.dice-value { font-size: 2em; font-weight: bold; line-height: 1; }
-.dice-label { font-size: 0.7em; text-transform: uppercase; color: #888; }
+/* D12 PRINCIPAL - Padrão */
+.dice-box.principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #1a222c, #222); }
+.dice-box.principal .dice-value { color: #8eb1d9; }
+.dice-box.principal .dice-label { color: #3d5a80; }
 
-#total-box {
-    padding-top: 10px; border-top: 1px dashed #444; width: 100%;
+/* DADOS SECUNDÁRIOS - Padrão */
+.dice-box.secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #221a26, #222); }
+.dice-box.secundario .dice-value { color: #b285c9; }
+.dice-box.secundario .dice-label { color: #5c2a72; }
+
+.dice-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px; }
+.dice-value { font-family: 'Cinzel', serif; font-size: 2.5em; font-weight: bold; line-height: 1; }
+
+#total-box { padding-top: 15px; border-top: 1px dashed #4a3c31; width: 100%; }
+
+/* O TOTAL EM AMARELO DOURADO */
+#total-visual {
+    font-size: 1.2em;
+    color: #d4af37; 
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
 }
-#total-visual { font-size: 1em; color: #d4af37; font-weight: bold; }
 
 #regra-texto {
-    font-size: 0.85em; font-style: italic; color: #fff;
-    background: rgba(255, 255, 255, 0.05); padding: 8px;
-    border-radius: 4px; display: none; width: 100%; border-left: 3px solid #888; box-sizing: border-box;
+    font-size: 0.85em; font-style: italic; color: #fff; background: rgba(255, 255, 255, 0.05);
+    padding: 10px; border-radius: 4px; display: none; width: 100%; border-left: 3px solid #888; box-sizing: border-box;
 }
 
 /* =========================================
-   CORES DOS ESPECTROS DO ÍMPETO (D12)
+   CORES DOS RESULTADOS ABSOLUTOS (1, 6, 12)
    ========================================= */
-/* Padrão (Sem Espectro) */
-.dice-box.principal { border-color: #3d5a80; color: #8eb1d9; }
+.resultado-1 .dice-box.principal { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
+.resultado-1 .dice-box.principal .dice-value { color: #ff4d4d; }
+.resultado-1 #regra-texto { display: block; border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); color: #ff9999;}
 
-/* Ígneo (Vermelho) */
-.espectro-igneo { border-color: #ff4d4d !important; color: #ff4d4d !important; box-shadow: 0 0 10px rgba(255,77,77,0.3); }
+.resultado-6 .dice-box.principal { border-color: #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.3); }
+.resultado-6 .dice-box.principal .dice-value { color: #ff9800; }
+.resultado-6 #regra-texto { display: block; border-left-color: #ff9800; background: rgba(255, 152, 0, 0.1); color: #ffcc80;}
 
-/* Celeste (Azul) */
-.espectro-celeste { border-color: #3d5a80 !important; color: #8eb1d9 !important; box-shadow: 0 0 10px rgba(61,90,128,0.3); }
+.resultado-12 .dice-box.principal { border-color: #4caf50; box-shadow: 0 0 20px rgba(76, 175, 80, 0.5); animation: pulse-lendario 2s infinite; }
+.resultado-12 .dice-box.principal .dice-value { color: #4caf50; }
+.resultado-12 #regra-texto { display: block; border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); color: #a5d6a7;}
 
-/* Viridiano (Verde) */
-.espectro-viridiano { border-color: #4caf50 !important; color: #4caf50 !important; box-shadow: 0 0 10px rgba(76,175,80,0.3); }
+@keyframes pulse-lendario {
+    0% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(76, 175, 80, 0.8); }
+    100% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
+}
 
-/* Solar (Amarelo/Dourado) */
-.espectro-solar { border-color: #fbc02d !important; color: #fbc02d !important; box-shadow: 0 0 10px rgba(251,192,45,0.3); }
-
-/* Índigo (Roxo) */
-.espectro-indigo { border-color: #5c2a72 !important; color: #b285c9 !important; box-shadow: 0 0 10px rgba(92,42,114,0.3); }
-
-/* Alabastro (Branco/Cinza) */
-.espectro-alabastro { border-color: #e0e0e0 !important; color: #ffffff !important; box-shadow: 0 0 10px rgba(224,224,224,0.3); }
-
-/* Destaques dos Resultados Absolutos no Histórico */
+/* ====== HISTÓRICO ====== */
+#historico-container { margin-top: 5px; border-top: 1px solid #4a3c31; padding-top: 10px; }
+#historico-container h3 { font-family: 'Cinzel', serif; font-size: 0.8em; color: #a89f91; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 #lista-historico { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
-#lista-historico li { padding: 8px; background: #222; border-radius: 4px; border-left: 3px solid #444; display: flex; justify-content: space-between; font-size: 0.9em; }
+#lista-historico li {
+    font-size: 0.85em; padding: 8px; background: #1a1816; border-radius: 4px;
+    border-left: 3px solid #444; display: flex; justify-content: space-between; align-items: center;
+}
 #lista-historico li.hist-1 { border-left-color: #ff4d4d; }
 #lista-historico li.hist-6 { border-left-color: #ff9800; }
 #lista-historico li.hist-12 { border-left-color: #4caf50; }
-.hist-total { font-weight: bold; color: #d4af37; }
+.hist-total { font-weight: bold; color: #d4af37; font-size: 1.1em;}
+.hist-detalhe { color: #888; font-size: 0.85em; margin-left: 5px;}
