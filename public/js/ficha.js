@@ -8,30 +8,40 @@ export let dadosPersonagem = {
     pesquisa: 0, arcanismo: 0, imaginacao: 0, historia: 0
 };
 
+// Função para ajustar os dados (+ e -) com proteção contra NaN
 window.ajustarDado = function(nomeChave, valor) {
-    let novoValor = dadosPersonagem[nomeChave] + valor;
+    let valorAtual = parseInt(dadosPersonagem[nomeChave]);
+    if (isNaN(valorAtual)) valorAtual = 0;
+
+    let novoValor = valorAtual + valor;
+    
     if (novoValor < 0) novoValor = 0;
     if (novoValor > 10) novoValor = 10; 
     
     dadosPersonagem[nomeChave] = novoValor;
     document.getElementById(`val-${nomeChave}`).textContent = novoValor;
+    
     salvarFicha();
 };
 
+// Função para alterar Vida e Ímpeto
 window.alterarRecurso = function(recurso, valor) {
     if (!idJogadorAtual) { alert("Faça login!"); return; }
     if (recurso === 'pv') {
         let el = document.getElementById('f-pv-atual');
-        let novo = Math.max(0, parseInt(el.textContent) + valor);
+        let atual = parseInt(el.textContent) || 0;
+        let novo = Math.max(0, atual + valor);
         el.textContent = novo;
         if (novo === 0) { document.body.style.backgroundColor = "#3a1010"; setTimeout(() => document.body.style.backgroundColor = "", 500); }
     } else if (recurso === 'pi') {
         let el = document.getElementById('f-pi-atual');
-        el.textContent = Math.max(0, parseInt(el.textContent) + valor);
+        let atual = parseInt(el.textContent) || 0;
+        el.textContent = Math.max(0, atual + valor);
     }
     salvarFicha();
 };
 
+// Salva os dados no Firebase
 export function salvarFicha() {
     if (!idJogadorAtual) return;
     const fichaRef = ref(db, `salas/${salaAtual}/jogadores/${idJogadorAtual}`);
@@ -48,9 +58,11 @@ export function salvarFicha() {
     set(fichaRef, dados).catch(e => console.error("Erro ao salvar:", e));
 }
 
+// Carrega os dados quando o usuário loga
 window.addEventListener('usuarioLogado', () => {
     if (!idJogadorAtual) return;
     const fichaRef = ref(db, `salas/${salaAtual}/jogadores/${idJogadorAtual}`);
+    
     onValue(fichaRef, (snapshot) => {
         const d = snapshot.val();
         if (d) {
@@ -63,8 +75,11 @@ window.addEventListener('usuarioLogado', () => {
             document.getElementById('f-pi-max').value = d.piMax || 5;
             
             if (d.dadosPersonagem) {
-                dadosPersonagem = d.dadosPersonagem;
                 for (let k in dadosPersonagem) {
+                    // A MÁGICA ACONTECE AQUI: Garante que o valor lido seja sempre um número válido
+                    let val = parseInt(d.dadosPersonagem[k]);
+                    dadosPersonagem[k] = isNaN(val) ? 0 : val;
+                    
                     let el = document.getElementById(`val-${k}`);
                     if (el) el.textContent = dadosPersonagem[k];
                 }

@@ -30,12 +30,14 @@ onAuthStateChanged(auth, (user) => {
     const statusLogin = document.getElementById('status-login');
     if (user) {
         idJogadorAtual = user.uid;
-        statusLogin.textContent = ` ${user.displayName || user.email}`;
+        statusLogin.textContent = `✅ ${user.displayName || user.email}`;
         document.getElementById('btn-login').style.display = 'none'; 
-        window.dispatchEvent(new Event('usuarioLogado')); // Avisa os outros arquivos
+        
+        // Dispara o evento avisando que o usuário logou e os outros arquivos podem carregar os dados
+        window.dispatchEvent(new Event('usuarioLogado')); 
     } else {
         idJogadorAtual = null;
-        statusLogin.textContent = "Faça login para salvar";
+        statusLogin.textContent = "🔴 Faça login para salvar";
         document.getElementById('btn-login').style.display = 'block'; 
     }
 });
