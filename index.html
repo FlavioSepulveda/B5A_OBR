@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa B5A - Rolagem Global</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Fontes adicionadas: Bebas Neue, Merriweather e Oswald (para o logo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -36,8 +37,8 @@
             <div class="app-container">
                 <div class="coluna-rolagem">
                     <h2>Registro de Rolagem</h2>
-                    <div class="input-group" style="background: #2b231d; padding: 10px; border-radius: 5px; border: 1px solid #d4af37;">
-                        <label for="sala-id" style="color: #d4af37;">ID da Sala</label>
+                    <div class="input-group" style="background: #222; padding: 10px; border-radius: 5px; border: 1px solid #c7a86b;">
+                        <label for="sala-id" style="color: #c7a86b;">ID da Sala</label>
                         <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
                     </div>
                     <div class="input-group">
@@ -101,7 +102,9 @@
             <div class="ficha-papel">
                 <!-- Cabeçalho -->
                 <div class="ficha-header">
-                    <div class="logo-ficha">BIBLIOTECA<br>DA 5ª AVENIDA</div>
+                    <div class="logo-ficha">
+                        BIBLIOTECA<br>DA 5<span class="ordinal">ª</span> AVENIDA
+                    </div>
                     <div class="header-info">
                         <div class="input-inline"><label>NOME:</label> <input type="text" id="f-nome" placeholder="Nome do Arquivista"></div>
                         <div class="input-inline"><label>ÍMPETO:</label> <input type="text" id="f-espectro" placeholder="Espectro"></div>
@@ -212,7 +215,7 @@
                     <div class="box-contorno">
                         <div class="ficha-tarja">HABILIDADE DE IMPETO</div>
                         <label>HABILIDADE ATIVA -</label>
-                        <textarea rows="3" style="width: 100%; border: none; border-bottom: 1px solid #000; background: transparent; resize: none; outline: none;"></textarea>
+                        <textarea rows="3" style="width: 100%; border: none; border-bottom: 1px solid #111; background: transparent; resize: none; outline: none;"></textarea>
                     </div>
                 </div>
 
@@ -254,7 +257,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
         const sidebar = document.getElementById('sidebar');
