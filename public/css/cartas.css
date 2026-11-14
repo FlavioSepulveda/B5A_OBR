@@ -1,0 +1,220 @@
+/* =========================================
+   ESTILO DAS CARTAS TCG
+   ========================================= */
+.grid-cartas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.carta-tcg {
+    background: linear-gradient(180deg, #1a1816 0%, #111 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.carta-tcg:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+    border-color: var(--gold);
+}
+
+/* Imagem da Carta */
+.carta-img-container {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    border-bottom: 3px solid var(--gold);
+}
+
+.carta-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #000;
+}
+
+/* Nome da Carta (Flutuando na imagem) */
+.carta-nome {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    padding: 20px 10px 5px 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-shadow: 1px 1px 3px #000;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Corpo da Carta */
+.carta-corpo {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.carta-status {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: bold;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.carta-descricao {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.carta-habilidades {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 0.8rem;
+    color: #bbb;
+    margin-bottom: 10px;
+}
+
+.carta-habilidades li {
+    margin-bottom: 4px;
+    border-bottom: 1px dotted #333;
+    padding-bottom: 4px;
+}
+
+.carta-habilidades li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+/* Rodapé da Carta */
+.carta-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #666;
+    border-top: 1px solid #333;
+    padding-top: 8px;
+    margin-top: auto;
+}
+
+/* Estilo para o modal de detalhes da carta */
+.modal-carta {
+    background: var(--bg-panel);
+    margin: 5% auto;
+    padding: 0; /* Sem padding para a imagem colar no topo */
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-carta-header img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 2px solid var(--gold);
+}
+
+.modal-carta-body {
+    padding: 20px;
+}
+
+/* Seção de Comentários */
+.secao-comentarios {
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+}
+
+.lista-comentarios {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comentario-item {
+    background: #111;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 2px solid var(--gold);
+}
+
+.comentario-autor { font-weight: bold; color: var(--gold); font-size: 0.8rem; }
+.comentario-texto { font-size: 0.9rem; color: #ddd; margin-top: 4px; }
+
+.form-comentario {
+    display: flex;
+    gap: 10px;
+}
+.form-comentario input {
+    flex: 1;
+    background: #111;
+    border: 1px solid #333;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* =========================================
+   CORES DOS ESPECTROS NAS CARTAS
+   ========================================= */
+/* Padrão (quando não tem espectro) */
+.carta-tcg { border-color: #333; }
+.carta-tcg .carta-nome { color: var(--gold); }
+.carta-tcg .carta-status { color: var(--gold); }
+
+/* Ígneo (Vermelho) */
+.carta-tcg.espectro-igneo { border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); }
+.carta-tcg.espectro-igneo .carta-nome, 
+.carta-tcg.espectro-igneo .carta-status { color: #ff4d4d; }
+
+/* Celeste (Azul) */
+.carta-tcg.espectro-celeste { border-color: #3d5a80; box-shadow: 0 0 15px rgba(61, 90, 128, 0.2); }
+.carta-tcg.espectro-celeste .carta-nome, 
+.carta-tcg.espectro-celeste .carta-status { color: #8eb1d9; }
+
+/* Viridiano (Verde) */
+.carta-tcg.espectro-viridiano { border-color: #4caf50; box-shadow: 0 0 15px rgba(76, 175, 80, 0.2); }
+.carta-tcg.espectro-viridiano .carta-nome, 
+.carta-tcg.espectro-viridiano .carta-status { color: #4caf50; }
+
+/* Solar (Amarelo) */
+.carta-tcg.espectro-solar { border-color: #fbc02d; box-shadow: 0 0 15px rgba(251, 192, 45, 0.2); }
+.carta-tcg.espectro-solar .carta-nome, 
+.carta-tcg.espectro-solar .carta-status { color: #fbc02d; }
+
+/* Índigo (Roxo) */
+.carta-tcg.espectro-indigo { border-color: #5c2a72; box-shadow: 0 0 15px rgba(92, 42, 114, 0.2); }
+.carta-tcg.espectro-indigo .carta-nome, 
+.carta-tcg.espectro-indigo .carta-status { color: #b285c9; }
+
+/* Alabastro (Branco) */
+.carta-tcg.espectro-alabastro { border-color: #e0e0e0; box-shadow: 0 0 15px rgba(224, 224, 224, 0.2); }
+.carta-tcg.espectro-alabastro .carta-nome, 
+.carta-tcg.espectro-alabastro .carta-status { color: #ffffff; }

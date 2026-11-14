@@ -1,40 +1,89 @@
-/* =========================================
-   ESTILO DA ESTANTE (LIVROS 3D)
-   ========================================= */
+/* Layout da Página */
+.estante-wrapper {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px 60px 20px;
+    min-height: calc(100vh - 100px);
+}
+
+.estante-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.estante-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 3rem;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.estante-header p {
+    color: #888;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* A Prateleira (Madeira) */
+.prateleira {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    padding-bottom: 20px; /* Espaço para a madeira */
+}
+
+.madeira {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(to bottom, #4a2e15, #2c1e16);
+    border-top: 3px solid #6b4423;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+    z-index: 1;
+}
+
+/* Grid dos Livros */
 .estante-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 25px;
+    gap: 20px;
     justify-content: center;
-    margin-top: 30px;
-    padding: 20px;
+    align-items: flex-end; /* Alinha os livros pela base */
+    padding: 0 20px 20px 20px; /* Espaço para não colar na borda */
+    position: relative;
+    z-index: 2;
+    min-height: 250px;
 }
 
+/* Estilo do Livro Individual */
 .livro-card {
-    width: 180px;
-    height: 260px;
-    /* Fundo imitando couro escuro */
+    width: 150px;
+    height: 220px;
     background: linear-gradient(135deg, #2c1e16, #1a110c);
     border: 1px solid #4a3c31;
-    
-    /* A Lombada do Livro */
-    border-left: 12px solid var(--gold);
-    
+    border-left: 12px solid var(--gold); /* Lombada */
     border-radius: 4px 8px 8px 4px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 20px 15px;
+    padding: 15px 10px;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.6);
     position: relative;
     overflow: hidden;
+    margin-bottom: 5px; /* Para não encostar na madeira */
 }
 
-/* Efeito de luz na capa do livro */
+/* Efeito de luz na capa */
 .livro-card::after {
     content: '';
     position: absolute;
@@ -43,31 +92,31 @@
     pointer-events: none;
 }
 
-/* Efeito ao passar o mouse (o livro sai da estante) */
+/* Efeito de puxar o livro */
 .livro-card:hover {
-    transform: translateY(-10px) rotate(-3deg) scale(1.05);
-    box-shadow: 15px 15px 25px rgba(0,0,0,0.8);
+    transform: translateY(-15px) rotate(-5deg) scale(1.05);
+    box-shadow: 15px 20px 25px rgba(0,0,0,0.9);
     border-left-color: #fff;
 }
 
 .livro-titulo {
     font-family: 'Bebas Neue', sans-serif;
     color: var(--gold);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     line-height: 1;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     word-break: break-word;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
 .livro-detalhe {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #aaa;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     font-style: italic;
 }
 
-/* Card de quando não tem personagem */
+/* Card de Estante Vazia */
 .livro-vazio {
     text-align: center;
     width: 100%;
@@ -80,13 +129,13 @@
     gap: 20px;
 }
 
+/* Responsividade */
 @media (max-width: 600px) {
+    .estante-wrapper { margin-top: 140px; }
     .livro-card {
-        width: 140px;
-        height: 200px;
-        padding: 15px 10px;
+        width: 120px;
+        height: 180px;
+        border-left-width: 8px;
     }
-    .livro-titulo {
-        font-size: 1.4rem;
-    }
+    .livro-titulo { font-size: 1.3rem; }
 }

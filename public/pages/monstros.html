@@ -6,6 +6,7 @@
     <title>Bestiário - B5A</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/comunidade.css">
+    <link rel="stylesheet" href="../css/cartas.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -18,13 +19,14 @@
     </nav>
 
     <div class="comunidade-container">
-        <!-- FORMULÁRIO -->
+        <!-- FORMULÁRIO DE CRIAÇÃO -->
         <div class="painel-escrita">
             <h2>Registrar Monstro</h2>
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
+                
                 <div class="input-group">
                     <label>Nome do Monstro</label>
-                    <input type="text" id="form-titulo" placeholder="Ex: Tirano de Cinzas">
+                    <input type="text" id="form-titulo" placeholder="Ex: O Tirano de Cinzas">
                 </div>
                 
                 <div class="row-inputs">
@@ -33,7 +35,7 @@
                         <input type="number" id="form-vida" value="10">
                     </div>
                     <div class="input-group">
-                        <label>TA (Defesa)</label>
+                        <label>Defesa (TA)</label>
                         <input type="number" id="form-ta" value="12">
                     </div>
                 </div>
@@ -50,58 +52,61 @@
                     </div>
                     <div class="input-group">
                         <label>Espectro</label>
-                        <input type="text" id="form-espectro" placeholder="Ex: Ígneo">
+                        <select id="form-espectro">
+                            <option value="padrao">Nenhum</option>
+                            <option value="igneo">Ígneo</option>
+                            <option value="celeste">Celeste</option>
+                            <option value="viridiano">Viridiano</option>
+                            <option value="solar">Solar</option>
+                            <option value="indigo">Índigo</option>
+                            <option value="alabastro">Alabastro</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem</label>
-                    <input type="url" id="form-imagem" placeholder="Link da imagem">
+                    <label>URL da Imagem da Criatura</label>
+                    <input type="url" id="form-imagem" placeholder="Cole o link de uma imagem">
                 </div>
 
                 <div class="input-group">
-                    <label>Descrição / Ataques</label>
-                    <textarea id="form-texto" rows="3" placeholder="Descreva o comportamento e ataques..."></textarea>
+                    <label>Descrição Principal / Ataque Básico</label>
+                    <textarea id="form-texto" rows="3" placeholder="Descreva a criatura..."></textarea>
                 </div>
 
-                <label style="color: var(--gold); margin-top: 10px;">Habilidades (Até 3)</label>
-                <input type="text" id="form-hab1" placeholder="Habilidade 1">
-                <input type="text" id="form-hab2" placeholder="Habilidade 2">
-                <input type="text" id="form-hab3" placeholder="Habilidade 3">
+                <!-- HABILIDADES COM CUSTO E DESCRIÇÃO -->
+                <label style="color: var(--gold); margin-top: 10px; margin-bottom: 5px; display: block; font-size: 0.9rem;">Habilidades da Criatura</label>
+                
+                <div class="row-inputs">
+                    <input type="text" id="form-hab1-custo" placeholder="Custo 1" style="width: 30%;">
+                    <input type="text" id="form-hab1-desc" placeholder="Habilidade 1" style="width: 70%;">
+                </div>
+                <div class="row-inputs">
+                    <input type="text" id="form-hab2-custo" placeholder="Custo 2" style="width: 30%;">
+                    <input type="text" id="form-hab2-desc" placeholder="Habilidade 2 (Opcional)" style="width: 70%;">
+                </div>
+                <div class="row-inputs">
+                    <input type="text" id="form-hab3-custo" placeholder="Custo 3" style="width: 30%;">
+                    <input type="text" id="form-hab3-desc" placeholder="Habilidade 3 (Opcional)" style="width: 70%;">
+                </div>
                 
                 <button id="btn-salvar-form" class="btn-primario" style="padding: 10px; margin-top: 10px;">Salvar Monstro</button>
                 <p id="status-form" style="font-size: 0.8rem; color: #888; text-align: center;"></p>
             </div>
         </div>
 
-        <!-- FEED -->
+        <!-- FEED DE CARTAS -->
         <div class="painel-feed">
-            <h2>Bestiário da Comunidade</h2>
-            <div id="lista-feed" class="grid-cronicas"></div>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div id="modal-item" class="modal-leitura">
-        <div class="modal-leitura-content">
-            <span class="close-btn" onclick="fecharModal()">&times;</span>
-            <img id="modal-img" src="" class="modal-capa" style="background-color: #111;">
-            <h2 id="modal-titulo">Nome</h2>
-            <p id="modal-subtitulo" style="color: var(--gold); font-size: 0.9rem; margin-bottom: 10px;"></p>
-            <div id="modal-texto" style="line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap;"></div>
-            
-            <div id="modal-habilidades" style="background: #111; padding: 10px; border: 1px solid #333; border-radius: 4px; margin-bottom: 20px;"></div>
-
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex: 1;">
-                    ❤️ Curtir (<span id="qtd-likes">0</span>)
-                </button>
-                <button id="btn-editar" class="btn-primario" style="display: none; flex: 1;" onclick="prepararEdicao()">Editar</button>
-            </div>
+            <h2>Bestiário</h2>
+            <div id="lista-cartas" class="grid-cartas"></div>
         </div>
     </div>
 
     <script type="module" src="../js/firebase.js"></script>
-    <script type="module" src="../js/monstros.js"></script>
+    <script type="module" src="../js/motor_cartas.js"></script>
+    <script>
+        // Inicia o motor configurado para monstros
+        iniciarCartas("monstros");
+    </script>
 </body>
 </html>
