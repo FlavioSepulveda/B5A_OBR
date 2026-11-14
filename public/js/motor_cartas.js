@@ -12,62 +12,73 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (MONSTRO/ARMA/HABILIDADE)
+// 1. SALVAR ITEM (COM LOGS DE ERRO)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
-        if (!idJogadorAtual) { alert("Faça login!"); return; }
+        if (!idJogadorAtual) { alert("Faça login com o Google para salvar!"); return; }
+        if (!salaAtual) { alert("Erro: ID da Sala inválido."); return; }
         
-        const titulo = document.getElementById('form-titulo').value.trim();
-        const texto = document.getElementById('form-texto').value.trim();
-        const imagem = document.getElementById('form-imagem').value.trim();
-        
-        if (titulo.length < 3) { alert("Dê um nome!"); return; }
-
-        let payload = {
-            autor: auth.currentUser.displayName || "Arquivista",
-            titulo: titulo,
-            texto: texto,
-            imagem: imagem,
-            data: Date.now()
-        };
-
-        // Verifica quais campos existem na tela para salvar
-        if (colecaoAtual === "monstros") {
-            payload.vida = document.getElementById('form-vida').value;
-            payload.ta = document.getElementById('form-ta').value;
-            payload.dominante = document.getElementById('form-dominante').value;
+        try {
+            const titulo = document.getElementById('form-titulo').value.trim();
+            const texto = document.getElementById('form-texto').value.trim();
+            const imagem = document.getElementById('form-imagem').value.trim();
             
-            const selectEspectro = document.getElementById('form-espectro');
-            payload.espectro = selectEspectro ? selectEspectro.value : 'padrao';
-            
-            payload.habilidades = [];
-            for(let i=1; i<=3; i++) {
-                let custo = document.getElementById(`form-hab${i}-custo`).value;
-                let desc = document.getElementById(`form-hab${i}-desc`).value;
-                if(desc) payload.habilidades.push({ custo: custo, desc: desc });
+            if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
+
+            let payload = {
+                autor: auth.currentUser.displayName || "Arquivista",
+                titulo: titulo,
+                texto: texto,
+                imagem: imagem,
+                data: Date.now()
+            };
+
+            if (colecaoAtual === "monstros") {
+                payload.vida = document.getElementById('form-vida').value;
+                payload.ta = document.getElementById('form-ta').value;
+                payload.dominante = document.getElementById('form-dominante').value;
+                const selectEspectro = document.getElementById('form-espectro');
+                payload.espectro = selectEspectro ? selectEspectro.value : 'padrao';
+                
+                payload.habilidades = [];
+                for(let i=1; i<=3; i++) {
+                    let custo = document.getElementById(`form-hab${i}-custo`).value;
+                    let desc = document.getElementById(`form-hab${i}-desc`).value;
+                    if(desc) payload.habilidades.push({ custo: custo, desc: desc });
+                }
+            } else if (colecaoAtual === "armas") {
+                payload.categoria = document.getElementById('form-categoria').value;
+                payload.dano = document.getElementById('form-dano').value;
+                payload.critico = document.getElementById('form-critico').value;
+                payload.efeito = document.getElementById('form-efeito').value;
+                payload.descarte = document.getElementById('form-descarte').value;
+            } else if (colecaoAtual === "habilidades") {
+                payload.tipo = document.getElementById('form-tipo').value;
+                payload.custo = document.getElementById('form-custo').value;
+                payload.descarte = document.getElementById('form-descarte').value;
             }
-        } else if (colecaoAtual === "armas") {
-            payload.categoria = document.getElementById('form-categoria').value;
-            payload.dano = document.getElementById('form-dano').value;
-            payload.critico = document.getElementById('form-critico').value;
-            payload.efeito = document.getElementById('form-efeito').value;
-            payload.descarte = document.getElementById('form-descarte').value;
-        } else if (colecaoAtual === "habilidades") {
-            payload.tipo = document.getElementById('form-tipo').value;
-            payload.custo = document.getElementById('form-custo').value;
-            payload.descarte = document.getElementById('form-descarte').value;
+
+            const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
+            const caminhoDB = `salas/${salaAtual}/${colecaoAtual}/${idGerado}`;
+            console.log("Tentando salvar no caminho:", caminhoDB); // LOG DE DEPURAÇÃO
+
+            const itemRef = ref(db, caminhoDB);
+
+            set(itemRef, payload).then(() => {
+                document.getElementById('status-form').textContent = "✅ Salvo com sucesso!";
+                document.getElementById('form-titulo').value = "";
+                itemAbertoId = null;
+                setTimeout(() => document.getElementById('status-form').textContent = "", 3000);
+            }).catch((error) => {
+                console.error("Erro do Firebase ao salvar:", error);
+                alert("Erro ao salvar no banco de dados. Verifique o console (F12).");
+            });
+
+        } catch (erro) {
+            console.error("Erro de JavaScript ao tentar salvar:", erro);
+            alert("Ocorreu um erro inesperado. Verifique o console.");
         }
-
-        const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
-        const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${idGerado}`);
-
-        set(itemRef, payload).then(() => {
-            document.getElementById('status-form').textContent = "✅ Salvo com sucesso!";
-            document.getElementById('form-titulo').value = "";
-            itemAbertoId = null;
-            setTimeout(() => document.getElementById('status-form').textContent = "", 3000);
-        });
     });
 }
 
@@ -89,8 +100,6 @@ function carregarCartas() {
             const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
 
             const card = document.createElement('div');
-            
-            // Aplica a classe do espectro na carta
             const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
             card.className = `carta-tcg ${classeEspectro}`;
             card.onclick = () => abrirModal(item, id);
@@ -99,7 +108,6 @@ function carregarCartas() {
             if (colecaoAtual === "monstros") {
                 statusHtml = `<div class="carta-status"><span>PV: ${item.vida}</span><span>TA: ${item.ta}</span></div>`;
             } else if (colecaoAtual === "armas") {
-                // Mostra o Dano e o Crítico na carta
                 statusHtml = `<div class="carta-status" style="justify-content: flex-start; gap: 10px;">
                     <span style="color: var(--gold);">Dano: ${item.dano || '1d6'}</span>
                     <span style="color: #888;">Crít: ${item.critico || '+1d6'}</span>
@@ -151,16 +159,13 @@ function abrirModal(item, id) {
     }
 
     const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
-    
     const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
     
-    // Monta a string de status
     let sub = `<strong>${item.autor}</strong>`;
     if(colecaoAtual === "monstros") sub += ` | PV: ${item.vida} | TA: ${item.ta} | Dom: ${item.dominante}`;
     if(colecaoAtual === "armas") sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico} | Efeito: ${item.efeito}`;
     if(colecaoAtual === "habilidades") sub += ` | ${item.tipo} | Custo: ${item.custo}`;
 
-    // Monta as habilidades
     let habsModal = "";
     if (item.habilidades && item.habilidades.length > 0) {
         habsModal = `<div style="background:#111; padding:10px; margin:15px 0; border-radius:4px;"><strong>Habilidades:</strong><ul style="margin-left:20px;">`;
@@ -185,7 +190,6 @@ function abrirModal(item, id) {
                     <button id="btn-editar" class="btn-primario" style="display:none; flex:1;" onclick="prepararEdicao()">Editar</button>
                 </div>
 
-                <!-- COMENTÁRIOS -->
                 <div class="secao-comentarios">
                     <h4 style="color:var(--gold); margin-bottom:10px;">Comentários</h4>
                     <div class="lista-comentarios" id="lista-comentarios"></div>
@@ -209,7 +213,7 @@ function fecharModalCartas() {
 }
 
 // ==========================================
-// 4. CURTIDAS
+// 4. CURTIDAS E COMENTÁRIOS
 // ==========================================
 function atualizarBotaoLike() {
     const btn = document.getElementById('btn-like');
@@ -231,9 +235,6 @@ async function alternarLike() {
     atualizarBotaoLike();
 }
 
-// ==========================================
-// 5. COMENTÁRIOS
-// ==========================================
 function carregarComentarios(itemId) {
     const lista = document.getElementById('lista-comentarios');
     if(!lista) return;
@@ -267,7 +268,7 @@ async function enviarComentario() {
 }
 
 // ==========================================
-// 6. EDIÇÃO
+// 5. EDIÇÃO
 // ==========================================
 function prepararEdicao() {
     get(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`)).then((snapshot) => {
