@@ -12,20 +12,23 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (SÓ O TÍTULO É OBRIGATÓRIO)
+// 1. SALVAR ITEM (COM TESTE DE FOGO)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
-        if (!idJogadorAtual) { alert("Faça login com o Google para salvar!"); return; }
-        if (!salaAtual) { alert("Erro: ID da Sala inválido."); return; }
-        
-        try {
-            const titulo = document.getElementById('form-titulo')?.value.trim() || "";
-            
-            // A ÚNICA COISA OBRIGATÓRIA É O NOME (TÍTULO)
-            if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
+        // 1. Verifica o Login
+        if (!idJogadorAtual) { 
+            alert("VOCÊ NÃO ESTÁ LOGADO. Faça login com o Google primeiro!"); 
+            return; 
+        }
 
-            // O resto é opcional. Se estiver vazio, salva como string vazia.
+        const titulo = document.getElementById('form-titulo')?.value.trim() || "";
+        if (titulo.length < 3) { 
+            alert("O NOME PRECISA TER PELO MENOS 3 LETRAS."); 
+            return; 
+        }
+
+        try {
             const texto = document.getElementById('form-texto')?.value.trim() || "";
             const imagem = document.getElementById('form-imagem')?.value.trim() || "";
 
@@ -37,6 +40,7 @@ function configurarFormulario() {
                 data: Date.now()
             };
 
+            // Pega os campos de acordo com a aba
             if (colecaoAtual === "monstros") {
                 payload.vida = document.getElementById('form-vida')?.value || 10;
                 payload.ta = document.getElementById('form-ta')?.value || 12;
@@ -57,7 +61,6 @@ function configurarFormulario() {
                 payload.categoria = document.getElementById('form-categoria')?.value || "Média";
                 payload.dano = document.getElementById('form-dano')?.value || "1d6";
                 payload.critico = document.getElementById('form-critico')?.value || "+1d6";
-                // Salva vazio ou "Nenhum" se não preencher
                 payload.efeito = document.getElementById('form-efeito')?.value.trim() || "Nenhum";
                 payload.descarte = document.getElementById('form-descarte')?.value.trim() || "Nenhum";
             } else if (colecaoAtual === "habilidades") {
@@ -66,10 +69,12 @@ function configurarFormulario() {
                 payload.descarte = document.getElementById('form-descarte')?.value || "";
             }
 
+            // Prepara o caminho no banco
             const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
             const caminhoDB = `salas/${salaAtual}/${colecaoAtual}/${idGerado}`;
             const itemRef = ref(db, caminhoDB);
 
+            // 2. Tenta salvar no Firebase
             set(itemRef, payload).then(() => {
                 const status = document.getElementById('status-form');
                 if (status) {
@@ -77,27 +82,29 @@ function configurarFormulario() {
                     status.style.color = "#4caf50";
                     setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
                 }
+                
+                // Limpa os campos
                 document.getElementById('form-titulo').value = "";
-                // Limpa outros campos se existirem para facilitar
                 if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
                 if(document.getElementById('form-efeito')) document.getElementById('form-efeito').value = "";
                 if(document.getElementById('form-descarte')) document.getElementById('form-descarte').value = "";
                 
                 itemAbertoId = null;
             }).catch((error) => {
-                console.error("Erro do Firebase ao salvar:", error);
-                alert("Erro ao salvar no banco de dados. Verifique o console (F12).");
+                console.error("Erro do Firebase:", error);
+                // 3. Se o Firebase bloquear, avisa na tela!
+                alert("ERRO NO FIREBASE: Verifique se as Regras do Realtime Database estão como 'true'.\n\nCódigo do erro: " + error.message);
             });
 
         } catch (erro) {
-            console.error("Erro de JavaScript ao tentar salvar:", erro);
-            alert("Ocorreu um erro inesperado. Verifique o console.");
+            console.error("Erro de JavaScript:", erro);
+            alert("ERRO INTERNO NO SITE: " + erro.message);
         }
     });
 }
 
 // ==========================================
-// 2. DESENHAR AS CARTAS NO FEED
+// 2. DESENHAR AS CARTAS
 // ==========================================
 function carregarCartas() {
     const lista = document.getElementById('lista-cartas');
@@ -137,7 +144,6 @@ function carregarCartas() {
                 habsHtml += `</ul></div>`;
             }
 
-            // Corta o texto de forma segura se ele existir
             const textoResumo = item.texto ? item.texto.substring(0, 80) + '...' : '';
 
             card.innerHTML = `
@@ -180,10 +186,8 @@ function abrirModal(item, id) {
     
     let sub = `<strong>${item.autor}</strong>`;
     if(colecaoAtual === "monstros") sub += ` | PV: ${item.vida} | TA: ${item.ta} | Dom: ${item.dominante}`;
-    
     if(colecaoAtual === "armas") {
         sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico}`;
-        // Só mostra o efeito e o descarte se não for "Nenhum"
         if (item.efeito && item.efeito !== "Nenhum") sub += ` | Efeito: ${item.efeito}`;
         if (item.descarte && item.descarte !== "Nenhum") sub += ` | Descarte: ${item.descarte}`;
     }
@@ -321,7 +325,6 @@ function prepararEdicao() {
             document.getElementById('form-dano').value = item.dano || "";
             document.getElementById('form-critico').value = item.critico || "";
             
-            // Se for "Nenhum", deixa o campo vazio para não escrever a palavra "Nenhum" no input
             let efeito = item.efeito === "Nenhum" ? "" : item.efeito;
             let descarte = item.descarte === "Nenhum" ? "" : item.descarte;
             
