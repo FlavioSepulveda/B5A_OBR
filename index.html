@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa B5A - Rolagem Global</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Fontes adicionadas: Bebas Neue, Merriweather e Oswald (para o logo) -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,18 +13,12 @@
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h2>Arquivos da Biblioteca</h2>
+            <h2>Arquivos</h2>
             <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
         </div>
         <div class="sidebar-links">
-            <button class="nav-btn" onclick="mudarAba('aba-rolagem')">🎲 Mesa de Rolagem</button>
-            <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
-            <hr style="border-color:#4a3c31; margin: 10px 0;">
-            <button class="nav-btn" onclick="abrirModal('modal-regras')">📖 Regras da Rolagem</button>
-            <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros do Ímpeto</button>
-        </div>
-        <div class="sidebar-footer">
-            <p>Bestiário das Almas</p>
+            <button class="nav-btn" onclick="mudarAba('aba-rolagem')">🎲 Rolagem</button>
+            <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Ficha</button>
         </div>
     </div>
 
@@ -42,7 +35,7 @@
                         <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
                     </div>
                     <div class="input-group">
-                        <label for="nome-jogador">Seu Nome / Personagem</label>
+                        <label for="nome-jogador">Seu Nome</label>
                         <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
                     </div>
                     <div class="input-group">
@@ -66,11 +59,11 @@
                     </div>
                     <div class="row-inputs">
                         <div class="input-group">
-                            <label for="qtd-dados">Qtd. de Dados</label>
+                            <label for="qtd-dados">Qtd. Dados</label>
                             <input type="number" id="qtd-dados" min="0" max="10" value="2">
                         </div>
                         <div class="input-group">
-                            <label for="volume">Volume (1-8)</label>
+                            <label for="volume">Volume</label>
                             <input type="number" id="volume" min="1" max="8" value="1">
                         </div>
                     </div>
@@ -100,7 +93,7 @@
         <!-- ABA 2: FICHA DO ARQUIVISTA -->
         <div id="aba-ficha" class="aba">
             <div class="ficha-papel">
-                <!-- Cabeçalho -->
+                <!-- CABEÇALHO -->
                 <div class="ficha-header">
                     <div class="logo-ficha">
                         BIBLIOTECA<br>DA 5<span class="ordinal">ª</span> AVENIDA
@@ -114,7 +107,7 @@
                     </div>
                 </div>
 
-                <!-- Atributos -->
+                <!-- ATRIBUTOS -->
                 <div class="ficha-tarja">ATRIBUTOS</div>
                 <div class="ficha-atributos-grid">
                     <div class="atributo-box">
@@ -135,12 +128,11 @@
                     </div>
                 </div>
 
-                <!-- Valores Básicos e Perícias -->
+                <!-- VALORES E PERÍCIAS -->
                 <div class="ficha-grid-2">
                     <!-- Valores Básicos -->
-                    <div class="valores-basicos">
+                    <div>
                         <div class="ficha-tarja">VALORES BÁSICOS</div>
-                        
                         <div class="valor-row">
                             <div class="valor-label">HP</div>
                             <div class="valor-controle">
@@ -151,7 +143,6 @@
                                 <button class="btn-controle" onclick="alterarRecurso('pv', 1)">+</button>
                             </div>
                         </div>
-
                         <div class="valor-row">
                             <div class="valor-label">PI MAX.</div>
                             <div class="valor-controle">
@@ -162,20 +153,19 @@
                                 <button class="btn-controle" onclick="alterarRecurso('pi', 1)">+</button>
                             </div>
                         </div>
-
                         <div class="valor-row">
                             <div class="valor-label">HP TEMP.</div>
                             <input type="number" id="f-hp-temp" value="0">
                         </div>
-
+                        
                         <div class="pilha-descarte-container">
-                            <div class="ficha-tarja" style="margin-bottom: 5px; font-size: 1.1rem;">PILHA DE DESCARTE</div>
+                            <div class="ficha-tarja" style="margin-bottom: 5px;">PILHA DE DESCARTE</div>
                             <div class="descarte-grid">
                                 <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
                                 <div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div><div class="descarte-box"></div>
                             </div>
                         </div>
-
+                        
                         <div class="valor-row" style="margin-top: 10px;">
                             <div class="valor-label">INICIATIVA</div>
                             <input type="text" id="f-iniciativa" placeholder="1d12 + ...">
@@ -183,7 +173,7 @@
                     </div>
 
                     <!-- Perícias -->
-                    <div class="pericias-container">
+                    <div>
                         <div class="ficha-tarja">PERÍCIAS</div>
                         <div class="pericias-grid">
                             <div class="pericia-item"><label>BARGANHA</label><input type="text" placeholder="0d6"></div>
@@ -202,57 +192,36 @@
                     </div>
                 </div>
 
-                <!-- Arma e Habilidade -->
+                <!-- ARMA E HABILIDADE -->
                 <div class="ficha-grid-2" style="margin-top: 15px;">
                     <div class="box-contorno">
                         <div class="ficha-tarja">ARMA FAVORITA</div>
-                        <div class="input-inline"><label>TIPO:</label><input type="text"></div>
-                        <div class="input-inline"><label>DANO:</label><input type="text"></div>
-                        <div class="input-inline"><label>CRÍTICO:</label><input type="text"></div>
-                        <div class="input-inline" style="margin-top: 5px;"><label>EFEITO:</label><input type="text"></div>
+                        <div class="linha-campo"><label>TIPO:</label><input type="text"></div>
+                        <div class="linha-campo"><label>DANO:</label><input type="text"></div>
+                        <div class="linha-campo"><label>CRÍTICO:</label><input type="text"></div>
+                        <div class="linha-campo"><label>EFEITO:</label><input type="text"></div>
                     </div>
 
                     <div class="box-contorno">
                         <div class="ficha-tarja">HABILIDADE DE IMPETO</div>
-                        <label>HABILIDADE ATIVA -</label>
-                        <textarea rows="3" style="width: 100%; border: none; border-bottom: 1px solid #111; background: transparent; resize: none; outline: none;"></textarea>
+                        <div class="linha-campo" style="display:block; margin-bottom: 5px;"><label>HABILIDADE ATIVA -</label></div>
+                        <textarea rows="4" class="textarea-linha"></textarea>
                     </div>
                 </div>
 
-                <!-- Palavras e Inventário -->
+                <!-- PALAVRAS E INVENTÁRIO -->
                 <div class="ficha-grid-2" style="margin-top: 15px;">
                     <div class="box-contorno">
                         <div class="ficha-tarja">PALAVRAS DE AFIRMAÇÃO</div>
-                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none;"></textarea>
+                        <textarea rows="8" class="textarea-linha"></textarea>
                     </div>
                     <div class="box-contorno">
                         <div class="ficha-tarja">INVENTÁRIO</div>
-                        <textarea rows="6" style="width: 100%; border: none; background: transparent; resize: none; outline: none;"></textarea>
+                        <textarea rows="8" class="textarea-linha"></textarea>
                     </div>
                 </div>
                 
                 <button id="btn-salvar-ficha" class="btn-primario" style="margin-top: 20px;">Salvar Ficha</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modais -->
-    <div id="modal-regras" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
-            <h2>📜 A Arte da Rolagem</h2>
-            <div class="modal-body">
-                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>.</p>
-                <p><strong>1:</strong> Catástrofe. <strong>6:</strong> Falha Absoluta. <strong>12:</strong> Momento Lendário.</p>
-            </div>
-        </div>
-    </div>
-    <div id="modal-espectros" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
-            <h2>🔥 Os Espectros do Ímpeto</h2>
-            <div class="modal-body">
-                <p>Ígneo (Sacrifício), Celeste (Controle), Viridiano (Vida), Solar (Liberdade), Índigo (Criatividade), Alabastro (Equilíbrio).</p>
             </div>
         </div>
     </div>
@@ -267,17 +236,13 @@
         function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
         btnMenu.addEventListener('click', toggleMenu);
         btnFecharMenu.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); fecharTodosModais(); });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
 
         function mudarAba(idAba) {
             document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('active'));
             document.getElementById(idAba).classList.add('active');
             sidebar.classList.remove('active'); overlay.classList.remove('active');
         }
-
-        function abrirModal(id) { sidebar.classList.remove('active'); document.getElementById(id).style.display = "block"; overlay.classList.add('active'); }
-        function fecharModal(id) { document.getElementById(id).style.display = "none"; overlay.classList.remove('active'); }
-        function fecharTodosModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     </script>
 </body>
 </html>
