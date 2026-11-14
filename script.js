@@ -9,8 +9,11 @@ const totalVisual = document.getElementById('total-visual');
 const regraTexto = document.getElementById('regra-texto');
 const container = document.getElementById('resultado-container');
 const toggles = document.querySelectorAll('.toggle');
+const listaHistorico = document.getElementById('lista-historico');
 
 let tipoRolagem = 'atributo'; 
+let historicoRolagens = [];
+const MY_EXTENSION_ID = "com.biblioteca5a.rolagens";
 
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
@@ -28,6 +31,12 @@ toggles.forEach(btn => {
     });
 });
 
+const REGRAS = {
+    1: "Catástrofe Definitiva!",
+    6: "Falha Absoluta!",
+    12: "Momento Lendário!"
+};
+
 function rolarDados(quantidade, faces) {
     const resultados = [];
     for (let i = 0; i < quantidade; i++) {
@@ -36,8 +45,28 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-btnRolar.addEventListener('click', () => {
-    // Limpa UI
+function renderizarHistorico() {
+    listaHistorico.innerHTML = ''; 
+    const recentes = historicoRolagens.slice(-4).reverse();
+
+    recentes.forEach(item => {
+        const li = document.createElement('li');
+        if (item.d12 === 1) li.classList.add('hist-1');
+        if (item.d12 === 6) li.classList.add('hist-6');
+        if (item.d12 === 12) li.classList.add('hist-12');
+
+        li.innerHTML = `
+            <span>
+                <strong>${item.nome}</strong> 
+                <span class="hist-detalhe">(${item.d12} + ${item.outros} + ${item.vol})</span>
+            </span>
+            <span class="hist-total">${item.total}</span>
+        `;
+        listaHistorico.appendChild(li);
+    });
+}
+
+btnRolar.addEventListener('click', async () => {
     container.className = '';
     regraTexto.style.display = 'none';
     regraTexto.textContent = '';
@@ -53,7 +82,7 @@ btnRolar.addEventListener('click', () => {
     const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
     const total = rolagemD12 + somaDados + volume;
 
-    // Atualiza a sua Interface Local
+    // UI Local
     dadoD12.textContent = rolagemD12;
     if (qtdDados > 0) {
         dadosOutros.textContent = somaDados;
@@ -68,12 +97,6 @@ btnRolar.addEventListener('click', () => {
         ${rolagemD12} (d12) + ${somaDados} (${nomeDado}) + ${volume} (Vol) = <strong>${total}</strong>
     `;
 
-    const REGRAS = {
-        1: "Catástrofe Definitiva!",
-        6: "Falha Absoluta!",
-        12: "Momento Lendário!"
-    };
-
     if (REGRAS[rolagemD12]) {
         regraTexto.textContent = REGRAS[rolagemD12];
         regraTexto.style.display = 'block';
@@ -82,27 +105,38 @@ btnRolar.addEventListener('click', () => {
         if (rolagemD12 === 12) container.classList.add('resultado-12');
     }
 
-    // --- INTEGRAÇÃO COM O CHAT DO WITCHDICE ---
+    // Histórico Local
+    const novaRolagem = {
+        nome: nome,
+        d12: rolagemD12,
+        outros: somaDados,
+        vol: volume,
+        total: total
+    };
+    historicoRolagens.push(novaRolagem);
+    if (historicoRolagens.length > 4) historicoRolagens.shift();
+    renderizarHistorico();
+
+    // --- INTEGRAÇÃO COM A DICE+ (OFICIAL) ---
     if (typeof OBR !== 'undefined') {
-        // Monta a notação que o Witchdice entende (ex: "1d12 + 2d4 + 3")
         let notacao = `1d12`;
         if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
         if (volume > 0) notacao += ` + ${volume}`;
 
-        let tituloRolagem = `${nome} (B5A)`;
-        
-        // Adiciona um emoji para os resultados absolutos no chat
-        if (rolagemD12 === 1) tituloRolagem = `💀 CATÁSTROFE - ${nome}`;
-        if (rolagemD12 === 6) tituloRolagem = `⚠️ FALHA ABSOLUTA - ${nome}`;
-        if (rolagemD12 === 12) tituloRolagem = `🌟 MOMENTO LENDÁRIO - ${nome}`;
+        const rollId = `roll_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-        // O "segredo" do Witchdice: ele escuta requisições no canal "witchdice/roll-request"
-        // e exibe no histórico dele para todos na sala, sem precisar do painel aberto!
-        OBR.broadcast.sendMessage("witchdice/roll-request", {
-            id: crypto.randomUUID(),
-            playerName: tituloRolagem,
-            roll: notacao,
-            timestamp: Date.now()
-        }, { destination: 'ALL' }).catch(e => console.log("Witchdice não encontrado, mas a rolagem local funcionou."));
+        // Envia para a Dice+ (ela registra no histórico global)
+        OBR.broadcast.sendMessage("dice-plus/roll-request", {
+            rollId: rollId,
+            playerId: OBR.player.id,
+            playerName: nome,
+            rollTarget: 'everyone',
+            diceNotation: notacao,
+            showResults: true,
+            timestamp: Date.now(),
+            source: MY_EXTENSION_ID
+        }, { destination: 'ALL' }).catch(err => {
+            console.log("Dice+ não está ativa na sala. Verifique no ícone de quebra-cabeça.", err);
+        });
     }
 });
