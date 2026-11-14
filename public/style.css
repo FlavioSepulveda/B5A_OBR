@@ -94,7 +94,7 @@ h2, h3, .menu-toggle, .nav-btn, .btn-primario, .dice-value, .btn-rolar-nome, .va
     border-radius: 6px;
     display: flex;
     flex-direction: column;
-    height: fit-content;
+    height: fit-content; /* Não estica verticalmente */
 }
 
 /* COMPONENTES DA FICHA */
@@ -129,7 +129,21 @@ input:focus, select:focus { border-color: var(--gold); }
 .btn-primario { padding: 15px; font-size: 1.3rem; background-color: var(--gold); color: var(--bg-main); border: none; cursor: pointer; width: 100%; border-radius: 4px; }
 .btn-primario:hover { background-color: #dfc28c; }
 
-#resultado-container { padding: 15px; text-align: center; background: #111; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 0px; margin-bottom: 15px; }
+/* RESULTADO (COLADO NO TOPO DO HISTÓRICO) */
+#resultado-container { 
+    padding: 15px; 
+    text-align: center; 
+    background: #111; 
+    border-radius: 8px; 
+    border: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 15px; 
+    margin-top: 0px; /* Cola no topo */
+    margin-bottom: 20px; 
+}
+
 .dice-box { display: flex; flex-direction: column; align-items: center; padding: 10px; border-radius: 6px; width: 70px; background: #1a1a1a; }
 .principal { border: 2px solid #3d5a80; background: linear-gradient(135deg, #141a22, #1a1a1a); }
 .secundario { border: 2px solid #5c2a72; background: linear-gradient(135deg, #1c141f, #1a1a1a); }
@@ -152,7 +166,7 @@ input:focus, select:focus { border-color: var(--gold); }
 .espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
 
 /* HISTÓRICO */
-.coluna-historico h3 { color: var(--gold); font-size: 1.3rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+.coluna-historico h3 { color: var(--gold); font-size: 1.3rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 15px; padding-bottom: 10px; margin-bottom: 15px; }
 #lista-historico-global { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 600px; }
 #lista-historico-global li { padding: 12px; background: var(--bg-input); border-radius: 4px; border-left: 4px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
 #lista-historico-global li.hist-1 { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }

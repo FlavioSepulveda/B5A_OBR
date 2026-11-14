@@ -131,7 +131,7 @@
                     </div>
                 </div>
 
-                <!-- Coluna 2: Perícias -->
+                <!-- Coluna 2 e 3 agrupadas -->
                 <div class="coluna-meio">
                     <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
                         <h3>Perícias (d6)</h3>
@@ -156,15 +156,15 @@
 
                 <!-- Coluna 3: Resultado e Histórico -->
                 <div class="coluna-historico">
-                    <!-- RESULTADO EM CIMA DO HISTÓRICO -->
-                    <div id="resultado-container">
+                    <!-- RESULTADO EM CIMA -->
+                    <div id="resultado-container" style="margin-top: 0; margin-bottom: 15px;">
                         <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
                         <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
                         <div id="total-box"><span id="total-visual">Aguardando...</span></div>
                     </div>
 
                     <!-- HISTÓRICO EMBAIXO -->
-                    <h3 style="margin-top: 25px;">Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
+                    <h3 style="border-top: 1px solid var(--border-color); padding-top: 15px;">Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
                     <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
                         <label style="color: #c7a86b;">ID da Sala</label>
                         <input type="text" id="sala-id" value="sala-padrao">
