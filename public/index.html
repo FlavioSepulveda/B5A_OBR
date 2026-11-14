@@ -3,325 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa B5A - Rolagem Global</title>
+    <title>Biblioteca da 5ª Avenida</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <button id="btn-menu" class="menu-toggle">☰ Menu</button>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">🏛️ B5A</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
 
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Opções</h2>
-            <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
-        </div>
-        <div style="padding: 15px; border-bottom: 1px solid #333;">
-            <button id="btn-login" style="width: 100%; padding: 10px; background: #c7a86b; color: #000; border: none; border-radius: 4px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer;">
-                Entrar com Google
-            </button>
-            <p id="status-login" style="font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center;">Faça login para salvar</p>
-        </div>
-        <div class="sidebar-links">
-            <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
-            <button class="nav-btn" onclick="mudarAba('aba-guia')">📖 Guia Rápido</button>
-            <button class="nav-btn" onclick="mudarAba('aba-comunidade')">🌍 Crônicas da Comunidade</button>
-            <hr style="border-color:#333; margin: 10px 0;">
-            <button class="nav-btn" onclick="mudarAba('aba-regras')">📖 Regras de Rolagem</button>
-            <button class="nav-btn" onclick="mudarAba('aba-espectros')">🔥 Espectros</button>
-            <button class="nav-btn" onclick="mudarAba('aba-caminhos')">⚔️ Caminhos</button>
+    <div class="home-container">
+        <h1 class="home-logo">BIBLIOTECA<br>DA 5<span class="ordinal">ª</span> AVENIDA</h1>
+        <p class="home-subtitulo">"A única pergunta que resta é: Qual história você veio escrever?"</p>
+
+        <div class="home-menu">
+            <a href="pages/ficha.html" class="card-menu">
+                <span class="icone">📜</span>
+                <h2>Mesa de Jogo</h2>
+                <p>Sua ficha, atributos, perícias e o histórico de rolagens.</p>
+            </a>
+
+            <a href="pages/comunidade.html" class="card-menu">
+                <span class="icone">🌍</span>
+                <h2>Crônicas</h2>
+                <p>Leia e crie histórias para a comunidade.</p>
+            </a>
+
+            <a href="pages/guia.html" class="card-menu">
+                <span class="icone">📖</span>
+                <h2>Guia Rápido</h2>
+                <p>Aprenda a jogar em 5 minutos.</p>
+            </a>
+
+            <a href="pages/regras.html" class="card-menu">
+                <span class="icone">🎲</span>
+                <h2>Regras</h2>
+                <p>O funcionamento do d12 e as regras de rolagem.</p>
+            </a>
+
+            <a href="pages/espectros.html" class="card-menu">
+                <span class="icone">🔥</span>
+                <h2>Espectros</h2>
+                <p>As seis convicções do Ímpeto.</p>
+            </a>
+
+            <a href="pages/caminhos.html" class="card-menu">
+                <span class="icone">⚔️</span>
+                <h2>Caminhos</h2>
+                <p>As vocações de combate do Arquivista.</p>
+            </a>
         </div>
     </div>
 
-    <div id="overlay" class="overlay"></div>
-
-    <div class="conteudo-abas">
-        
-        <!-- ABA 1: A FICHA E AS ROLAGENS -->
-        <div id="aba-ficha" class="aba active">
-            <div class="mesa-container">
-                <!-- Coluna 1: Ficha e Atributos -->
-                <div class="coluna-ficha">
-                    <div class="cabecalho-ficha">
-                        <h2>Ficha do Arquivista</h2>
-                    </div>
-
-                    <div class="secao-ficha">
-                        <div class="input-group">
-                            <label>Nome do Personagem</label>
-                            <input type="text" id="f-nome" placeholder="Quem é você?">
-                        </div>
-                        <div class="row-inputs" style="margin-top: 10px;">
-                            <div class="input-group">
-                                <label>Espectro</label>
-                                <select id="f-espectro" class="espectro-select">
-                                    <option value="padrao">Padrão</option>
-                                    <option value="igneo">Ígneo</option>
-                                    <option value="celeste">Celeste</option>
-                                    <option value="viridiano">Viridiano</option>
-                                    <option value="solar">Solar</option>
-                                    <option value="indigo">Índigo</option>
-                                    <option value="alabastro">Alabastro</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Volume</label>
-                                <input type="number" id="f-volume" min="1" max="8" value="1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="secao-ficha destaque">
-                        <h3>Recursos Vitais</h3>
-                        <div class="recurso-row">
-                            <label>Vida (PV)</label>
-                            <div class="botoes-recurso">
-                                <button onclick="alterarRecurso('pv', -1)">-</button>
-                                <span id="f-pv-atual" class="valor-recurso">10</span>
-                                <span class="separador">/</span>
-                                <input type="number" id="f-pv-max" class="max-recurso" value="10">
-                                <button onclick="alterarRecurso('pv', 1)">+</button>
-                            </div>
-                        </div>
-                        <div class="recurso-row">
-                            <label>Ímpeto (PI)</label>
-                            <div class="botoes-recurso">
-                                <button onclick="alterarRecurso('pi', -1)">-</button>
-                                <span id="f-pi-atual" class="valor-recurso">5</span>
-                                <span class="separador">/</span>
-                                <input type="number" id="f-pi-max" class="max-recurso" value="5">
-                                <button onclick="alterarRecurso('pi', 1)">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="secao-ficha">
-                        <h3>Atributos (d4)</h3>
-                        <div class="lista-rolagens">
-                            <div class="linha-rolagem">
-                                <div class="controle-dados">
-                                    <button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button>
-                                    <span id="val-vigor" class="valor-dado">0</span>
-                                    <button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button>
-                                </div>
-                                <button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button>
-                            </div>
-                            <div class="linha-rolagem">
-                                <div class="controle-dados">
-                                    <button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button>
-                                    <span id="val-dinamismo" class="valor-dado">0</span>
-                                    <button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button>
-                                </div>
-                                <button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button>
-                            </div>
-                            <div class="linha-rolagem">
-                                <div class="controle-dados">
-                                    <button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button>
-                                    <span id="val-razao" class="valor-dado">0</span>
-                                    <button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button>
-                                </div>
-                                <button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button>
-                            </div>
-                            <div class="linha-rolagem">
-                                <div class="controle-dados">
-                                    <button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button>
-                                    <span id="val-determinacao" class="valor-dado">0</span>
-                                    <button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button>
-                                </div>
-                                <button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Coluna 2: Perícias -->
-                <div class="coluna-meio">
-                    <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
-                        <h3>Perícias (d6)</h3>
-                        <div class="lista-rolagens">
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button><span id="val-barganha" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button><span id="val-combate" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button><span id="val-tecnologia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('resistencia', -1)">-</button><span id="val-resistencia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('resistencia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Resistência', 'resistencia', 6)">Resistência</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('intuicao', -1)">-</button><span id="val-intuicao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('intuicao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Intuição', 'intuicao', 6)">Intuição</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('medicina', -1)">-</button><span id="val-medicina" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('medicina', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Medicina', 'medicina', 6)">Medicina</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('investigar', -1)">-</button><span id="val-investigar" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('investigar', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Investigar', 'investigar', 6)">Investigar</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('invasao', -1)">-</button><span id="val-invasao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('invasao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Invasão', 'invasao', 6)">Invasão</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('pesquisa', -1)">-</button><span id="val-pesquisa" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('pesquisa', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Pesquisa', 'pesquisa', 6)">Pesquisa</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button><span id="val-arcanismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('arcanismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('imaginacao', -1)">-</button><span id="val-imaginacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('imaginacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Imaginação', 'imaginacao', 6)">Imaginação</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('historia', -1)">-</button><span id="val-historia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('historia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('História', 'historia', 6)">História</button></div>
-                        </div>
-                    </div>
-
-                    <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
-                </div>
-
-                <!-- Coluna 3: Resultado e Histórico -->
-                <div class="coluna-historico">
-                    <!-- RESULTADO EM CIMA -->
-                    <div id="resultado-container">
-                        <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
-                        <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
-                        <div id="total-box"><span id="total-visual">Aguardando...</span></div>
-                    </div>
-
-                    <!-- HISTÓRICO EMBAIXO -->
-                    <div class="historico-wrapper">
-                        <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
-                        <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
-                            <label style="color: #c7a86b;">ID da Sala</label>
-                            <input type="text" id="sala-id" value="sala-padrao">
-                        </div>
-                        <ul id="lista-historico-global"></ul>
-                        <div id="aviso-historico-vazio" style="text-align: center; color: #666; margin-top: 30px; font-style: italic;">
-                            Nenhuma rolagem ainda...
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ABA 2: GUIA RÁPIDO -->
-        <div id="aba-guia" class="aba">
-            <div class="conteudo-texto">
-                <h1>📖 Guia Rápido do Arquivista</h1>
-                <p>Bem-vindo à Biblioteca da 5ª Avenida. Este guia foi feito para que você possa jogar sem precisar ler o livro de regras inteiro.</p>
-                <h3>1. Criando seu Personagem</h3>
-                <p>Na aba <strong>Minha Ficha</strong>, preencha seu Nome e escolha um <strong>Espectro</strong>. Você começa com <strong>0 dados</strong> em todos os Atributos e Perícias. Converse com o Guardião para distribuir seus pontos iniciais clicando nos botões "+".</p>
-                <h3>2. Como Rolar Dados</h3>
-                <p>A base do jogo é <strong>1d12 + Dados de Atributo/Perícia + seu Volume</strong>. Para rolar, ajuste a quantidade de dados na ficha e clique no <strong>nome</strong> do Atributo ou Perícia. O resultado vai direto para a Crônica da Mesa.</p>
-                <h3>3. Os Três Destinos Absolutos</h3>
-                <p><strong style="color:#ff4d4d;">1 (Catástrofe):</strong> Falha automática. O Guardião ganha um Dado de Descartes.</p>
-                <p><strong style="color:#ff9800;">6 (Falha Absoluta):</strong> Falha, mesmo que o total seja alto.</p>
-                <p><strong style="color:#4caf50;">12 (Lendário):</strong> O sucesso é épico!</p>
-                <h3>4. Desafiar o Destino</h3>
-                <p>Se você tiver <strong>0 dados</strong> em algo, pode tentar mesmo assim. Clique no nome do Atributo que está zerado, e o site vai rolar automaticamente 2d12 (mantendo o maior).</p>
-            </div>
-        </div>
-
-        <!-- ABA 3: COMUNIDADE -->
-        <div id="aba-comunidade" class="aba">
-            <div class="conteudo-texto">
-                <h1>🌍 Crônicas da Comunidade</h1>
-                <p>Todo Arquivista tem um Prólogo. De onde você veio? O que perdeu antes de atravessar as portas da Biblioteca? Escreva a história do seu personagem abaixo para que outros jogadores a leiam.</p>
-                
-                <div class="input-group" style="margin-bottom: 20px; background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
-                    <label style="color: var(--gold); display: block; font-size: 1.2rem;">Criar Nova Crônica</label>
-                    
-                    <div class="row-inputs">
-                        <div class="input-group">
-                            <label>Título da Missão</label>
-                            <input type="text" id="cronica-titulo" placeholder="Ex: O Despertar do Tirano">
-                        </div>
-                        <div class="input-group">
-                            <label>Qtd. de Jogadores</label>
-                            <input type="number" id="cronica-jogadores" min="1" max="10" value="4">
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>URL de uma Imagem (Opcional)</label>
-                        <input type="url" id="cronica-imagem" placeholder="Cole o link de uma imagem do Pinterest ou Imgur">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Breve Resumo / Prólogo</label>
-                        <textarea id="cronica-texto" rows="4" style="width: 100%; resize: vertical; padding: 10px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-family: 'Merriweather';" placeholder="A primeira vez que a Biblioteca chamou por mim..."></textarea>
-                    </div>
-
-                    <button id="btn-salvar-cronica" class="btn-primario" style="font-size: 1rem; padding: 10px;">Publicar Crônica</button>
-                    <p id="status-cronica" style="font-size: 0.8rem; color: #888; text-align: center; margin: 0;"></p>
-                </div>
-
-                <h3>Relatos dos Arquivistas</h3>
-                <!-- Aqui é onde os cards vão aparecer -->
-                <div id="lista-cronicas" class="grid-cronicas">
-                </div>
-            </div>
-        </div>
-
-        <!-- ABA 4: REGRAS -->
-        <div id="aba-regras" class="aba">
-            <div class="conteudo-texto">
-                <h1>📜 A Arte da Rolagem</h1>
-                <p>Toda história começa com uma escolha. Você estende a mão, lança o dado e, por um instante, existem vários caminhos diante de você. Na Biblioteca da 5ª Avenida, o destino não está escrito de antemão. Ele nasce do encontro entre aquilo que seu Arquivista é capaz de fazer e aquilo que os dados decidiram contar.</p>
-                <h3>O d12: O Coração Narrativo do Sistema</h3>
-                <p>Sempre que o resultado de uma ação for incerto ou perigoso, o d12 entra em cena. Você o lança, observa suas faces e descobre qual caminho a história tomou. Ao resultado do dado, some os modificadores de Atributo ou Perícia, quando aplicáveis, e o bônus correspondente ao seu Volume.</p>
-                <p>O resultado final é então comparado à <strong>TA (Taxa de Acerto)</strong> definida pelo Guardião. Se o valor atingir ou superar a TA, a ação é bem-sucedida. Caso contrário, ela falha. Mas o d12 guarda três resultados capazes de acrescentar algo a mais à história.</p>
-                <h3>Os Três Resultados Absolutos</h3>
-                <p>O d12 possui três faces especiais: <strong>1, 6 e 12</strong>. Elas não substituem o resultado da rolagem nem alteram a comparação com a TA. Em vez disso, acrescentam uma camada narrativa ao que aconteceu. O resultado mecânico continua sendo determinado normalmente. A diferença é que, quando uma dessas três faces aparece, a Biblioteca parece ter algo a dizer sobre aquele momento.</p>
-                <p><strong>1 — Catástrofe Definitiva:</strong> Quando o d12 mostra 1, algo terrível acontece. A ação falha automaticamente, independentemente do total obtido. Não importa quantos bônus você tenha somado: o destino decidiu que aquele momento pertencia à ruína. Além disso, o Guardião ganha 1 Dado de Descartes para sua própria Pilha.</p>
-                <p><strong>6 — Falha Absoluta:</strong> Quando o d12 mostra 6, a ação falha, mesmo que o total supere a TA. O 6 não é um desastre com consequências extras: é a certeza de que a tentativa não deu certo. O personagem pode ter sido rápido demais, confiante demais ou simplesmente azarado. A história segue, mas aquele caminho foi fechado.</p>
-                <p><strong>12 — Momento Lendário:</strong> Quando o d12 mostra 12, algo extraordinário acontece. O resultado continua sendo somado normalmente e comparado à TA. Se a ação funcionar, o sucesso ganha uma dimensão lendária. Se falhar, algo positivo surge da tentativa. <strong>Um 12 não garante o sucesso. Ele garante que o momento será lembrado.</strong></p>
-                <h3>Desafiar o Destino</h3>
-                <p>Mesmo que você não tenha dados em um Atributo, a Biblioteca não fecha as portas. Role <strong>2d12</strong>, mantenha o maior resultado e descarte o menor. Some o Volume ao resultado final. Falhar aqui é mais severo: o Guardião ganha um Dado de Descartes adicional.</p>
-            </div>
-        </div>
-
-        <!-- ABA 5: ESPECTROS -->
-        <div id="aba-espectros" class="aba">
-            <div class="conteudo-texto">
-                <h1>🔥 Os Espectros do Ímpeto</h1>
-                <p>O Espectro não define sua profissão, sua personalidade ou a forma como você luta. Ele representa a razão pela qual seu Arquivista continua caminhando, mesmo quando tudo parece perdido.</p>
-                <h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3>
-                <p>Ofensiva, sacrifício e ambição. O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece. Ele consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo. <em>"O que você está disposto a sacrificar?"</em></p>
-                <h3 style="color:#8eb1d9">Celeste (Azul)</h3>
-                <p>Controle, ordem e precisão. O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Para eles, uma mente disciplinada sempre supera uma espada desembainhada. <em>"Como você pretende alcançar seu objetivo?"</em></p>
-                <h3 style="color:#4caf50">Viridiano (Verde)</h3>
-                <p>Vida, perseverança e crescimento. O Ímpeto Verde é a essência da Vida. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo. <em>"Por que continuar mesmo após cair?"</em></p>
-                <h3 style="color:#fbc02d">Solar (Amarelo)</h3>
-                <p>Liberdade, mobilidade e adaptação. O Ímpeto Solar é a manifestação da Liberdade. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar. <em>"O que existe além do horizonte?"</em></p>
-                <h3 style="color:#b285c9">Índigo (Roxo)</h3>
-                <p>Criatividade, conhecimento e imaginação. O Ímpeto Violeta é a manifestação do Conhecimento. Pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem o impossível. <em>"E se tudo pudesse ser diferente?"</em></p>
-                <h3 style="color:#e0e0e0">Alabastro (Branco)</h3>
-                <p>Equilíbrio, proteção e união. O Ímpeto Alabastro é a manifestação da Ordem e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição. <em>"Como impedir que um extremo destrua todos os outros?"</em></p>
-            </div>
-        </div>
-
-        <!-- ABA 6: CAMINHOS -->
-        <div id="aba-caminhos" class="aba">
-            <div class="conteudo-texto">
-                <h1>⚔️ Caminhos (Combate)</h1>
-                <p>Todo Arquivista atravessa as portas da Biblioteca movido por um propósito, mas é o Caminho que define como ele enfrentará os desafios dessa jornada.</p>
-                <h3>Guerreiro</h3>
-                <p>Os Guerreiros enfrentam os perigos da Biblioteca na linha de frente. Sua força não vem apenas das armas, mas da determinação de continuar lutando quando qualquer outro já teria recuado.</p>
-                <h3>Mago</h3>
-                <p>Os Magos dedicam suas vidas ao estudo do Ímpeto, tratando cada Palavra de Afirmação como parte da linguagem que sustenta a realidade. Buscam compreendê-lo e, por alguns instantes, reescrever as regras do mundo.</p>
-                <h3>Suporte</h3>
-                <p>Os Suportes sabem que nenhuma grande história é escrita sozinho. Fortalecem, protegem e criam oportunidades para que o grupo supere qualquer desafio. Sua maior força está em garantir que ninguém fique para trás.</p>
-                <h3>Assassino</h3>
-                <p>Vencem batalhas antes mesmo do primeiro golpe. Especialistas em furtividade e precisão, aguardam o momento perfeito para atacar, transformando cada descuido em uma oportunidade fatal.</p>
-                <h3>Atirador</h3>
-                <p>Transformam distância em vantagem. Especialistas em precisão e paciência, aguardam o momento ideal para agir, fazendo de cada disparo uma oportunidade decisiva.</p>
-            </div>
-        </div>
-
-    </div>
-   
     <script type="module" src="./js/firebase.js"></script>
-    <script type="module" src="./js/ficha.js"></script>
-    <script type="module" src="./js/rolagem.js"></script>
-    <script type="module" src="./js/comunidade.js"></script>
-
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const btnMenu = document.getElementById('btn-menu');
-        const btnFecharMenu = document.getElementById('btn-fechar-menu');
-
-        function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
-        btnMenu.addEventListener('click', toggleMenu);
-        btnFecharMenu.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
-
-        function mudarAba(idAba) {
-            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('active'));
-            document.getElementById(idAba).classList.add('active');
-            sidebar.classList.remove('active'); 
-            overlay.classList.remove('active');
-            window.scrollTo(0, 0); 
-        }
-    </script>
 </body>
 </html>
