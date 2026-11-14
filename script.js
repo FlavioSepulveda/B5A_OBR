@@ -11,8 +11,9 @@ const container = document.getElementById('resultado-container');
 const toggles = document.querySelectorAll('.toggle');
 
 let tipoRolagem = 'atributo'; 
-const MY_EXTENSION_ID = "com.biblioteca5a.rolagens";
+const CANAL_ROLAGEM = "com.biblioteca5a.rolagens.global";
 
+// Função para atualizar o label
 function atualizarLabel() {
     const qtd = inputQtd.value || 0;
     labelOutros.textContent = tipoRolagem === 'atributo' ? `${qtd}d4` : `${qtd}d6`;
@@ -43,27 +44,55 @@ function rolarDados(quantidade, faces) {
     return resultados;
 }
 
-// Função para verificar se a Dice+ está pronta
-async function checkDicePlusReady() {
-    if (typeof OBR === 'undefined') return false;
+// Função que exibe o alerta na tela de quem recebeu
+function mostrarAlertaGlobal(dados) {
+    // Cria um elemento visual temporário para o alerta
+    const alerta = document.createElement('div');
+    alerta.style.position = 'fixed';
+    alerta.style.top = '20px';
+    alerta.style.left = '50%';
+    alerta.style.transform = 'translateX(-50%)';
+    alerta.style.backgroundColor = '#d4af37';
+    alerta.style.color = '#121212';
+    alerta.style.padding = '15px 30px';
+    alerta.style.borderRadius = '8px';
+    alerta.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+    alerta.style.zIndex = '9999';
+    alerta.style.fontFamily = 'serif';
+    alerta.style.textAlign = 'center';
+    alerta.style.fontSize = '1.2em';
     
-    const requestId = crypto.randomUUID();
-    return new Promise((resolve) => {
-        const unsubscribe = OBR.broadcast.onMessage("dice-plus/isReady", (event) => {
-            const data = event.data;
-            if ('ready' in data && data.requestId === requestId) {
-                unsubscribe();
-                resolve(true);
+    let texto = `<strong>${dados.nome}</strong> rolou: <br>`;
+    texto += `${dados.d12} (d12) + ${dados.soma} (dados) + ${dados.vol} (Vol) = <strong>${dados.total}</strong>`;
+    
+    if (REGRAS[dados.d12]) {
+        alerta.style.backgroundColor = dados.d12 === 1 ? '#ff4d4d' : (dados.d12 === 6 ? '#ff9800' : '#4caf50');
+        alerta.style.color = '#fff';
+        texto += `<br><small>${REGRAS[dados.d12]}</small>`;
+    }
+
+    alerta.innerHTML = texto;
+    document.body.appendChild(alerta);
+
+    // Remove o alerta após 5 segundos
+    setTimeout(() => {
+        if (alerta.parentNode) {
+            alerta.parentNode.removeChild(alerta);
+        }
+    }, 5000);
+}
+
+// Configura a escuta de mensagens globais
+if (typeof OBR !== 'undefined') {
+    OBR.onReady(() => {
+        // Escuta as rolagens de todos os jogadores
+        OBR.broadcast.onMessage(CANAL_ROLAGEM, (event) => {
+            const dados = event.data;
+            // Se a mensagem não for de mim mesmo (para não duplicar)
+            if (dados.senderId !== OBR.player.id) {
+                mostrarAlertaGlobal(dados);
             }
         });
-        OBR.broadcast.sendMessage("dice-plus/isReady", {
-            requestId,
-            timestamp: Date.now()
-        }, { destination: 'ALL' });
-        setTimeout(() => {
-            unsubscribe();
-            resolve(false);
-        }, 1000);
     });
 }
 
@@ -84,7 +113,7 @@ btnRolar.addEventListener('click', async () => {
         const somaDados = resultadosDados.reduce((a, b) => a + b, 0);
         const total = rolagemD12 + somaDados + volume;
 
-        // Atualiza a interface local
+        // Atualiza a interface local (como antes)
         dadoD12.textContent = rolagemD12;
         if (qtdDados > 0) {
             dadosOutros.textContent = somaDados;
@@ -106,31 +135,22 @@ btnRolar.addEventListener('click', async () => {
             if (rolagemD12 === 12) container.classList.add('resultado-12');
         }
 
-        // --- INTEGRAÇÃO COM A DICE+ (COM VERIFICAÇÃO) ---
+        // --- ENVIO GLOBAL PARA TODOS ---
         if (typeof OBR !== 'undefined') {
-            const isReady = await checkDicePlusReady();
-            if (!isReady) {
-                console.error("Dice+ não está ativa na sala. Verifique se a extensão foi adicionada e ativada.");
-                return;
-            }
+            // Prepara os dados para enviar
+            const dadosRolagem = {
+                senderId: OBR.player.id, // Para não exibir o alerta para quem rolou
+                nome: nome,
+                d12: rolagemD12,
+                soma: somaDados,
+                vol: volume,
+                total: total
+            };
 
-            let notacao = `1d12`;
-            if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
-            if (volume > 0) notacao += ` + ${volume}`;
-
-            const rollId = `roll_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-
-            await OBR.broadcast.sendMessage("dice-plus/roll-request", {
-                rollId: rollId,
-                playerId: OBR.player.id,
-                playerName: nome,
-                rollTarget: 'everyone',
-                diceNotation: notacao,
-                showResults: true,
-                timestamp: Date.now(),
-                source: MY_EXTENSION_ID
-            }, { destination: 'ALL' });
+            // Envia a mensagem para todos na mesa
+            await OBR.broadcast.sendMessage(CANAL_ROLAGEM, dadosRolagem, { destination: 'ALL' });
         }
+
     } catch (erro) {
         console.error("Erro na rolagem:", erro);
     }
