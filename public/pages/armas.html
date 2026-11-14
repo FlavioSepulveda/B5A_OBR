@@ -50,7 +50,7 @@
                 
                 <div class="row-inputs">
                     <div class="input-group">
-                        <label>Efeito com Descartes</label>
+                        <label>Efeito (Descarte)</label>
                         <input type="text" id="form-descarte" placeholder="Ex: +1d6 por dado descartado">
                     </div>
                     <div class="input-group">
@@ -83,18 +83,16 @@
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/motor_cartas.js"></script>
     <script>
-        // Função que preenche o Dano e o Crítico automaticamente
         window.atualizarDadosArma = function() {
             const categoria = document.getElementById('form-categoria').value;
             const inputDano = document.getElementById('form-dano');
             const inputCritico = document.getElementById('form-critico');
 
-            // Valores baseados no seu livro
             const tabelaArmas = {
                 "Leve": { dano: "1d4", critico: "+1d4" },
                 "Média": { dano: "1d6", critico: "+1d6" },
                 "Pesada": { dano: "2d10", critico: "+1d10" },
-                "Precisão": { dano: "1d6", critico: "+1d6" } // Ajuste se precisão tiver outro valor
+                "Precisão": { dano: "1d6", critico: "+1d6" }
             };
 
             const valores = tabelaArmas[categoria] || tabelaArmas["Média"];
@@ -102,10 +100,7 @@
             inputCritico.value = valores.critico;
         };
 
-        // Inicia o motor para armas
         iniciarCartas("armas");
-        
-        // Preenche os valores iniciais ao carregar a página
         atualizarDadosArma();
     </script>
 </body>

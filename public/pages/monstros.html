@@ -19,7 +19,7 @@
     </nav>
 
     <div class="comunidade-container">
-        <!-- FORMULÁRIO DE CRIAÇÃO -->
+        <!-- FORMULÁRIO -->
         <div class="painel-escrita">
             <h2>Registrar Monstro</h2>
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
@@ -65,16 +65,15 @@
                 </div>
 
                 <div class="input-group">
-                    <label>URL da Imagem da Criatura</label>
+                    <label>URL da Imagem</label>
                     <input type="url" id="form-imagem" placeholder="Cole o link de uma imagem">
                 </div>
 
                 <div class="input-group">
-                    <label>Descrição Principal / Ataque Básico</label>
+                    <label>Descrição Principal</label>
                     <textarea id="form-texto" rows="3" placeholder="Descreva a criatura..."></textarea>
                 </div>
 
-                <!-- HABILIDADES COM CUSTO E DESCRIÇÃO -->
                 <label style="color: var(--gold); margin-top: 10px; margin-bottom: 5px; display: block; font-size: 0.9rem;">Habilidades da Criatura</label>
                 
                 <div class="row-inputs">
@@ -83,11 +82,11 @@
                 </div>
                 <div class="row-inputs">
                     <input type="text" id="form-hab2-custo" placeholder="Custo 2" style="width: 30%;">
-                    <input type="text" id="form-hab2-desc" placeholder="Habilidade 2 (Opcional)" style="width: 70%;">
+                    <input type="text" id="form-hab2-desc" placeholder="Habilidade 2" style="width: 70%;">
                 </div>
                 <div class="row-inputs">
                     <input type="text" id="form-hab3-custo" placeholder="Custo 3" style="width: 30%;">
-                    <input type="text" id="form-hab3-desc" placeholder="Habilidade 3 (Opcional)" style="width: 70%;">
+                    <input type="text" id="form-hab3-desc" placeholder="Habilidade 3" style="width: 70%;">
                 </div>
                 
                 <button id="btn-salvar-form" class="btn-primario" style="padding: 10px; margin-top: 10px;">Salvar Monstro</button>
@@ -95,7 +94,7 @@
             </div>
         </div>
 
-        <!-- FEED DE CARTAS -->
+        <!-- FEED -->
         <div class="painel-feed">
             <h2>Bestiário</h2>
             <div id="lista-cartas" class="grid-cartas"></div>
@@ -104,9 +103,6 @@
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/motor_cartas.js"></script>
-    <script>
-        // Inicia o motor configurado para monstros
-        iniciarCartas("monstros");
-    </script>
+    <script>iniciarCartas("monstros");</script>
 </body>
 </html>
