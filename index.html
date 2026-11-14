@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa B5A - Rolagem Global</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- MENU LATERAL E BOTÃO -->
+    <!-- MENU LATERAL -->
     <button id="btn-menu" class="menu-toggle">☰ Arquivos</button>
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h2>Arquivos da Biblioteca</h2>
+            <h2>Arquivos</h2>
             <button id="btn-fechar-menu" class="close-sidebar">&times;</button>
         </div>
         <div class="sidebar-links">
-            <button class="nav-btn" onclick="mudarAba('aba-rolagem')">🎲 Mesa de Rolagem</button>
-            <button class="nav-btn" onclick="mudarAba('aba-ficha')">📜 Minha Ficha</button>
+            <button class="nav-btn" onclick="abrirModal('modal-regras')">📖 Regras de Rolagem</button>
+            <button class="nav-btn" onclick="abrirModal('modal-espectros')">🔥 Espectros do Ímpeto</button>
+            <button class="nav-btn" onclick="abrirModal('modal-caminhos')">⚔️ Caminhos (Combate)</button>
+            <button class="nav-btn" onclick="abrirModal('modal-vocacoes')">🔍 Vocações (Investigação)</button>
         </div>
         <div class="sidebar-footer">
             <p>Bestiário das Almas</p>
@@ -28,112 +30,177 @@
 
     <div id="overlay" class="overlay"></div>
 
-    <div class="abas-container">
-        <!-- ABA 1: ROLAGEM -->
-        <div id="aba-rolagem" class="aba active">
-            <div class="app-container">
-                <div class="coluna-rolagem">
-                    <h2>Registro de Rolagem</h2>
-                    
-                    <div class="input-group" style="background: #1a1a1a; padding: 10px; border-radius: 5px; border: 1px solid #c7a86b;">
-                        <label for="sala-id" style="color: #c7a86b;">ID da Sala</label>
-                        <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="nome-jogador">Seu Nome / Personagem</label>
-                        <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="espectro">Espectro do Ímpeto</label>
-                        <select id="espectro" class="espectro-select">
-                            <option value="padrao">Nenhum (Padrão)</option>
-                            <option value="igneo">Ígneo (Vermelho)</option>
-                            <option value="celeste">Celeste (Azul)</option>
-                            <option value="viridiano">Viridiano (Verde)</option>
-                            <option value="solar">Solar (Amarelo)</option>
-                            <option value="indigo">Índigo (Roxo)</option>
-                            <option value="alabastro">Alabastro (Branco)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Tipo de Teste</label>
-                        <div class="toggle-group">
-                            <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
-                            <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
-                        </div>
-                    </div>
-                    
-                    <div class="row-inputs">
-                        <div class="input-group">
-                            <label for="qtd-dados">Qtd. Dados</label>
-                            <input type="number" id="qtd-dados" min="0" max="10" value="2">
-                        </div>
-                        <div class="input-group">
-                            <label for="volume">Volume</label>
-                            <input type="number" id="volume" min="1" max="8" value="1">
-                        </div>
-                    </div>
-                    
-                    <button id="btn-rolar">Lançar Dados</button>
-                    
-                    <div id="resultado-container">
-                        <div id="d12-box" class="dice-box principal">
-                            <span class="dice-label">d12</span>
-                            <span id="dado-d12" class="dice-value">-</span>
-                        </div>
-                        <div id="outros-dados-box" class="dice-box secundario">
-                            <span id="label-outros" class="dice-label">2d4</span>
-                            <span id="dados-outros" class="dice-value">-</span>
-                        </div>
-                        <div id="total-box">
-                            <span id="total-visual">Aguardando rolagem...</span>
-                        </div>
-                        <div id="regra-texto"></div>
-                    </div>
-                </div>
-                
-                <div class="coluna-historico">
-                    <h3>Crônica da Mesa</h3>
-                    <ul id="lista-historico-global"></ul>
+    <!-- CONTEÚDO PRINCIPAL: APENAS ROLAGEM -->
+    <div class="app-container">
+        <!-- Rolagem -->
+        <div class="coluna-rolagem">
+            <h2>Registro de Rolagem</h2>
+            
+            <div class="input-group" style="background: #222; padding: 10px; border-radius: 5px; border: 1px solid #c7a86b;">
+                <label for="sala-id" style="color: #c7a86b;">ID da Sala</label>
+                <input type="text" id="sala-id" placeholder="Ex: mesa-b5a" value="sala-padrao">
+            </div>
+            
+            <div class="input-group">
+                <label for="nome-jogador">Seu Nome / Personagem</label>
+                <input type="text" id="nome-jogador" placeholder="Ex: Kael" value="Arquivista">
+            </div>
+            
+            <div class="input-group">
+                <label for="espectro">Espectro do Ímpeto</label>
+                <select id="espectro" class="espectro-select">
+                    <option value="padrao">Nenhum (Padrão)</option>
+                    <option value="igneo">Ígneo (Vermelho)</option>
+                    <option value="celeste">Celeste (Azul)</option>
+                    <option value="viridiano">Viridiano (Verde)</option>
+                    <option value="solar">Solar (Amarelo)</option>
+                    <option value="indigo">Índigo (Roxo)</option>
+                    <option value="alabastro">Alabastro (Branco)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label>Tipo de Teste</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle active" data-tipo="atributo">Atributo (d4)</button>
+                    <button type="button" class="toggle" data-tipo="pericia">Perícia (d6)</button>
                 </div>
             </div>
+            
+            <div class="row-inputs">
+                <div class="input-group">
+                    <label for="qtd-dados">Qtd. Dados</label>
+                    <input type="number" id="qtd-dados" min="0" max="10" value="2">
+                </div>
+                <div class="input-group">
+                    <label for="volume">Volume</label>
+                    <input type="number" id="volume" min="1" max="8" value="1">
+                </div>
+            </div>
+            
+            <button id="btn-rolar">Lançar Dados</button>
+            
+            <div id="resultado-container">
+                <div id="d12-box" class="dice-box principal">
+                    <span class="dice-label">d12</span>
+                    <span id="dado-d12" class="dice-value">-</span>
+                </div>
+                <div id="outros-dados-box" class="dice-box secundario">
+                    <span id="label-outros" class="dice-label">2d4</span>
+                    <span id="dados-outros" class="dice-value">-</span>
+                </div>
+                <div id="total-box">
+                    <span id="total-visual">Aguardando rolagem...</span>
+                </div>
+                <div id="regra-texto"></div>
+            </div>
         </div>
+        
+        <!-- Histórico -->
+        <div class="coluna-historico">
+            <h3>Crônica da Mesa</h3>
+            <ul id="lista-historico-global"></ul>
+        </div>
+    </div>
 
-        <!-- ABA 2: FICHA (APENAS IMAGEM) -->
-        <div id="aba-ficha" class="aba">
-            <div class="ficha-wrapper">
-                <!-- COLOQUE O LINK DA SUA IMAGEM/PDF AQUI NO SRC -->
-                <img src="C:\Users\Usuário\Desktop\B5A_OBR\logo preta.png" alt="Ficha da Biblioteca da 5ª Avenida" class="ficha-img">
+    <!-- ========================================== -->
+    <!-- MODAIS DE CONSULTA RÁPIDA (OS RESUMOS) -->
+    <!-- ========================================== -->
+
+    <!-- Modal Regras -->
+    <div id="modal-regras" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-regras')">&times;</span>
+            <h2>📜 A Arte da Rolagem</h2>
+            <div class="modal-body">
+                <p>Sempre que a ação for incerta, role <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + seu Volume</strong>. Igual ou maior que a TA, sucesso.</p>
+                <hr>
+                <h3>Resultados Absolutos</h3>
+                <p><strong>1 — Catástrofe Definitiva:</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</p>
+                <p><strong>6 — Falha Absoluta:</strong> A ação falha, mesmo superando a TA.</p>
+                <p><strong>12 — Momento Lendário:</strong> O resultado soma normalmente. Se vencer, ação lendária.</p>
             </div>
         </div>
     </div>
 
+    <!-- Modal Espectros -->
+    <div id="modal-espectros" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-espectros')">&times;</span>
+            <h2>🔥 Espectros do Ímpeto</h2>
+            <div class="modal-body">
+                <div class="espectro-item"><h3 style="color:#ff4d4d">Ígneo (Vermelho)</h3><p>Sacrifício e Ambição.</p></div>
+                <div class="espectro-item"><h3 style="color:#8eb1d9">Celeste (Azul)</h3><p>Controle e Razão.</p></div>
+                <div class="espectro-item"><h3 style="color:#4caf50">Viridiano (Verde)</h3><p>Vida e Perseverança.</p></div>
+                <div class="espectro-item"><h3 style="color:#fbc02d">Solar (Amarelo)</h3><p>Liberdade e Movimento.</p></div>
+                <div class="espectro-item"><h3 style="color:#b285c9">Índigo (Roxo)</h3><p>Criatividade e Conhecimento.</p></div>
+                <div class="espectro-item"><h3 style="color:#ffffff">Alabastro (Branco)</h3><p>Equilíbrio e Justiça.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Caminhos -->
+    <div id="modal-caminhos" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-caminhos')">&times;</span>
+            <h2>⚔️ Caminhos (Combate)</h2>
+            <div class="modal-body">
+                <p><strong>Guerreiro:</strong> Linha de frente, foco em Vida.</p>
+                <p><strong>Mago:</strong> Mestre do Ímpeto e das Palavras.</p>
+                <p><strong>Suporte:</strong> Cura e proteção dos aliados.</p>
+                <p><strong>Assassino:</strong> Dano massivo e furtividade.</p>
+                <p><strong>Atirador:</strong> Precisão à distância.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vocações -->
+    <div id="modal-vocacoes" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModal('modal-vocacoes')">&times;</span>
+            <h2>🔍 Vocações (Investigação)</h2>
+            <div class="modal-body">
+                <p><strong>Cronista:</strong> Altera como o mundo é lembrado.</p>
+                <p><strong>Selador:</strong> Contém anomalias perigosas.</p>
+                <p><strong>Guardião de Memórias:</strong> Preserva o conhecimento.</p>
+                <p><strong>Investigador:</strong> Enxerga o oculto.</p>
+                <p><strong>Cartógrafo:</strong> Dobra o espaço.</p>
+                <p><strong>Ecoísta:</strong> Invoca ecos do passado.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script type="module" src="script.js"></script>
     <script>
-        // Controle do Menu Lateral
+        // Lógica do Menu Lateral
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const btnMenu = document.getElementById('btn-menu');
         const btnFecharMenu = document.getElementById('btn-fechar-menu');
 
         function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
-        
         btnMenu.addEventListener('click', toggleMenu);
         btnFecharMenu.addEventListener('click', toggleMenu);
+        
         overlay.addEventListener('click', () => { 
             sidebar.classList.remove('active'); 
             overlay.classList.remove('active'); 
+            fecharTodosModais();
         });
 
-        // Troca de Abas
-        function mudarAba(idAba) {
-            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('active'));
-            document.getElementById(idAba).classList.add('active');
-            sidebar.classList.remove('active'); 
+        // Controle dos Modais
+        function abrirModal(id) {
+            sidebar.classList.remove('active');
+            document.getElementById(id).style.display = "block";
+            overlay.classList.add('active');
+        }
+        function fecharModal(id) {
+            document.getElementById(id).style.display = "none";
             overlay.classList.remove('active');
+        }
+        function fecharTodosModais() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
     </script>
 </body>

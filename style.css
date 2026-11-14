@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&family=Oswald:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,7 +23,7 @@ body {
 }
 
 /* =========================================
-   MENU LATERAL E NAVEGAÇÃO
+   MENU LATERAL
    ========================================= */
 .menu-toggle {
     position: fixed; top: 15px; left: 15px; z-index: 900;
@@ -62,29 +62,16 @@ body {
 .overlay.active { display: block; opacity: 1; }
 
 /* =========================================
-   LAYOUT GERAL E ABAS
-   ========================================= */
-.abas-container {
-    margin-top: 60px;
-    width: 100%;
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 15px;
-}
-.aba { display: none; }
-.aba.active { display: block; animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* =========================================
-   ABA DE ROLAGEM (LAYOUT CORRIGIDO)
+   ÁREA PRINCIPAL DE ROLAGEM
    ========================================= */
 .app-container {
     display: flex;
-    flex-direction: row; /* Coloca as colunas lado a lado */
+    flex-direction: row;
     gap: 20px;
     width: 100%;
-    margin: 20px 0;
+    max-width: 1100px;
+    margin: 60px auto 20px auto; /* Centraliza o site na tela */
+    padding: 0 15px;
 }
 
 .coluna-rolagem, .coluna-historico {
@@ -151,28 +138,21 @@ input:focus, select:focus { border-color: var(--gold); }
 #total-box { padding-top: 10px; border-top: 1px dashed var(--border-color); width: 100%; }
 #total-visual { font-size: 1rem; color: var(--gold); font-weight: bold; }
 
-/* =========================================
-   CORES DOS ESPECTROS DO ÍMPETO (RESTAURADAS)
-   ========================================= */
+/* Cores dos Espectros */
 .espectro-igneo .dice-box.principal { border-color: #ff4d4d; background: linear-gradient(135deg, #2c1a1a, #1a1a1a); }
 .espectro-igneo .dice-box.principal .dice-value { color: #ff4d4d; }
-
 .espectro-celeste .dice-box.principal { border-color: #3d5a80; background: linear-gradient(135deg, #1a222c, #1a1a1a); }
 .espectro-celeste .dice-box.principal .dice-value { color: #8eb1d9; }
-
 .espectro-viridiano .dice-box.principal { border-color: #4caf50; background: linear-gradient(135deg, #1a2c1a, #1a1a1a); }
 .espectro-viridiano .dice-box.principal .dice-value { color: #4caf50; }
-
 .espectro-solar .dice-box.principal { border-color: #fbc02d; background: linear-gradient(135deg, #2c2a1a, #1a1a1a); }
 .espectro-solar .dice-box.principal .dice-value { color: #fbc02d; }
-
 .espectro-indigo .dice-box.principal { border-color: #5c2a72; background: linear-gradient(135deg, #221a26, #1a1a1a); }
 .espectro-indigo .dice-box.principal .dice-value { color: #b285c9; }
-
 .espectro-alabastro .dice-box.principal { border-color: #e0e0e0; background: linear-gradient(135deg, #2a2a2a, #1a1a1a); }
 .espectro-alabastro .dice-box.principal .dice-value { color: #ffffff; }
 
-/* HISTÓRICO */
+/* Histórico */
 #lista-historico-global {
     list-style: none; padding: 0; margin: 0;
     display: flex; flex-direction: column; gap: 10px;
@@ -190,33 +170,63 @@ input:focus, select:focus { border-color: var(--gold); }
 .hist-detalhe { color: var(--text-muted); font-size: 0.8rem; }
 
 /* =========================================
-   ABA DA FICHA (FUNDO BRANCO PARA SUA IMAGEM)
+   ESTILO DOS MODAIS (RESUMOS DE REGRAS)
    ========================================= */
-.ficha-wrapper {
-    background-color: #e8e4db; /* Cor de fundo branca/papel */
-    padding: 20px;
-    border-radius: 4px;
-    max-width: 950px;
-    margin: 20px auto;
-    min-height: 800px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+.modal {
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; overflow-y: auto; 
+    background-color: rgba(0,0,0,0.8); backdrop-filter: blur(3px);
 }
 
-/* A imagem da sua ficha vai se ajustar a este container */
-.ficha-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+.modal-content {
+    background-color: var(--bg-panel);
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+    color: var(--text-main);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    position: relative;
 }
+
+.modal-content h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 20px;
+    color: var(--gold);
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.modal-body p, .modal-body li {
+    font-size: 1rem; line-height: 1.6; margin-bottom: 12px; text-align: justify; color: #ccc;
+}
+.modal-body strong { color: var(--gold); }
+.modal-body hr { border: 0; height: 1px; background: var(--border-color); margin: 20px 0; }
+
+.modal-body h3 {
+    font-family: 'Bebas Neue', sans-serif; color: var(--gold);
+    text-align: left; border: none; font-size: 1.3rem; margin-top: 15px; margin-bottom: 5px;
+}
+
+.espectro-item { margin-bottom: 15px; border-bottom: 1px dotted var(--border-color); padding-bottom: 10px; }
+.espectro-item h3 { margin: 0 0 5px 0; }
+
+.close-btn {
+    color: var(--gold); position: absolute; top: 10px; right: 20px;
+    font-size: 30px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+.close-btn:hover { color: #ff4d4d; transform: scale(1.1); }
 
 /* =========================================
-   RESPONSIVIDADE (CELULAR)
+   RESPONSIVIDADE
    ========================================= */
 @media (max-width: 768px) {
     .app-container { flex-direction: column; }
     .coluna-rolagem, .coluna-historico { width: 100%; max-width: 100%; }
-    .ficha-wrapper { padding: 5px; min-height: auto; }
+    .modal-content { width: 95%; margin: 10% auto; padding: 20px; }
 }
