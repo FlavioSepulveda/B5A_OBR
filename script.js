@@ -67,6 +67,30 @@ function renderizarHistorico() {
     });
 }
 
+// Função para verificar se a Dice+ está pronta (conforme documentação oficial)
+async function checkDicePlusReady() {
+    if (typeof OBR === 'undefined') return false;
+    
+    const requestId = crypto.randomUUID();
+    return new Promise((resolve) => {
+        const unsubscribe = OBR.broadcast.onMessage("dice-plus/isReady", (event) => {
+            const data = event.data;
+            if ('ready' in data && data.requestId === requestId) {
+                unsubscribe();
+                resolve(true);
+            }
+        });
+        OBR.broadcast.sendMessage("dice-plus/isReady", {
+            requestId,
+            timestamp: Date.now()
+        }, { destination: 'ALL' });
+        setTimeout(() => {
+            unsubscribe();
+            resolve(false);
+        }, 1000);
+    });
+}
+
 // Escuta broadcast local (para quem estiver com o painel aberto)
 if (typeof OBR !== 'undefined') {
     OBR.onReady(() => {
@@ -135,28 +159,37 @@ btnRolar.addEventListener('click', async () => {
         if (historicoRolagens.length > 4) historicoRolagens.shift();
         renderizarHistorico();
 
-        // --- INTEGRAÇÃO GLOBAL COM A DICE+ ---
+        // --- INTEGRAÇÃO GLOBAL COM A DICE+ (CORRIGIDA) ---
         if (typeof OBR !== 'undefined') {
-            // 1. Envia para o seu próprio broadcast (para outros painéis abertos)
+            // 1. Envia para o seu próprio broadcast
             OBR.broadcast.sendMessage(CANAL_ROLAGEM, novaRolagem, { destination: 'ALL' });
 
-            // 2. Envia para a Dice+ (Isso faz aparecer no histórico global de todos!)
-            let notacao = `1d12`;
-            if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
-            if (volume > 0) notacao += ` + ${volume}`;
-
-            const rollId = `roll_${Date.now()}`;
+            // 2. Verifica se a Dice+ está pronta ANTES de enviar
+            const dicePlusReady = await checkDicePlusReady();
             
-            OBR.broadcast.sendMessage("dice-plus/roll-request", {
-                rollId: rollId,
-                playerId: OBR.player.id,
-                playerName: nome,
-                rollTarget: 'everyone', // Todos veem
-                diceNotation: notacao,
-                showResults: true, // Mostra o popup da Dice+
-                timestamp: Date.now(),
-                source: MY_EXTENSION_ID
-            }, { destination: 'ALL' });
+            if (dicePlusReady) {
+                let notacao = `1d12`;
+                if (qtdDados > 0) notacao += ` + ${qtdDados}d${faces}`;
+                if (volume > 0) notacao += ` + ${volume}`;
+
+                const rollId = `roll_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                
+                // Envia para a Dice+
+                await OBR.broadcast.sendMessage("dice-plus/roll-request", {
+                    rollId: rollId,
+                    playerId: OBR.player.id,
+                    playerName: nome,
+                    rollTarget: 'everyone',
+                    diceNotation: notacao,
+                    showResults: true,
+                    timestamp: Date.now(),
+                    source: MY_EXTENSION_ID
+                }, { destination: 'ALL' });
+
+                console.log("Rolagem enviada para a Dice+ com sucesso!");
+            } else {
+                console.warn("Dice+ não está pronta ou não foi encontrada na sala.");
+            }
         }
 
     } catch (erro) {
