@@ -53,200 +53,207 @@ h1, h2, h3, .nav-brand, .btn-primario, .nav-btn, .btn-login-nav {
     text-decoration: none;
 }
 
-.nav-user {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+.nav-user { display: flex; align-items: center; gap: 15px; }
 
 .btn-login-nav {
-    background-color: var(--gold);
-    color: #000;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
+    background-color: var(--gold); color: #000; border: none;
+    padding: 8px 15px; border-radius: 4px; font-size: 1rem; cursor: pointer;
 }
 
-.status-login-nav {
-    font-size: 0.85rem;
-    color: #888;
-}
+.status-login-nav { font-size: 0.85rem; color: #888; }
 
 /* =========================================
-   ESTILOS DA HOME (index.html)
+   LAYOUT DA HOME (FEED + SIDEBAR)
    ========================================= */
-.home-container {
+.home-layout {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 100px 20px 40px; /* Espaço para a navbar */
+    flex-direction: row;
+    gap: 40px; /* Mais espaço entre o feed e o menu */
+    width: 100%;
+    max-width: 1350px; /* Aumentado para preencher melhor a tela */
+    margin: 80px auto 40px auto;
+    padding: 0 20px;
+    align-items: flex-start;
+    justify-content: center; /* Centraliza o bloco todo no meio do monitor */
+}
+
+/* FEED CENTRAL */
+.feed-container {
+    flex: 1;
+    max-width: 850px; /* O feed agora é mais largo */
+}
+
+.logo-topo {
     text-align: center;
-    min-height: 100vh;
+    margin-bottom: 30px;
 }
 
 .logo-principal {
     width: 100%;
-    max-width: 280px; 
-    height: auto;
-    margin-top: -30px; /* Sobe um pouco a logo para não ficar um vão gigante */
+    max-width: 280px;
     margin-bottom: 10px;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
 }
 
 .home-subtitulo {
     color: #888;
     font-style: italic;
-    margin-top: 0;
-    margin-bottom: 40px;
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
-/* GRID DOS CARDS - O SEGREDO ESTÁ AQUI */
-.home-menu {
-    display: grid;
-    /* O minmax(250px) impede que os cards fiquem finos e amassem o texto */
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: 20px;
-    width: 100%;
-    max-width: 900px; 
-    margin: 0 auto;
+.titulo-feed {
+    color: var(--gold);
+    font-size: 1.8rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.card-menu {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 20px 15px;
-    text-decoration: none;
-    color: #fff !important; /* Força a cor branca para sumir com o roxo */
-    transition: all 0.3s;
+.feed-posts {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    gap: 20px;
 }
 
-.card-menu:hover {
-    border-color: var(--gold);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    background: #1e1e1e;
-}
-
-.card-menu .icone { 
-    font-size: 2rem; 
-    margin-bottom: 10px; 
-    line-height: 1;
-}
-
-/* Força a cor dourada e remove o roxo do navegador */
-.card-menu h2 { 
-    color: var(--gold) !important; 
-    font-size: 1.3rem; 
-    margin-bottom: 5px; 
-    font-family: 'Bebas Neue', sans-serif;
-    text-decoration: none;
-}
-
-/* Força a cor cinza e remove o roxo do navegador */
-.card-menu p { 
-    color: #888 !important; 
-    font-size: 0.85rem; 
-    line-height: 1.4; 
-    text-decoration: none;
-}
-
-.destaque-menu {
-    border-color: var(--gold);
-    background: rgba(199, 168, 107, 0.05);
-}
-
-
-
-/* =========================================
-   LAYOUT DE TEXTO (Regras, Guia, etc)
-   ========================================= */
-.conteudo-texto {
+/* Posts (Cards do Feed) */
+.post-card {
     background: var(--bg-panel);
-    padding: 40px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    max-width: 900px;
-    margin: 0 auto 40px auto;
-    width: 100%;
-    line-height: 1.8;
+    padding: 20px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.conteudo-texto h1 {
+.post-card:hover { 
+    border-color: var(--gold); 
+    transform: translateX(5px);
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.post-header h3 { color: var(--gold); font-size: 1.5rem; margin: 0; }
+.post-header span { font-size: 0.85rem; color: #888; }
+
+.post-body {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.post-img {
+    width: 160px; /* Imagem bem maior no PC */
+    height: 110px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #111;
+    border: 1px solid #333;
+}
+
+.post-text { 
+    font-size: 1rem; 
+    color: #ccc; 
+    line-height: 1.6; 
+    flex: 1; 
+}
+
+.post-footer {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #aaa;
+    border-top: 1px dashed #333;
+    padding-top: 10px;
+}
+
+/* SIDEBAR MENU */
+.sidebar-menu {
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 80px;
+}
+
+.menu-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.menu-card h3 {
     color: var(--gold);
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 15px;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
     text-align: center;
 }
 
-.conteudo-texto p { font-size: 1.05rem; margin-bottom: 20px; text-align: justify; color: #ccc; }
-.conteudo-texto strong { color: var(--gold); }
-.conteudo-texto h3 { color: var(--gold); font-size: 1.5rem; margin-top: 30px; margin-bottom: 10px; }
-
-/* Inputs Genéricos */
-.input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-.row-inputs { display: flex; gap: 10px; }
-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-input, select, textarea { 
-    padding: 10px; border: 1px solid var(--border-color); background-color: var(--bg-input); 
-    color: var(--text-main); font-size: 1rem; font-family: 'Merriweather', serif; 
-    width: 100%; outline: none; border-radius: 4px; 
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    text-decoration: none;
+    color: #ccc;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    border-radius: 4px;
+    transition: all 0.2s;
 }
-input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 
-.btn-primario { 
-    padding: 15px; font-size: 1.3rem; background-color: var(--gold); 
-    color: var(--bg-main); border: none; cursor: pointer; 
-    width: 100%; border-radius: 4px; transition: 0.2s;
+.menu-item:hover {
+    background: #222;
+    color: var(--gold);
+    padding-left: 15px;
 }
-.btn-primario:hover { background-color: #dfc28c; }
+
+.menu-item.destaque {
+    border: 1px solid var(--gold);
+    background: rgba(199, 168, 107, 0.05);
+    color: var(--gold);
+}
 
 /* =========================================
    RESPONSIVIDADE
    ========================================= */
-/* =========================================
-   RESPONSIVIDADE (CELULAR)
-   ========================================= */
 @media (max-width: 900px) {
-    .top-nav { 
-        flex-direction: column; 
-        height: auto; 
-        padding: 10px; 
-        gap: 5px; 
+    .home-layout {
+        flex-direction: column;
+        margin-top: 80px;
     }
     
-    .home-container {
-        /* No celular, a navbar fica mais alta. Empurramos o conteúdo para baixo dela. */
-        padding-top: 130px; 
+    .sidebar-menu {
+        flex: auto;
+        width: 100%;
+        position: static;
+        order: -1; /* Menu fica no topo no celular */
     }
 
-    .logo-principal { 
-        max-width: 180px; /* Logo menor no celular */
-        margin-top: 0;
-    } 
-    
-    .home-subtitulo {
-        margin-top: 5px; /* No celular as vezes é melhor não sobrepor */
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-    }
-    
-    .home-menu {
-        grid-template-columns: 1fr; /* 1 card por linha no celular */
+    .feed-container {
         max-width: 100%;
     }
 
-    .conteudo-texto { 
-        padding: 20px; 
-        margin-top: 130px;
+    .post-body {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .post-img {
+        width: 100%;
+        height: 200px; /* Imagem ocupa a largura toda no celular */
     }
 }

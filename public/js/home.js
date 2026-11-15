@@ -1,0 +1,126 @@
+import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+const feedContainer = document.getElementById('feed-home');
+
+// Função para formatar o tempo (Há 2 horas, etc)
+function tempoAtras(timestamp) {
+    if (!timestamp) return "Recentemente";
+    const segundos = Math.floor((Date.now() - timestamp) / 1000);
+    if (segundos < 60) return "Agora mesmo";
+    const minutos = Math.floor(segundos / 60);
+    if (minutos < 60) return `Há ${minutos} min`;
+    const horas = Math.floor(minutos / 60);
+    if (horas < 24) return `Há ${horas} horas`;
+    return `Há ${Math.floor(horas / 24)} dias`;
+}
+
+function carregarFeed() {
+    if(!feedContainer) return;
+
+    // Vamos ouvir a sala inteira
+    onValue(ref(db, `salas/${salaAtual}`), (snapshot) => {
+        const dados = snapshot.val();
+        if(!dados) {
+            feedContainer.innerHTML = '<p style="color:#888; text-align:center;">Nenhuma atividade recente.</p>';
+            return;
+        }
+
+        let todasAtividades = [];
+
+        // Junta Monstros
+        if(dados.monstros) {
+            Object.values(dados.monstros).forEach(m => {
+                todasAtividades.push({
+                    tipo: 'Bestiário', link: 'pages/monstros.html',
+                    titulo: m.titulo, autor: m.autor, data: m.data,
+                    imagem: m.imagem, texto: m.texto || 'Uma nova criatura catalogada.',
+                    icone: '👹'
+                });
+            });
+        }
+
+        // Junta Armas
+        if(dados.armas) {
+            Object.values(dados.armas).forEach(a => {
+                todasAtividades.push({
+                    tipo: 'Arsenal', link: 'pages/armas.html',
+                    titulo: a.titulo, autor: a.autor, data: a.data,
+                    imagem: a.imagem, texto: `Arma forjada na categoria ${a.categoria}.`,
+                    icone: '🛡️'
+                });
+            });
+        }
+
+        // Junta Crônicas
+        if(dados.cronicas) {
+            Object.values(dados.cronicas).forEach(c => {
+                todasAtividades.push({
+                    tipo: 'Crônica', link: 'pages/comunidade.html',
+                    titulo: c.titulo, autor: c.autor, data: c.data,
+                    imagem: c.imagem, texto: c.historia ? c.historia.substring(0, 100) + '...' : 'Nova história registrada.',
+                    icone: '🌍'
+                });
+            });
+        }
+
+        // Junta Habilidades
+        if(dados.habilidades) {
+            Object.values(dados.habilidades).forEach(h => {
+                todasAtividades.push({
+                    tipo: 'Grimório', link: 'pages/habilidades.html',
+                    titulo: h.titulo, autor: h.autor, data: h.data,
+                    imagem: h.imagem, texto: `Nova ${h.tipo} registrada.`,
+                    icone: '✨'
+                });
+            });
+        }
+
+        // Ordena pelas mais recentes
+        todasAtividades.sort((a, b) => b.data - a.data);
+
+        // Pega apenas as 10 últimas para não pesar a tela
+        const feedRecente = todasAtividades.slice(0, 10);
+
+        if(feedRecente.length === 0) {
+            feedContainer.innerHTML = '<p style="color:#888; text-align:center;">Nenhuma atividade recente.</p>';
+            return;
+        }
+
+        feedContainer.innerHTML = '';
+
+        feedRecente.forEach(item => {
+            const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=200&q=80';
+            const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : imagemPadrao;
+
+            const card = document.createElement('a');
+            card.href = item.link;
+            card.className = 'post-card';
+
+            card.innerHTML = `
+                <div class="post-header">
+                    <h3>${item.icone} ${item.titulo}</h3>
+                    <span>${tempoAtras(item.data)}</span>
+                </div>
+                <div class="post-body">
+                    <img src="${imgFinal}" class="post-img" onerror="this.src='${imagemPadrao}'">
+                    <div class="post-text">
+                        ${item.texto}
+                    </div>
+                </div>
+                <div class="post-footer">
+                    <span>Publicado no ${item.tipo}</span>
+                    <span>Por: <strong>${item.autor}</strong></span>
+                </div>
+            `;
+
+            feedContainer.appendChild(card);
+        });
+    });
+}
+
+// Escuta o login para carregar o feed
+window.addEventListener('usuarioLogado', carregarFeed);
+
+// Tenta carregar o feed mesmo se o usuário ainda não tiver clicado em login
+setTimeout(carregarFeed, 1000);
