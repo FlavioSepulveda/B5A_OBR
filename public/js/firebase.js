@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-// SUAS CONFIGURAÇÕES DO FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyDVpq__JyU5KTQ6p6zB6DTqey4k2jaEFZo",
   authDomain: "b5at-44d1d.firebaseapp.com",
@@ -17,29 +16,26 @@ export const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 export const auth = getAuth(app);
 
-// Lê o UID da URL para ver perfil de outros jogadores
 const urlParams = new URLSearchParams(window.location.search);
 export let uidPerfilVisitado = urlParams.get('uid'); 
-
 export let idJogadorAtual = null;
-// Puxa a sala do localStorage ou usa a padrão
 export let salaAtual = localStorage.getItem('b5a_sala_atual') || "sala-padrao";
 
-// Configura o Botão de Login
-const btnLogin = document.getElementById('btn-login');
-if (btnLogin) {
-    btnLogin.addEventListener('click', () => {
+// Configura o Login de forma segura
+document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'btn-login') {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider).catch((error) => {
             console.error("Erro no login:", error);
-            alert("Erro no login. Verifique a conexão ou o bloqueador de pop-ups.");
+            alert("Erro no login. Verifique a conexão ou pop-ups.");
         });
-    });
-}
+    }
+});
 
-// Monitora o estado de login
 onAuthStateChanged(auth, (user) => {
     const statusLogin = document.getElementById('status-login');
+    const btnLogin = document.getElementById('btn-login');
+
     if (user) {
         idJogadorAtual = user.uid;
         if(statusLogin) {

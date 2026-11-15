@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa - B5A</title>
+    <!-- O CSS GLOBAL -->
     <link rel="stylesheet" href="../style.css">
+    <!-- O CSS ESPECÍFICO DA FICHA -->
     <link rel="stylesheet" href="../css/ficha.css">
+    <!-- FONTES -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <a href="../index.html" class="nav-brand">← Voltar</a>
         <div class="nav-user">
             <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
@@ -18,107 +21,105 @@
     </nav>
 
     <div class="conteudo-abas" style="margin-top: 80px;">
-        <div class="aba active">
-            <div class="mesa-container">
-                <div class="coluna-ficha">
-                    <div class="cabecalho-ficha"><h2>Ficha do Arquivista</h2></div>
-                    <div class="secao-ficha">
+        <div class="mesa-container">
+            <div class="coluna-ficha">
+                <div class="cabecalho-ficha"><h2>Ficha do Arquivista</h2></div>
+                <div class="secao-ficha">
+                    <div class="input-group">
+                        <label>Nome do Personagem</label>
+                        <input type="text" id="f-nome" placeholder="Quem é você?">
+                    </div>
+                    <div class="row-inputs" style="margin-top: 10px;">
                         <div class="input-group">
-                            <label>Nome do Personagem</label>
-                            <input type="text" id="f-nome" placeholder="Quem é você?">
+                            <label>Espectro</label>
+                            <select id="f-espectro" class="espectro-select">
+                                <option value="padrao">Padrão</option>
+                                <option value="igneo">Ígneo</option>
+                                <option value="celeste">Celeste</option>
+                                <option value="viridiano">Viridiano</option>
+                                <option value="solar">Solar</option>
+                                <option value="indigo">Índigo</option>
+                                <option value="alabastro">Alabastro</option>
+                            </select>
                         </div>
-                        <div class="row-inputs" style="margin-top: 10px;">
-                            <div class="input-group">
-                                <label>Espectro</label>
-                                <select id="f-espectro" class="espectro-select">
-                                    <option value="padrao">Padrão</option>
-                                    <option value="igneo">Ígneo</option>
-                                    <option value="celeste">Celeste</option>
-                                    <option value="viridiano">Viridiano</option>
-                                    <option value="solar">Solar</option>
-                                    <option value="indigo">Índigo</option>
-                                    <option value="alabastro">Alabastro</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Volume</label>
-                                <input type="number" id="f-volume" min="1" max="8" value="1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="secao-ficha destaque">
-                        <h3>Recursos Vitais</h3>
-                        <div class="recurso-row">
-                            <label>Vida (PV)</label>
-                            <div class="botoes-recurso">
-                                <button onclick="alterarRecurso('pv', -1)">-</button>
-                                <span id="f-pv-atual" class="valor-recurso">10</span>
-                                <span class="separador">/</span>
-                                <input type="number" id="f-pv-max" class="max-recurso" value="10">
-                                <button onclick="alterarRecurso('pv', 1)">+</button>
-                            </div>
-                        </div>
-                        <div class="recurso-row">
-                            <label>Ímpeto (PI)</label>
-                            <div class="botoes-recurso">
-                                <button onclick="alterarRecurso('pi', -1)">-</button>
-                                <span id="f-pi-atual" class="valor-recurso">5</span>
-                                <span class="separador">/</span>
-                                <input type="number" id="f-pi-max" class="max-recurso" value="5">
-                                <button onclick="alterarRecurso('pi', 1)">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="secao-ficha">
-                        <h3>Atributos (d4)</h3>
-                        <div class="lista-rolagens">
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button><span id="val-vigor" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button><span id="val-dinamismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button><span id="val-razao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button><span id="val-determinacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button></div>
+                        <div class="input-group">
+                            <label>Volume</label>
+                            <input type="number" id="f-volume" min="1" max="8" value="1">
                         </div>
                     </div>
                 </div>
 
-                <div class="coluna-meio">
-                    <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
-                        <h3>Perícias (d6)</h3>
-                        <div class="lista-rolagens">
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button><span id="val-barganha" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button><span id="val-combate" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button><span id="val-tecnologia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('resistencia', -1)">-</button><span id="val-resistencia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('resistencia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Resistência', 'resistencia', 6)">Resistência</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('intuicao', -1)">-</button><span id="val-intuicao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('intuicao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Intuição', 'intuicao', 6)">Intuição</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('medicina', -1)">-</button><span id="val-medicina" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('medicina', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Medicina', 'medicina', 6)">Medicina</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('investigar', -1)">-</button><span id="val-investigar" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('investigar', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Investigar', 'investigar', 6)">Investigar</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('invasao', -1)">-</button><span id="val-invasao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('invasao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Invasão', 'invasao', 6)">Invasão</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('pesquisa', -1)">-</button><span id="val-pesquisa" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('pesquisa', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Pesquisa', 'pesquisa', 6)">Pesquisa</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button><span id="val-arcanismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('arcanismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('imaginacao', -1)">-</button><span id="val-imaginacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('imaginacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Imaginação', 'imaginacao', 6)">Imaginação</button></div>
-                            <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('historia', -1)">-</button><span id="val-historia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('historia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('História', 'historia', 6)">História</button></div>
+                <div class="secao-ficha destaque">
+                    <h3>Recursos Vitais</h3>
+                    <div class="recurso-row">
+                        <label>Vida (PV)</label>
+                        <div class="botoes-recurso">
+                            <button onclick="alterarRecurso('pv', -1)">-</button>
+                            <span id="f-pv-atual" class="valor-recurso">10</span>
+                            <span class="separador">/</span>
+                            <input type="number" id="f-pv-max" class="max-recurso" value="10">
+                            <button onclick="alterarRecurso('pv', 1)">+</button>
                         </div>
                     </div>
-
-                    <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
+                    <div class="recurso-row">
+                        <label>Ímpeto (PI)</label>
+                        <div class="botoes-recurso">
+                            <button onclick="alterarRecurso('pi', -1)">-</button>
+                            <span id="f-pi-atual" class="valor-recurso">5</span>
+                            <span class="separador">/</span>
+                            <input type="number" id="f-pi-max" class="max-recurso" value="5">
+                            <button onclick="alterarRecurso('pi', 1)">+</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="coluna-historico">
-                    <div id="resultado-container">
-                        <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
-                        <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
-                        <div id="total-box"><span id="total-visual">Aguardando...</span></div>
+                <div class="secao-ficha">
+                    <h3>Atributos (d4)</h3>
+                    <div class="lista-rolagens">
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button><span id="val-vigor" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button><span id="val-dinamismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button><span id="val-razao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button><span id="val-determinacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button></div>
                     </div>
-                    <div class="historico-wrapper">
-                        <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
-                        <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
-                            <label style="color: #c7a86b;">ID da Sala</label>
-                            <input type="text" id="sala-id" value="sala-padrao">
-                        </div>
-                        <ul id="lista-historico-global"></ul>
-                        <div id="aviso-historico-vazio" style="text-align: center; color: #666; margin-top: 30px; font-style: italic;">Nenhuma rolagem ainda...</div>
+                </div>
+            </div>
+
+            <div class="coluna-meio">
+                <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
+                    <h3>Perícias (d6)</h3>
+                    <div class="lista-rolagens">
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button><span id="val-barganha" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button><span id="val-combate" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button><span id="val-tecnologia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('resistencia', -1)">-</button><span id="val-resistencia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('resistencia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Resistência', 'resistencia', 6)">Resistência</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('intuicao', -1)">-</button><span id="val-intuicao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('intuicao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Intuição', 'intuicao', 6)">Intuição</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('medicina', -1)">-</button><span id="val-medicina" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('medicina', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Medicina', 'medicina', 6)">Medicina</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('investigar', -1)">-</button><span id="val-investigar" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('investigar', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Investigar', 'investigar', 6)">Investigar</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('invasao', -1)">-</button><span id="val-invasao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('invasao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Invasão', 'invasao', 6)">Invasão</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('pesquisa', -1)">-</button><span id="val-pesquisa" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('pesquisa', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Pesquisa', 'pesquisa', 6)">Pesquisa</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button><span id="val-arcanismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('arcanismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('imaginacao', -1)">-</button><span id="val-imaginacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('imaginacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Imaginação', 'imaginacao', 6)">Imaginação</button></div>
+                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('historia', -1)">-</button><span id="val-historia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('historia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('História', 'historia', 6)">História</button></div>
                     </div>
+                </div>
+
+                <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
+            </div>
+
+            <div class="coluna-historico">
+                <div id="resultado-container">
+                    <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
+                    <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
+                    <div id="total-box"><span id="total-visual">Aguardando...</span></div>
+                </div>
+                <div class="historico-wrapper">
+                    <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
+                    <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
+                        <label style="color: #c7a86b;">ID da Sala</label>
+                        <input type="text" id="sala-id" value="sala-padrao">
+                    </div>
+                    <ul id="lista-historico-global"></ul>
+                    <div id="aviso-historico-vazio" style="text-align: center; color: #666; margin-top: 30px; font-style: italic;">Nenhuma rolagem ainda...</div>
                 </div>
             </div>
         </div>
