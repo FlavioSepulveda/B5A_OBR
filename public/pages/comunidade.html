@@ -12,17 +12,14 @@
     <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
     <div class="comunidade-container">
-        <!-- COLUNA ESQUERDA: FORMULÁRIO -->
         <div class="painel-escrita">
             <h2>Escrever Crônica</h2>
-            
-            <!-- CAMPO OCULTO PARA GUARDAR O ID EM EDIÇÃO -->
             <input type="hidden" id="edit-cronica-id" value="">
             
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
@@ -53,25 +50,20 @@
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: FEED -->
         <div class="painel-feed">
             <h2>Relatos dos Arquivistas</h2>
             <div id="lista-cronicas" class="grid-cronicas"></div>
         </div>
     </div>
 
-    <!-- MODAL DE LEITURA/EDIÇÃO -->
     <div id="modal-cronica" class="modal-leitura">
         <div class="modal-leitura-content">
             <span class="close-btn" onclick="fecharModalCronica()">&times;</span>
-            
             <img id="modal-img" src="" alt="Capa" class="modal-capa" style="background-color: #111;">
-            
             <h2 id="modal-titulo">Título</h2>
             <p id="modal-autor" style="color: var(--gold); font-size: 0.9rem; margin-bottom: 10px;">Autor</p>
             <div id="modal-texto" style="line-height: 1.6; margin-bottom: 20px;"></div>
             
-            <!-- BOTÕES DE AÇÃO -->
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex: 1;">
                     ❤️ Curtir (<span id="qtd-likes">0</span>)
