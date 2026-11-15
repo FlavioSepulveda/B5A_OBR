@@ -79,7 +79,6 @@
         .card-espectro {
             background: linear-gradient(145deg, var(--bg-slot) 0%, rgba(0,0,0,0) 100%);
             border-left: 4px solid var(--espectro-cor); padding: 12px; border-radius: 6px; font-size: 0.85rem;
-            box-shadow: -2px 0 10px -5px var(--espectro-cor);
         }
         .juramento { font-style: italic; color: var(--espectro-cor); margin-bottom: 8px; display: block; }
         
@@ -89,9 +88,7 @@
         }
         select:focus, input:focus, textarea:focus { border-color: var(--espectro-cor); }
 
-        .tabs-diario {
-            display: flex; gap: 5px; margin-bottom: 10px;
-        }
+        .tabs-diario { display: flex; gap: 5px; margin-bottom: 10px; }
         .tab-diario {
             flex: 1; padding: 8px; background: #222; color: #888; border: 1px solid #444;
             font-family: 'Bebas Neue'; font-size: 1rem; cursor: pointer; border-radius: 4px;
@@ -141,6 +138,7 @@
             border-radius: 6px; padding: 12px; margin-bottom: 15px;
         }
         .arma-card h4 { color: var(--espectro-cor); font-size: 1.1rem; margin-bottom: 5px; }
+        .arma-card input, .arma-card select { margin-bottom: 5px; font-size: 0.8rem; padding: 5px; }
         
         .pilha-descartes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
         .slot-descarte { 
@@ -324,18 +322,25 @@
             <div class="zona-titulo"><span>⚔️ Arma & Combate</span></div>
             
             <div class="arma-card">
-                <h4>Arma Favorita</h4>
-                <select id="sel-arma" onchange="atualizarArma()" style="margin-bottom:5px;">
-                    <option value="espada_longa">Espada Longa (Média)</option>
-                    <option value="adaga">Adaga (Leve)</option>
-                    <option value="machado">Machado (Pesada)</option>
-                    <option value="arco">Arco (Precisão)</option>
-                    <option value="cajado">Cajado (Catalisador)</option>
+                <h4>Criar Arma Favorita</h4>
+                <input type="text" id="arma-nome" placeholder="Nome da Arma (Ex: Lâmina da Tempestade)">
+                
+                <select id="arma-categoria" onchange="atualizarDadosArma()">
+                    <option value="Leve">Leve (1d4)</option>
+                    <option value="Média" selected>Média (1d6)</option>
+                    <option value="Pesada">Pesada (2d10)</option>
+                    <option value="Precisão">Precisão (1d6)</option>
+                    <option value="Catalisador">Catalisador (Arcanismo)</option>
                 </select>
-                <div style="font-size:0.8rem; color:var(--texto-suave); margin-bottom:8px;">
-                    Dano: <strong id="lbl-dano-arma" style="color:var(--espectro-cor);">1d6 + 1d6</strong>
+                
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="arma-dano" placeholder="Dano" readonly style="background:#222; text-align:center;">
+                    <input type="text" id="arma-critico" placeholder="Crítico" readonly style="background:#222; text-align:center;">
                 </div>
-                <button class="btn-rolar" onclick="rolarDanoArma()">🎲 Rolar Dano</button>
+
+                <input type="text" id="arma-efeito" placeholder="Efeito ou Descarte (Opcional)">
+
+                <button class="btn-rolar" style="margin-top:5px;" onclick="rolarDanoArma()">🎲 Rolar Dano da Arma</button>
             </div>
 
             <div class="zona-titulo">
@@ -371,7 +376,7 @@
         import { db, auth, idJogadorAtual } from '../js/firebase.js';
         import { ref, get, set, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        // --- TABELAS DE BÔNUS ---
+        // --- TABELAS ---
         const ESPECTROS = {
             padrao: { cor: "#d4af37", juramento: "O destino aguarda.", passivo: "Nenhum.", ativo: "Nenhum." },
             igneo: { cor: "#e63946", juramento: "“Toda conquista exige um sacrifício.”", passivo: "+1d4 em um atributo e -1d4 em outro.", ativo: "Troca Equivalente." },
@@ -400,14 +405,6 @@
             ecoista: { vida: 0, impeto: 0, desloc: "6,5m", attr: { razao: 1, dinamismo: 1 }, per: ["arcanismo", "acrobacia"] }
         };
 
-        const ARMAS = {
-            espada_longa: { nome: "Espada Longa", dado: "1d6", critico: "1d6", tipo: "Média" },
-            adaga: { nome: "Adaga", dado: "1d4", critico: "1d4", tipo: "Leve" },
-            machado: { nome: "Machado", dado: "2d10", critico: "1d10", tipo: "Pesada" },
-            arco: { nome: "Arco", dado: "1d6", critico: "1d6", tipo: "Precisão" },
-            cajado: { nome: "Cajado", dado: "1d6", critico: "1d6", tipo: "Catalisador" }
-        };
-
         const TITULOS_DISPONIVEIS = [
             { nome: "Aquele que Nunca Cai", efeito: "Na primeira vez em cada cena que seus PV chegarem a 0, permaneça com 1 PV." },
             { nome: "Carcereiro", efeito: "Condições de Imobilizado aplicadas por você duram +1 turno." },
@@ -421,9 +418,8 @@
             volume: 1,
             atributosBase: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 },
             atributos: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 },
-            // Perícias base iniciam em 1 para as 4 escolhidas, 0 no resto
-            periciasBase: { Atletismo: 1, Combate: 1, Resistencia: 1, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 1, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
-            pericias: { Atletismo: 1, Combate: 1, Resistencia: 1, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 1, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
+            periciasBase: { Atletismo: 0, Combate: 0, Resistencia: 0, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 0, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
+            pericias: { Atletismo: 0, Combate: 0, Resistencia: 0, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 0, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
             pv: 0, pvTemp: 0, pi: 0,
             pilha: [],
             tituloAtivo: null,
@@ -447,9 +443,16 @@
                 document.getElementById('sel-espectro').value = dados.espectro || "padrao";
                 document.getElementById('sel-caminho').value = dados.caminho || "guerreiro";
                 document.getElementById('sel-vocacao').value = dados.vocacao || "nenhuma";
-                document.getElementById('sel-arma').value = dados.armaFavorita || "espada_longa";
                 estado.volume = dados.volume || 1;
                 
+                // Carrega dados salvos da arma
+                if(dados.arma) {
+                    document.getElementById('arma-nome').value = dados.arma.nome || "";
+                    document.getElementById('arma-categoria').value = dados.arma.categoria || "Média";
+                    document.getElementById('arma-efeito').value = dados.arma.efeito || "";
+                    atualizarDadosArma();
+                }
+
                 if(dados.dadosPersonagem) {
                     for(let k in dados.dadosPersonagem) {
                         if(estado.atributosBase[k] !== undefined) estado.atributosBase[k] = parseInt(dados.dadosPersonagem[k]) || 0;
@@ -465,7 +468,6 @@
                 estado.pvTemp = dados.pvTemp || 0;
                 estado.tituloAtivo = dados.tituloAtivo || null;
                 
-                // Recalcula os pontos restantes baseados no que foi salvo
                 let totalAttr = Object.values(estado.atributosBase).reduce((a,b) => a+b, 0);
                 estado.pontosAtributoRestantes = 4 - totalAttr;
                 
@@ -475,7 +477,6 @@
             
             iniciarTabuleiro();
             conectarSala();
-            atualizarArma();
         }
 
         // --- RENDERIZAÇÃO ---
@@ -485,7 +486,7 @@
                 `<button class="selo-vol ${estado.volume === i+1 ? 'ativo' : ''}" onclick="mudarVolume(${i+1})">${r}</button>`
             ).join("");
             atualizarEspectro();
-            aplicarBonus(); // Recalcula tudo e renderiza
+            aplicarBonus();
             renderizarPilha();
             renderizarTitulo();
             document.getElementById('pv-atual').innerText = estado.pv;
@@ -574,14 +575,24 @@
         // --- ATRIBUTOS ---
         window.renderizarAtributos = () => {
             const nomes = { vigor: "Vigor", dinamismo: "Dinamismo", razao: "Razão", determinacao: "Determinação" };
-            document.getElementById("lbl-pontos-attr").innerText = `${estado.pontosAtributoRestantes}d4 restantes`;
+            
+            // Só mostra o texto de dados restantes se for Volume 1
+            if(estado.volume === 1) {
+                document.getElementById("lbl-pontos-attr").innerText = `${estado.pontosAtributoRestantes}d4 restantes`;
+                document.getElementById("lbl-pontos-attr").style.display = "inline";
+            } else {
+                document.getElementById("lbl-pontos-attr").style.display = "none";
+            }
             
             document.getElementById("chamas-container").innerHTML = Object.keys(nomes).map(k => {
                 const qtdBase = estado.atributosBase[k];
                 const qtdFinal = estado.atributos[k];
                 const icones = qtdFinal > 0 ? "▲".repeat(qtdFinal) : "0d4";
                 
-                // Botões de + e - para o jogador montar a ficha
+                // O limite de 2d4 SÓ EXISTE no Volume 1
+                const limiteAtingido = (estado.volume === 1 && qtdBase >= 2);
+                const semPontos = (estado.volume === 1 && estado.pontosAtributoRestantes <= 0);
+                
                 return `
                     <div class="chama-card">
                         <div class="titulo-fonte" style="font-size:1.1rem;">${nomes[k]}</div>
@@ -589,7 +600,7 @@
                         <div style="margin-bottom:6px; display:flex; justify-content:center; gap:5px; align-items:center;">
                             <button class="btn-mini" onclick="ajustarAttr('${k}', -1)">-</button>
                             <span style="font-size:0.8rem;">${qtdBase}d4</span>
-                            <button class="btn-mini" onclick="ajustarAttr('${k}', 1)">+</button>
+                            <button class="btn-mini" onclick="ajustarAttr('${k}', 1)" ${(limiteAtingido || semPontos) ? 'disabled style="opacity:0.3;"' : ''}>+</button>
                         </div>
                         <button class="${qtdFinal === 0 ? 'btn-rolar desafiar' : 'btn-rolar'}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
                             ${qtdFinal === 0 ? '⚠️ Desafiar' : `Rolar`}
@@ -600,28 +611,38 @@
         }
 
         window.ajustarAttr = (k, delta) => {
-            if (delta > 0 && estado.pontosAtributoRestantes <= 0) return alert("Você não tem mais dados para distribuir nos Atributos!");
-            if (delta > 0 && estado.atributosBase[k] >= 2 && estado.volume === 1) return alert("O limite é 2d4 por Atributo no Volume I.");
+            // Lógica de limite e gasto de pontos (só se aplica no Volume 1)
+            if (estado.volume === 1) {
+                if (delta > 0 && estado.pontosAtributoRestantes <= 0) return alert("Você não tem mais dados para distribuir nos Atributos!");
+                if (delta > 0 && estado.atributosBase[k] >= 2) return alert("O limite é 2d4 por Atributo no Volume I.");
+                estado.pontosAtributoRestantes -= delta;
+            }
             
             let novoValor = estado.atributosBase[k] + delta;
             if (novoValor < 0 || novoValor > 10) return;
 
             estado.atributosBase[k] = novoValor;
-            estado.pontosAtributoRestantes -= delta;
-            
-            aplicarBonus(); // Isso já chama o renderizarAtributos e recalcula a vida
+            aplicarBonus(); 
         }
 
         // --- PERÍCIAS ---
         window.renderizarPericias = () => {
-            document.getElementById("lbl-pontos-per").innerText = `${estado.pontosPericiaRestantes} Perícias livres`;
+            if(estado.volume === 1) {
+                document.getElementById("lbl-pontos-per").innerText = `${estado.pontosPericiaRestantes} Perícias livres`;
+                document.getElementById("lbl-pontos-per").style.display = "inline";
+            } else {
+                document.getElementById("lbl-pontos-per").style.display = "none";
+            }
             
             document.getElementById("pericias-container").innerHTML = Object.keys(estado.pericias).map(p => {
                 const qtdBase = estado.periciasBase[p];
                 const qtdFinal = estado.pericias[p];
                 
-                // Se o jogador tiver pontos livres, ele pode ativar uma perícia nova. Se não, só rolar.
-                let btnMais = `<button class="btn-mini" onclick="ajustarPericia('${p}', 1)" ${estado.pontosPericiaRestantes <= 0 || qtdBase > 0 ? 'disabled style="opacity:0.2;"' : ''}>+</button>`;
+                // O botão de + só aparece se for Vol 1 e o jogador tiver pontos
+                let btnMais = "";
+                if (estado.volume === 1) {
+                    btnMais = `<button class="btn-mini" onclick="ajustarPericia('${p}', 1)" ${estado.pontosPericiaRestantes <= 0 || qtdBase > 0 ? 'disabled style="opacity:0.2;"' : ''}>+</button>`;
+                }
                 
                 return `
                     <div class="pericia-item">
@@ -636,7 +657,7 @@
         }
 
         window.ajustarPericia = (p, delta) => {
-            if (delta > 0 && estado.pontosPericiaRestantes <= 0) return alert("Você já escolheu as 4 Perícias iniciais!");
+            if (estado.volume === 1 && estado.pontosPericiaRestantes <= 0) return alert("Você já escolheu as 4 Perícias iniciais!");
             
             estado.periciasBase[p] = 1;
             estado.pontosPericiaRestantes -= 1;
@@ -645,24 +666,50 @@
         }
 
         // --- ARMA ---
-        window.atualizarArma = () => {
-            const arma = ARMAS[document.getElementById("sel-arma").value];
-            document.getElementById("lbl-dano-arma").innerText = `${arma.dado} + ${arma.critico}`;
+        window.atualizarDadosArma = () => {
+            const cat = document.getElementById("arma-categoria").value;
+            let dano = "1d6", crit = "1d6";
+            
+            if(cat === "Leve") { dano = "1d4"; crit = "1d4"; }
+            else if(cat === "Média") { dano = "1d6"; crit = "1d6"; }
+            else if(cat === "Pesada") { dano = "2d10"; crit = "1d10"; }
+            else if(cat === "Precisão") { dano = "1d6"; crit = "1d6"; }
+            else if(cat === "Catalisador") { dano = "Arcanismo"; crit = "-"; }
+
+            document.getElementById("arma-dano").value = dano;
+            document.getElementById("arma-critico").value = crit;
         }
 
         window.rolarDanoArma = () => {
-            const arma = ARMAS[document.getElementById("sel-arma").value];
-            const dadoBase = Math.floor(Math.random() * parseInt(arma.dado.split('d')[1])) + 1;
-            const dadoCritico = Math.floor(Math.random() * parseInt(arma.critico.split('d')[1])) + 1; 
-            
-            const total = dadoBase + dadoCritico + estado.atributos.vigor; 
+            const nome = document.getElementById("arma-nome").value || "Arma";
+            const cat = document.getElementById("arma-categoria").value;
+            const danoStr = document.getElementById("arma-dano").value;
+            const critStr = document.getElementById("arma-critico").value;
+            const efeito = document.getElementById("arma-efeito").value;
+
+            // Se for catalisador, usa Arcanismo
+            let qtdArcanismo = estado.pericias["Arcanismo"];
+            let totalDano = 0;
+
+            if (cat === "Catalisador") {
+                for(let i=0; i<qtdArcanismo; i++) totalDano += Math.floor(Math.random() * 6) + 1;
+                if (qtdArcanismo === 0) totalDano = Math.floor(Math.random() * 6) + 1; // Fallback
+            } else {
+                const qtdBase = parseInt(danoStr.split('d')[1]);
+                const qtdCrit = parseInt(critStr.split('d')[1]);
+                for(let i=0; i<qtdBase; i++) totalDano += Math.floor(Math.random() * (cat === "Pesada" ? 10 : (cat === "Leve" ? 4 : 6))) + 1;
+                if (critStr !== "-") {
+                    for(let i=0; i<1; i++) totalDano += Math.floor(Math.random() * (cat === "Pesada" ? 10 : (cat === "Leve" ? 4 : 6))) + 1;
+                }
+            }
 
             document.getElementById("bandeja").innerHTML = `
-                <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">Ataque: ${arma.nome}</div>
+                <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">Ataque: ${nome} (${cat})</div>
                 <div>
-                    <span style="font-size:1.2rem;">[${dadoBase}] + [${dadoCritico}] + Vigor(${estado.atributos.vigor}) = <strong style="font-size:1.8rem; color:var(--espectro-cor);">${total}</strong></span>
+                    <span style="font-size:1.8rem; color:var(--espectro-cor);">Total de Dano: ${totalDano}</span>
                 </div>
-                <div style="font-size:0.85rem;">Dano Físico</div>
+                <div style="font-size:0.85rem;">Dano Base: ${danoStr} | Crítico: ${critStr}</div>
+                ${efeito ? `<div style="font-size:0.8rem; color:#ff9800; margin-top:5px;">Efeito: ${efeito}</div>` : ''}
             `;
         }
 
@@ -740,7 +787,7 @@
             }
         }
 
-        // --- DESCARTES ---
+        // --- DESCARTES E RECURSOS ---
         window.enviarParaDescarte = (valor) => {
             if (estado.pilha.length >= 10) return alert("Limite de 10 dados!");
             estado.pilha.push(valor);
@@ -768,7 +815,6 @@
             renderizarPilha();
         }
 
-        // --- RECURSOS ---
         window.alterarRecurso = (tipo, delta) => {
             estado[tipo] = Math.max(0, estado[tipo] + delta);
             const map = { pv: "pv-atual", pvTemp: "pv-temp", pi: "pi-atual" };
