@@ -585,24 +585,29 @@
             }
             
             document.getElementById("chamas-container").innerHTML = Object.keys(nomes).map(k => {
-                const qtdBase = estado.atributosBase[k];
-                const qtdFinal = estado.atributos[k];
+                const qtdBase = estado.atributosBase[k]; // O que o jogador colocou
+                const qtdFinal = estado.atributos[k];    // Base + Bônus de Classe
                 const icones = qtdFinal > 0 ? "▲".repeat(qtdFinal) : "0d4";
                 
                 const limiteAtingido = (estado.volume === 1 && qtdBase >= 2);
                 const semPontos = (estado.volume === 1 && estado.pontosAtributoRestantes <= 0);
                 
+                // A MÁGICA ACONTECE AQUI: Verifica o qtdBase, não o qtdFinal
+                const precisaDesafiar = (qtdBase === 0);
+                const textoBotao = precisaDesafiar ? '⚠️ DESAFIAR' : 'ROLAR';
+                const classeBotao = precisaDesafiar ? 'btn-rolar desafiar' : 'btn-rolar';
+
                 return `
                     <div class="chama-card">
-                        <div class="titulo-fonte" style="font-size:1.1rem;">${nomes[k]}</div>
+                        <div class="titulo-fonte" style="font-size:1.1rem; color: #ccc;">${nomes[k]}</div>
                         <div class="dados-visuais">${icones}</div>
-                        <div style="margin-bottom:6px; display:flex; justify-content:center; gap:5px; align-items:center;">
+                        <div style="margin-bottom:8px; display:flex; justify-content:center; gap:8px; align-items:center;">
                             <button class="btn-mini" onclick="ajustarAttr('${k}', -1)">-</button>
-                            <span style="font-size:0.8rem;">${qtdBase}d4</span>
+                            <span style="font-size:0.9rem; color: #fff; font-weight: bold; min-width: 30px;">${qtdBase}d4</span>
                             <button class="btn-mini" onclick="ajustarAttr('${k}', 1)" ${(limiteAtingido || semPontos) ? 'disabled style="opacity:0.3;"' : ''}>+</button>
                         </div>
-                        <button class="${qtdFinal === 0 ? 'btn-rolar desafiar' : 'btn-rolar'}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
-                            ${qtdFinal === 0 ? '⚠️ Desafiar' : `Rolar`}
+                        <button class="${classeBotao}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
+                            ${textoBotao}
                         </button>
                     </div>
                 `;
