@@ -1,0 +1,143 @@
+.perfil-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 100px auto 40px auto;
+    padding: 0 20px;
+    align-items: flex-start;
+}
+
+/* Lado Esquerdo: Identidade */
+.perfil-identidade {
+    flex: 0 0 300px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    object-fit: cover;
+    margin-bottom: 15px;
+    background: #111;
+}
+
+.perfil-identidade h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 2rem;
+    margin-bottom: 5px;
+    border: none;
+}
+
+/* Lado Direito: Conteúdo */
+.perfil-conteudo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estatísticas */
+.estatisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.stat-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+/* Abas */
+.abas-perfil {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: transparent;
+    color: #888;
+    border: 1px solid transparent;
+    padding: 8px 15px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.tab-btn:hover { color: #ccc; }
+.tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+
+.tab-conteudo { display: none; }
+.tab-conteudo.active { display: block; animation: fadeIn 0.3s; }
+
+/* Grid de Mini Cards (para o Acervo) */
+.grid-mini-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.mini-card {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+    color: #fff;
+    transition: border-color 0.2s;
+}
+
+.mini-card:hover { border-color: var(--gold); }
+
+.mini-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin: 0;
+    line-height: 1;
+}
+
+.mini-card p { font-size: 0.8rem; color: #888; margin: 0; }
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .perfil-container { flex-direction: column; }
+    .perfil-identidade { flex: auto; width: 100%; }
+    .estatisticas-grid { grid-template-columns: repeat(2, 1fr); }
+}

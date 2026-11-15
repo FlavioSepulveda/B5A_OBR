@@ -33,6 +33,7 @@ function configurarFormulario() {
                 
                 let payload = {
                     autor: auth.currentUser?.displayName || "Arquivista",
+                    autorId: idJogadorAtual, // NOVO: Salva o ID do usuário
                     titulo: titulo,
                     texto: texto,
                     imagem: imagemFinal,
@@ -170,7 +171,6 @@ function carregarCartas() {
 
             let statusHtml = "";
             if (colecaoAtual === "monstros") {
-                // Adicionado Nível na parte de cima do card
                 statusHtml = `
                     <div class="carta-status" style="flex-direction: column; gap: 5px;">
                         <div style="display:flex; justify-content:space-between; width:100%;">
@@ -240,7 +240,6 @@ function abrirModal(item, id) {
     
     let sub = `<strong>${item.autor}</strong>`;
     if(colecaoAtual === "monstros") {
-        // Adicionando Atributos no subtítulo do modal
         sub += `<br>PV: ${item.vida} | TA: ${item.ta} | Nível: ${item.nivel || 'Comum'} | Dom: ${item.dominante}`;
         sub += `<br><span style="font-size:0.75rem; color:#888;">Atributos: VIG ${item.vigor || '0d4'} | DIN ${item.dinamismo || '0d4'} | RAZ ${item.razao || '0d4'} | DET ${item.determinacao || '0d4'}</span>`;
     }
@@ -294,7 +293,10 @@ function abrirModal(item, id) {
 
     modal.style.display = 'block';
     
-    if (item.autor === auth.currentUser?.displayName) {
+    // NOVO: Verificação Segura de Autor (usa autorId se existir, senão usa autor)
+    const isDono = item.autorId ? item.autorId === idJogadorAtual : item.autor === auth.currentUser?.displayName;
+    
+    if (isDono) {
         document.getElementById('btn-editar').style.display = 'block';
         document.getElementById('btn-deletar-modal').style.display = 'block';
     }
