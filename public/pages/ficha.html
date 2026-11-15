@@ -52,7 +52,6 @@
             border-bottom: 3px solid var(--espectro-cor);
             padding: 12px 20px; border-radius: 8px; margin-bottom: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            transition: border-color 0.3s;
         }
         .trilha-volume { display: flex; gap: 6px; align-items: center; }
         .selo-vol {
@@ -250,7 +249,6 @@
                         <option value="cartografo">Cartógrafo de Realidades</option>
                         <option value="ecoista">Ecoísta</option>
                     </select>
-                    <small style="color:#666; font-size:0.7rem;">*Escolher Vocação substitui os bônus de Caminho.</small>
                 </div>
 
                 <div style="margin-top:12px;">
@@ -304,14 +302,20 @@
                 </div>
             </div>
 
-            <div class="zona-titulo"><span>🔥 Atributos (d4)</span></div>
+            <div class="zona-titulo">
+                <span>🔥 Atributos (d4)</span>
+                <span style="font-size:0.8rem; color:var(--texto-suave);" id="lbl-pontos-attr">4d4 restantes</span>
+            </div>
             <div class="chamas-grid" id="chamas-container"></div>
 
             <div class="bandeja-dados" id="bandeja">
                 <div style="color:var(--texto-suave); font-size:0.9rem;">Aguardando rolagem...</div>
             </div>
 
-            <div class="zona-titulo"><span>📜 Perícias (d6)</span></div>
+            <div class="zona-titulo">
+                <span>📜 Perícias (d6)</span>
+                <span style="font-size:0.8rem; color:var(--texto-suave);" id="lbl-pontos-per">Escolha 4</span>
+            </div>
             <div class="pericias-grid" id="pericias-container"></div>
         </section>
 
@@ -415,13 +419,16 @@
         // --- ESTADO ---
         const estado = {
             volume: 1,
-            atributosBase: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 }, // Valores puros (sem bônus)
-            atributos: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 }, // Valores com bônus aplicados
-            periciasBase: { Atletismo: 0, Combate: 0, Resistencia: 0, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 0, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
-            pericias: { Atletismo: 0, Combate: 0, Resistencia: 0, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 0, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
+            atributosBase: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 },
+            atributos: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 },
+            // Perícias base iniciam em 1 para as 4 escolhidas, 0 no resto
+            periciasBase: { Atletismo: 1, Combate: 1, Resistencia: 1, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 1, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
+            pericias: { Atletismo: 1, Combate: 1, Resistencia: 1, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 1, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
             pv: 0, pvTemp: 0, pi: 0,
             pilha: [],
-            tituloAtivo: null
+            tituloAtivo: null,
+            pontosAtributoRestantes: 4,
+            pontosPericiaRestantes: 4
         };
 
         let fichaId = null;
@@ -448,15 +455,22 @@
                         if(estado.atributosBase[k] !== undefined) estado.atributosBase[k] = parseInt(dados.dadosPersonagem[k]) || 0;
                     }
                 }
-                if(dados.pericias) {
-                    for(let p in dados.periciasBase) {
-                        if(dados.pericias[p] !== undefined) estado.periciasBase[p] = parseInt(dados.pericias[p]) || 0;
+                if(dados.periciasBase) {
+                    for(let p in estado.periciasBase) {
+                        if(dados.periciasBase[p] !== undefined) estado.periciasBase[p] = parseInt(dados.periciasBase[p]) || 0;
                     }
                 }
                 estado.pv = dados.pvAtual || 10;
                 estado.pi = dados.piAtual || 5;
                 estado.pvTemp = dados.pvTemp || 0;
                 estado.tituloAtivo = dados.tituloAtivo || null;
+                
+                // Recalcula os pontos restantes baseados no que foi salvo
+                let totalAttr = Object.values(estado.atributosBase).reduce((a,b) => a+b, 0);
+                estado.pontosAtributoRestantes = 4 - totalAttr;
+                
+                let totalPer = Object.values(estado.periciasBase).filter(v => v > 0).length;
+                estado.pontosPericiaRestantes = 4 - totalPer;
             }
             
             iniciarTabuleiro();
@@ -471,9 +485,7 @@
                 `<button class="selo-vol ${estado.volume === i+1 ? 'ativo' : ''}" onclick="mudarVolume(${i+1})">${r}</button>`
             ).join("");
             atualizarEspectro();
-            aplicarBonus(); // Isso chama o recalcularTudo
-            renderizarAtributos();
-            renderizarPericias();
+            aplicarBonus(); // Recalcula tudo e renderiza
             renderizarPilha();
             renderizarTitulo();
             document.getElementById('pv-atual').innerText = estado.pv;
@@ -500,52 +512,32 @@
             `;
         }
 
-        // --- NOVA LÓGICA: APLICAR BÔNUS DE CLASSE ---
+        // --- APLICAR BÔNUS E RENDERIZAR ---
         window.aplicarBonus = () => {
             const caminhoKey = document.getElementById("sel-caminho").value;
             const vocacaoKey = document.getElementById("sel-vocacao").value;
             
-            // 1. Reseta para os valores base
             estado.atributos = { ...estado.atributosBase };
             estado.pericias = { ...estado.periciasBase };
             
-            let fatorVida = 0, fatorImpeto = 0, desloc = "6m", extraInv = 0, extraInic = 0, extraPI = 0;
+            let fatorVida = 0, fatorImpeto = 0, desloc = "6m", extraInv = 0, extraPI = 0;
             let nomeClasse = "";
 
-            // 2. Aplica o Caminho (se for o caso)
             if(vocacaoKey === 'nenhuma') {
                 const cam = CAMINHOS[caminhoKey];
-                fatorVida = cam.vida;
-                fatorImpeto = cam.impeto;
-                desloc = cam.desloc;
+                fatorVida = cam.vida; fatorImpeto = cam.impeto; desloc = cam.desloc;
                 nomeClasse = `Caminho: ${caminhoKey}`;
                 
-                // Atributos
                 if(cam.attr.vigor) estado.atributos.vigor += cam.attr.vigor;
                 if(cam.attr.dinamismo) estado.atributos.dinamismo += cam.attr.dinamismo;
                 if(cam.attr.razao) estado.atributos.razao += cam.attr.razao;
                 if(cam.attr.determinacao) estado.atributos.determinacao += cam.attr.determinacao;
                 
-                // Perícias (+1d6 se tiver)
-                if(cam.per && cam.per.length > 0) {
-                    cam.per.forEach(p => {
-                        let key = p.charAt(0).toUpperCase() + p.slice(1);
-                        if(estado.pericias[key] !== undefined) estado.pericias[key] += 1;
-                    });
-                }
-                // Extras
-                if(cam.extra) {
-                    if(cam.extra.pi) extraPI = cam.extra.pi;
-                    if(cam.extra.inv) extraInv = cam.extra.inv;
-                    if(cam.extra.inic) extraInic = cam.extra.inic;
-                }
-
+                if(cam.per) cam.per.forEach(p => { let key = p.charAt(0).toUpperCase() + p.slice(1); if(estado.pericias[key] !== undefined) estado.pericias[key] += 1; });
+                if(cam.extra) { if(cam.extra.pi) extraPI = cam.extra.pi; if(cam.extra.inv) extraInv = cam.extra.inv; }
             } else {
-                // Aplica a Vocação
                 const voc = VOCACOES[vocacaoKey];
-                fatorVida = 5; // Valores base para quem tem vocação
-                fatorImpeto = 4;
-                desloc = voc.desloc;
+                fatorVida = 5; fatorImpeto = 4; desloc = voc.desloc;
                 nomeClasse = `Vocação: ${vocacaoKey}`;
 
                 if(voc.attr.vigor) estado.atributos.vigor += voc.attr.vigor;
@@ -553,18 +545,12 @@
                 if(voc.attr.razao) estado.atributos.razao += voc.attr.razao;
                 if(voc.attr.determinacao) estado.atributos.determinacao += voc.attr.determinacao;
 
-                if(voc.per && voc.per.length > 0) {
-                    voc.per.forEach(p => {
-                        let key = p.charAt(0).toUpperCase() + p.slice(1);
-                        if(estado.pericias[key] !== undefined) estado.pericias[key] += 1;
-                    });
-                }
+                if(voc.per) voc.per.forEach(p => { let key = p.charAt(0).toUpperCase() + p.slice(1); if(estado.pericias[key] !== undefined) estado.pericias[key] += 1; });
             }
 
             document.getElementById("lbl-caminho").innerText = nomeClasse;
             document.getElementById("lbl-desloc").innerText = desloc;
 
-            // 3. Recalcula Vida, Ímpeto e Inventário
             const maxDet = estado.atributos.determinacao * 4;
             const maxRaz = estado.atributos.razao * 4;
             const maxVig = estado.atributos.vigor * 4;
@@ -581,50 +567,81 @@
             for (let i = 1; i <= invCap; i++) html += `<div class="slot-item"><input type="text" placeholder="Item ${i}..." style="background:transparent; border:none; margin:0; padding:0; font-size:0.78rem; color:#ccc;"></div>`;
             document.getElementById("inventario-container").innerHTML = html;
 
-            // Atualiza a tela
             renderizarAtributos();
             renderizarPericias();
         }
 
+        // --- ATRIBUTOS ---
         window.renderizarAtributos = () => {
             const nomes = { vigor: "Vigor", dinamismo: "Dinamismo", razao: "Razão", determinacao: "Determinação" };
+            document.getElementById("lbl-pontos-attr").innerText = `${estado.pontosAtributoRestantes}d4 restantes`;
+            
             document.getElementById("chamas-container").innerHTML = Object.keys(nomes).map(k => {
-                const qtd = estado.atributos[k];
+                const qtdBase = estado.atributosBase[k];
+                const qtdFinal = estado.atributos[k];
+                const icones = qtdFinal > 0 ? "▲".repeat(qtdFinal) : "0d4";
+                
+                // Botões de + e - para o jogador montar a ficha
                 return `
                     <div class="chama-card">
                         <div class="titulo-fonte" style="font-size:1.1rem;">${nomes[k]}</div>
-                        <div class="dados-visuais">${qtd > 0 ? "▲".repeat(qtd) : "0d4"}</div>
-                        <div style="margin-bottom:6px; display:none;">
+                        <div class="dados-visuais">${icones}</div>
+                        <div style="margin-bottom:6px; display:flex; justify-content:center; gap:5px; align-items:center;">
                             <button class="btn-mini" onclick="ajustarAttr('${k}', -1)">-</button>
-                            <span style="font-size:0.8rem;">${qtd}d4</span>
+                            <span style="font-size:0.8rem;">${qtdBase}d4</span>
                             <button class="btn-mini" onclick="ajustarAttr('${k}', 1)">+</button>
                         </div>
-                        <button class="${qtd === 0 ? 'btn-rolar desafiar' : 'btn-rolar'}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
-                            ${qtd === 0 ? '⚠️ Desafiar' : `Rolar`}
+                        <button class="${qtdFinal === 0 ? 'btn-rolar desafiar' : 'btn-rolar'}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
+                            ${qtdFinal === 0 ? '⚠️ Desafiar' : `Rolar`}
                         </button>
                     </div>
                 `;
             }).join("");
         }
 
-        // Nota: Ajustar Atributo agora modifica o valor Base e depois aplica os bônus
-        window.ajustarAttr = (k, delta) => { 
-            estado.atributosBase[k] = Math.max(0, estado.atributosBase[k] + delta); 
-            aplicarBonus(); 
+        window.ajustarAttr = (k, delta) => {
+            if (delta > 0 && estado.pontosAtributoRestantes <= 0) return alert("Você não tem mais dados para distribuir nos Atributos!");
+            if (delta > 0 && estado.atributosBase[k] >= 2 && estado.volume === 1) return alert("O limite é 2d4 por Atributo no Volume I.");
+            
+            let novoValor = estado.atributosBase[k] + delta;
+            if (novoValor < 0 || novoValor > 10) return;
+
+            estado.atributosBase[k] = novoValor;
+            estado.pontosAtributoRestantes -= delta;
+            
+            aplicarBonus(); // Isso já chama o renderizarAtributos e recalcula a vida
         }
 
+        // --- PERÍCIAS ---
         window.renderizarPericias = () => {
+            document.getElementById("lbl-pontos-per").innerText = `${estado.pontosPericiaRestantes} Perícias livres`;
+            
             document.getElementById("pericias-container").innerHTML = Object.keys(estado.pericias).map(p => {
-                const qtd = estado.pericias[p];
+                const qtdBase = estado.periciasBase[p];
+                const qtdFinal = estado.pericias[p];
+                
+                // Se o jogador tiver pontos livres, ele pode ativar uma perícia nova. Se não, só rolar.
+                let btnMais = `<button class="btn-mini" onclick="ajustarPericia('${p}', 1)" ${estado.pontosPericiaRestantes <= 0 || qtdBase > 0 ? 'disabled style="opacity:0.2;"' : ''}>+</button>`;
+                
                 return `
                     <div class="pericia-item">
-                        <span>${p} (${qtd}d6)</span>
-                        <div>
+                        <span>${p} (${qtdFinal}d6)</span>
+                        <div style="display:flex; gap:5px;">
+                            ${btnMais}
                             <button class="btn-mini" style="background:var(--espectro-cor); color:#000;" onclick="rolarPericia('${p}')">🎲</button>
                         </div>
                     </div>
                 `;
             }).join("");
+        }
+
+        window.ajustarPericia = (p, delta) => {
+            if (delta > 0 && estado.pontosPericiaRestantes <= 0) return alert("Você já escolheu as 4 Perícias iniciais!");
+            
+            estado.periciasBase[p] = 1;
+            estado.pontosPericiaRestantes -= 1;
+            
+            aplicarBonus();
         }
 
         // --- ARMA ---
