@@ -753,7 +753,7 @@
         }
 
         // --- ROLAGENS GERAIS ---
-        window.rolarAtributo = (key, label) => executarRolagem(label, estado.atributos[key], 4);
+        window.rolarAtributo = (key, label) => executarRolagem(label, estado.atributosBase[key], 4);
         window.rolarPericia = (nome) => executarRolagem(nome, estado.pericias[nome], 6);
 
         async function executarRolagem(titulo, qtdDados, faces) {
