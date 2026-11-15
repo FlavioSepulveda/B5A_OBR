@@ -756,46 +756,58 @@
         window.rolarAtributo = (key, label) => executarRolagem(label, estado.atributosBase[key], 4);
         window.rolarPericia = (nome) => executarRolagem(nome, estado.pericias[nome], 6);
 
-        async function executarRolagem(titulo, qtdDados, faces) {
+                async function executarRolagem(titulo, qtdDados, faces) {
             const bandeja = document.getElementById("bandeja");
             let d12 = Math.floor(Math.random() * 12) + 1;
             let avisoExtra = "";
+            let textoConta = "";
 
             if (qtdDados === 0) {
+                // Lógica do Desafiar o Destino (2d12)
                 const d12_b = Math.floor(Math.random() * 12) + 1;
                 const escolhido = Math.max(d12, d12_b);
-                avisoExtra = `<div style="color:#ffccd5; font-size:0.8rem;">⚠️ Desafio (2d12: ${d12} e ${d12_b} → ${escolhido})</div>`;
+                
+                // Mostra os dois dados na tela
+                avisoExtra = `<div style="color:#ffccd5; font-size:0.85rem; margin-top:5px;">⚠️ Desafio (2d12): <strong>${d12}</strong> e <strong>${d12_b}</strong> → Manteve ${escolhido}</div>`;
                 d12 = escolhido;
+                textoConta = `${d12} (d12) + Vol(${estado.volume})`;
+            } else {
+                // Lógica de rolagem normal
+                let extras = [];
+                for (let i = 0; i < qtdDados; i++) extras.push(Math.floor(Math.random() * faces) + 1);
+                const somaExtras = extras.reduce((a, b) => a + b, 0);
+                
+                textoConta = `${d12} (d12) + [${extras.join(", ")}] + Vol(${estado.volume})`;
+                d12 = d12 + somaExtras; // Soma os dados extras ao d12 apenas para o texto
             }
 
-            let extras = [];
-            for (let i = 0; i < qtdDados; i++) extras.push(Math.floor(Math.random() * faces) + 1);
-            const total = d12 + extras.reduce((a, b) => a + b, 0) + estado.volume;
+            const total = d12 + estado.volume;
 
             let classeAbs = "", msgAbs = "";
-            if (d12 === 1) { classeAbs = "absoluto-1"; msgAbs = "💀 CATÁSTROFE (1)!"; }
-            else if (d12 === 6) { classeAbs = "absoluto-6"; msgAbs = "🌑 FALHA (6)."; }
-            else if (d12 === 12) { classeAbs = "absoluto-12"; msgAbs = "✨ LENDÁRIO (12)!"; }
+            // A regra dos absolutos só se aplica ao valor do d12 original
+            const d12Original = textoConta.split(' ')[0]; 
+            if (d12Original == 1) { classeAbs = "absoluto-1"; msgAbs = "💀 CATÁSTROFE (1)!"; }
+            else if (d12Original == 6) { classeAbs = "absoluto-6"; msgAbs = "🌑 FALHA (6)."; }
+            else if (d12Original == 12) { classeAbs = "absoluto-12"; msgAbs = "✨ LENDÁRIO (12)!"; }
 
             bandeja.innerHTML = `
                 <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">Teste de ${titulo}</div>
-                <div>
-                    <span class="d12-destaque ${classeAbs}">${d12}</span>
-                    <span style="font-size:1.2rem;">+ [${extras.join(", ") || "0"}] + Vol(${estado.volume}) = <strong style="font-size:1.8rem; color:var(--espectro-cor);">${total}</strong></span>
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <span class="d12-destaque ${classeAbs}">${textoConta.split(' ')[0]}</span>
+                    <span style="font-size:1.2rem;">${textoConta.replace(textoConta.split(' ')[0], '')} = <strong style="font-size:1.8rem; color:var(--espectro-cor);">${total}</strong></span>
                 </div>
                 <div style="font-size:0.85rem; font-weight:bold;">${msgAbs}</div>
                 ${avisoExtra}
-                <button class="btn-mini" style="width:auto; padding:4px 10px; margin-top:8px;" onclick="enviarParaDescarte(${d12})">⏳ Descartar</button>
+                <button class="btn-mini" style="width:auto; padding:4px 10px; margin-top:8px;" onclick="enviarParaDescarte(${textoConta.split(' ')[0]})">⏳ Descartar d12</button>
             `;
 
             if(idJogadorAtual) {
                 const nome = document.getElementById('nome-char').value || "Arquivista";
                 await push(ref(db, `salas/sala-padrao/rolagens`), { 
-                    nome: `${nome} (${titulo})`, d12: d12, outros: extras.reduce((a, b) => a + b, 0), vol: estado.volume, total: total 
+                    nome: `${nome} (${titulo})`, d12: parseInt(textoConta.split(' ')[0]), outros: total - parseInt(textoConta.split(' ')[0]) - estado.volume, vol: estado.volume, total: total 
                 });
             }
         }
-
         // --- DESCARTES E RECURSOS ---
         window.enviarParaDescarte = (valor) => {
             if (estado.pilha.length >= 10) return alert("Limite de 10 dados!");
