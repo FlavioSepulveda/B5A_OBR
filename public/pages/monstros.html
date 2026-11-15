@@ -21,6 +21,10 @@
     <div class="comunidade-container">
         <div class="painel-escrita">
             <h2>Registrar Monstro</h2>
+            
+            <!-- CAMPO OCULTO PARA EDIÇÃO -->
+            <input type="hidden" id="edit-item-id" value="">
+
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
                 
                 <div class="input-group">
@@ -65,7 +69,6 @@
 
                 <div class="input-group">
                     <label>Imagem do Item (Opcional)</label>
-                    <!-- O input agora aceita arquivos de imagem -->
                     <input type="file" id="form-arquivo" accept="image/*" style="background: #111; color: #ccc; padding: 8px; border: 1px solid #333; border-radius: 4px;">
                     <small style="color: #888; font-size: 0.7rem; margin-top: 5px;">Ou cole um link:</small>
                     <input type="url" id="form-imagem" placeholder="Link da imagem (Opcional)">
@@ -105,12 +108,11 @@
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/motor_cartas.js"></script>
     <script>
-        // Aguarda o carregamento completo da página e dos módulos
         window.onload = () => {
             if (typeof iniciarCartas === 'function') {
                 iniciarCartas("monstros");
             } else {
-                setTimeout(() => iniciarCartas("monstros"), 500); // Tenta novamente se demorar
+                setTimeout(() => iniciarCartas("monstros"), 500);
             }
         };
     </script>

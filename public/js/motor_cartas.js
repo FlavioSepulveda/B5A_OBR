@@ -1,8 +1,8 @@
 import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
-import { ref, set, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { ref, set, onValue, update, push, get, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 let colecaoAtual = "";
-let itemAbertoId = null;
+let idItemAbertoNoModal = null; // ID do item que está sendo lido no momento
 let curtidasDoItem = [];
 
 window.iniciarCartas = function(colecao) {
@@ -12,7 +12,7 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (CORRIGIDO PARA NÃO APAGAR OS OUTROS)
+// 1. SALVAR ITEM (CRIAR OU ATUALIZAR)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
@@ -20,6 +20,9 @@ function configurarFormulario() {
         
         const titulo = document.getElementById('form-titulo')?.value.trim() || "";
         if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
+
+        // Verifica o campo oculto de edição
+        const editId = document.getElementById('edit-item-id')?.value || "";
 
         const btnSalvar = document.getElementById('btn-salvar-form');
         btnSalvar.textContent = "Salvando...";
@@ -60,32 +63,24 @@ function configurarFormulario() {
                     payload.descarte = document.getElementById('form-descarte')?.value || "";
                 }
 
-                // AQUI ESTÁ A CORREÇÃO: Se for edição, atualiza. Se for novo, gera um ID com push()
                 let promessa;
-                if (itemAbertoId) {
-                    // Atualiza mantendo os dados antigos (como likes e comentários)
-                    const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`);
+                if (editId) {
+                    // ATUALIZAR EXISTENTE
+                    const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${editId}`);
                     promessa = update(itemRef, payload);
                 } else {
-                    // Cria uma nova referência com ID único gerada pelo Firebase
+                    // CRIAR NOVO
+                    payload.curtidas = [];
                     const novaRef = push(ref(db, `salas/${salaAtual}/${colecaoAtual}`));
                     promessa = set(novaRef, payload);
                 }
 
                 promessa.then(() => {
                     const status = document.getElementById('status-form');
-                    status.textContent = "✅ Salvo com sucesso!";
+                    status.textContent = editId ? "✅ Item atualizado!" : "✅ Item criado!";
                     status.style.color = "#4caf50";
                     
-                    document.getElementById('form-titulo').value = "";
-                    if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
-                    if(document.getElementById('form-arquivo')) document.getElementById('form-arquivo').value = "";
-                    if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = "";
-                    
-                    itemAbertoId = null;
-                    btnSalvar.textContent = "Salvar";
-                    btnSalvar.disabled = false;
-
+                    resetarFormulario();
                     setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
                 }).catch((error) => {
                     console.error("Erro Firebase:", error);
@@ -131,6 +126,23 @@ function configurarFormulario() {
     });
 }
 
+window.resetarFormulario = function() {
+    document.getElementById('edit-item-id').value = ""; // Limpa o ID invisível
+    
+    document.getElementById('form-titulo').value = "";
+    if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
+    if(document.getElementById('form-arquivo')) document.getElementById('form-arquivo').value = "";
+    if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = "";
+    
+    const btnSalvar = document.getElementById('btn-salvar-form');
+    btnSalvar.textContent = "Salvar";
+    btnSalvar.style.background = "var(--gold)";
+    btnSalvar.disabled = false;
+
+    const btnCancelar = document.getElementById('btn-cancelar-edicao');
+    if(btnCancelar) btnCancelar.style.display = 'none';
+}
+
 // ==========================================
 // 2. DESENHAR AS CARTAS
 // ==========================================
@@ -141,12 +153,13 @@ function carregarCartas() {
     onValue(ref(db, `salas/${salaAtual}/${colecaoAtual}`), (snapshot) => {
         lista.innerHTML = '';
         const dados = snapshot.val();
-        if (!dados) { lista.innerHTML = '<p>Nenhuma carta criada ainda.</p>'; return; }
+        if (!dados) { lista.innerHTML = '<p>Nenhum item criado ainda.</p>'; return; }
 
         Object.keys(dados).sort((a,b) => dados[b].data - dados[a].data).forEach(id => {
             const item = dados[id];
             const qtdLikes = item.curtidas ? item.curtidas.length : 0;
-            const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+            const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+            const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : imagemPadrao;
 
             const card = document.createElement('div');
             const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
@@ -174,7 +187,7 @@ function carregarCartas() {
 
             card.innerHTML = `
                 <div class="carta-img-container">
-                    <img src="${imgFinal}" class="carta-img" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80'">
+                    <img class="carta-img" alt="Capa">
                     <div class="carta-nome">${item.titulo}</div>
                 </div>
                 <div class="carta-corpo">
@@ -187,16 +200,21 @@ function carregarCartas() {
                     </div>
                 </div>
             `;
+
+            const imgElement = card.querySelector('.carta-img');
+            imgElement.src = imgFinal;
+            imgElement.onerror = () => { imgElement.src = imagemPadrao; };
+
             lista.appendChild(card);
         });
     });
 }
 
 // ==========================================
-// 3. MODAL, LIKES E COMENTÁRIOS
+// 3. MODAL E EDIÇÃO
 // ==========================================
 function abrirModal(item, id) {
-    itemAbertoId = id;
+    idItemAbertoNoModal = id; 
     curtidasDoItem = item.curtidas || [];
     
     let modal = document.getElementById('modal-dinamico');
@@ -207,7 +225,8 @@ function abrirModal(item, id) {
         document.body.appendChild(modal);
     }
 
-    const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+    const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+    const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : imagemPadrao;
     const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
     
     let sub = `<strong>${item.autor}</strong>`;
@@ -230,7 +249,7 @@ function abrirModal(item, id) {
         <div class="modal-carta ${classeEspectro}">
             <span class="close-btn" onclick="fecharModalCartas()" style="z-index:10; font-size:40px; text-shadow:0 0 5px #000;">&times;</span>
             <div class="modal-carta-header">
-                <img src="${imgFinal}">
+                <img class="modal-img-element" alt="Capa">
             </div>
             <div class="modal-carta-body">
                 <h2 style="color:var(--gold); font-family:'Bebas Neue'; font-size:2.5rem; margin-bottom:5px; line-height:1;">${item.titulo}</h2>
@@ -241,6 +260,7 @@ function abrirModal(item, id) {
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex:1;">❤️ <span id="qtd-likes">0</span></button>
                     <button id="btn-editar" class="btn-primario" style="display:none; flex:1;" onclick="prepararEdicao()">Editar</button>
+                    <button id="btn-deletar-modal" style="display:none; background:#a83232; color:white; border:none; border-radius:4px; cursor:pointer; flex:1; font-family: 'Bebas Neue', sans-serif; font-size:1.2rem;" onclick="deletarItem('${id}')">Apagar</button>
                 </div>
 
                 <div class="secao-comentarios">
@@ -255,58 +275,38 @@ function abrirModal(item, id) {
         </div>
     `;
 
+    const modalImg = modal.querySelector('.modal-img-element');
+    modalImg.src = imgFinal;
+    modalImg.onerror = () => { modalImg.src = imagemPadrao; };
+
     modal.style.display = 'block';
-    document.getElementById('btn-editar').style.display = (item.autor === auth.currentUser?.displayName) ? 'block' : 'none';
+    
+    if (item.autor === auth.currentUser?.displayName) {
+        document.getElementById('btn-editar').style.display = 'block';
+        document.getElementById('btn-deletar-modal').style.display = 'block';
+    }
+
     atualizarBotaoLike();
     carregarComentarios(id);
 }
 
-function fecharModalCartas() { document.getElementById('modal-dinamico').style.display = 'none'; }
-
-function atualizarBotaoLike() {
-    const btn = document.getElementById('btn-like');
-    if(!btn) return;
-    document.getElementById('qtd-likes').textContent = curtidasDoItem.length;
-    btn.className = (idJogadorAtual && curtidasDoItem.includes(idJogadorAtual)) ? 'btn-curtir curtido' : 'btn-curtir';
+window.fecharModalCartas = function() { 
+    document.getElementById('modal-dinamico').style.display = 'none'; 
+    idItemAbertoNoModal = null; 
 }
 
-async function alternarLike() {
-    if (!idJogadorAtual) { alert("Faça login!"); return; }
-    let novas = [...curtidasDoItem];
-    if (novas.includes(idJogadorAtual)) novas = novas.filter(id => id !== idJogadorAtual);
-    else novas.push(idJogadorAtual);
+// ==========================================
+// 4. PREPARAR EDIÇÃO E DELETAR
+// ==========================================
+window.prepararEdicao = function() {
+    if(!idItemAbertoNoModal) return;
 
-    await update(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`), { curtidas: novas });
-    curtidasDoItem = novas;
-    atualizarBotaoLike();
-}
-
-function carregarComentarios(itemId) {
-    const lista = document.getElementById('lista-comentarios');
-    if(!lista) return;
-    onValue(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemId}/comentarios`), (snapshot) => {
-        lista.innerHTML = '';
-        const dados = snapshot.val();
-        if (!dados) { lista.innerHTML = '<p style="font-size:0.8rem; color:#666;">Nenhum comentário.</p>'; return; }
-        Object.values(dados).forEach(c => {
-            lista.innerHTML += `<div class="comentario-item"><div class="comentario-autor">${c.autor}</div><div class="comentario-texto">${c.texto}</div></div>`;
-        });
-        lista.scrollTop = lista.scrollHeight;
-    });
-}
-
-async function enviarComentario() {
-    if (!idJogadorAtual) { alert("Faça login!"); return; }
-    const input = document.getElementById('input-comentario');
-    if(!input.value.trim()) return;
-    await push(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}/comentarios`), { autor: auth.currentUser.displayName || "Arquivista", texto: input.value.trim() });
-    input.value = '';
-}
-
-function prepararEdicao() {
-    get(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`)).then((snapshot) => {
+    get(ref(db, `salas/${salaAtual}/${colecaoAtual}/${idItemAbertoNoModal}`)).then((snapshot) => {
         const item = snapshot.val();
         if (!item) return;
+
+        // A MÁGICA ESTÁ AQUI: Joga o ID para o input invisível do formulário
+        document.getElementById('edit-item-id').value = idItemAbertoNoModal;
 
         document.getElementById('form-titulo').value = item.titulo;
         if(document.getElementById('form-texto')) document.getElementById('form-texto').value = item.texto || "";
@@ -336,12 +336,79 @@ function prepararEdicao() {
             document.getElementById('form-descarte').value = item.descarte || "";
         }
 
+        const btnSalvar = document.getElementById('btn-salvar-form');
+        btnSalvar.textContent = "Salvar Alterações";
+        btnSalvar.style.background = "#4caf50";
+
+        let btnCancelar = document.getElementById('btn-cancelar-edicao');
+        if(!btnCancelar) {
+            btnCancelar = document.createElement('button');
+            btnCancelar.id = 'btn-cancelar-edicao';
+            btnCancelar.className = 'btn-primario';
+            btnCancelar.style.background = '#a83232';
+            btnCancelar.style.marginTop = '5px';
+            btnCancelar.textContent = 'Cancelar Edição';
+            btnCancelar.onclick = resetarFormulario;
+            btnSalvar.parentNode.appendChild(btnCancelar);
+        }
+        btnCancelar.style.display = 'block';
+
         fecharModalCartas();
         window.scrollTo(0, 0);
     });
 }
 
-window.fecharModalCartas = fecharModalCartas;
+window.deletarItem = function(id) {
+    if(confirm("Tem certeza que deseja APAGAR este item permanentemente?")) {
+        remove(ref(db, `salas/${salaAtual}/${colecaoAtual}/${id}`)).then(() => {
+            fecharModalCartas();
+            resetarFormulario();
+        });
+    }
+}
+
+// ==========================================
+// 5. LIKES E COMENTÁRIOS
+// ==========================================
+function atualizarBotaoLike() {
+    const btn = document.getElementById('btn-like');
+    if(!btn) return;
+    document.getElementById('qtd-likes').textContent = curtidasDoItem.length;
+    btn.className = (idJogadorAtual && curtidasDoItem.includes(idJogadorAtual)) ? 'btn-curtir curtido' : 'btn-curtir';
+}
+
+async function alternarLike() {
+    if (!idJogadorAtual) { alert("Faça login!"); return; }
+    let novas = [...curtidasDoItem];
+    if (novas.includes(idJogadorAtual)) novas = novas.filter(id => id !== idJogadorAtual);
+    else novas.push(idJogadorAtual);
+
+    await update(ref(db, `salas/${salaAtual}/${colecaoAtual}/${idItemAbertoNoModal}`), { curtidas: novas });
+    curtidasDoItem = novas;
+    atualizarBotaoLike();
+}
+
+function carregarComentarios(itemId) {
+    const lista = document.getElementById('lista-comentarios');
+    if(!lista) return;
+    onValue(ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemId}/comentarios`), (snapshot) => {
+        lista.innerHTML = '';
+        const dados = snapshot.val();
+        if (!dados) { lista.innerHTML = '<p style="font-size:0.8rem; color:#666;">Nenhum comentário.</p>'; return; }
+        Object.values(dados).forEach(c => {
+            lista.innerHTML += `<div class="comentario-item"><div class="comentario-autor">${c.autor}</div><div class="comentario-texto">${c.texto}</div></div>`;
+        });
+        lista.scrollTop = lista.scrollHeight;
+    });
+}
+
+async function enviarComentario() {
+    if (!idJogadorAtual) { alert("Faça login!"); return; }
+    const input = document.getElementById('input-comentario');
+    if(!input.value.trim()) return;
+    await push(ref(db, `salas/${salaAtual}/${colecaoAtual}/${idItemAbertoNoModal}/comentarios`), { autor: auth.currentUser.displayName || "Arquivista", texto: input.value.trim() });
+    input.value = '';
+}
+
 window.alternarLike = alternarLike;
 window.enviarComentario = enviarComentario;
-window.prepararEdicao = prepararEdicao;
