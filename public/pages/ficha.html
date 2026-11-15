@@ -3,170 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa de Jogo - B5A</title>
-    <!-- CSS GLOBAL -->
-    <link rel="stylesheet" href="../style.css">
-    <!-- CSS ESPECÍFICO DA FICHA -->
-    <link rel="stylesheet" href="../css/ficha.css">
-    <!-- FONTES -->
+    <title>Tabuleiro do Arquivista - B5A</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           VARIÁVEIS E BASE
+           ========================================= */
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --espectro-cor: #d4af37; /* Cor padrão, muda via JS */
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background: radial-gradient(circle at center, #1a1520 0%, var(--bg-mesa) 100%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 16px;
+            padding-top: 80px; /* Espaço para a navbar */
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* =========================================
+           NAVBAR SUPERIOR
+           ========================================= */
+        .top-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            background-color: #111; border-bottom: 2px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; z-index: 1000;
+        }
+        .nav-brand { font-size: 1.5rem; color: var(--ouro); text-decoration: none; font-family: 'Bebas Neue'; }
+        .nav-user { display: flex; align-items: center; gap: 15px; }
+        .btn-login-nav { background-color: var(--ouro); color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-size: 1rem; cursor: pointer; }
+        .status-login-nav { font-size: 0.85rem; color: #888; text-decoration: none; }
+
+        /* =========================================
+           TOPO DO TABULEIRO (VOLUME E NOME)
+           ========================================= */
+        .topbar-tabuleiro {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-painel); 
+            border: 1px solid #444;
+            border-bottom: 3px solid var(--espectro-cor); /* Detalhe do Espectro */
+            padding: 12px 20px; border-radius: 8px; margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
+        }
+
+        .trilha-volume { display: flex; gap: 6px; align-items: center; }
+        .selo-vol {
+            width: 32px; height: 32px; border: 1px solid #444;
+            background: var(--bg-slot); color: var(--texto-suave);
+            font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer; border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .selo-vol.ativo { background: var(--ouro); color: #000; font-weight: bold; border-color: var(--ouro); }
+
+        /* =========================================
+           GRID DE 3 ZONAS (RESPONSIVO)
+           ========================================= */
+        .tabuleiro-grid {
+            display: grid; grid-template-columns: 320px 1fr 360px;
+            gap: 16px; align-items: start;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .zona {
+            background: var(--bg-painel); 
+            border: 1px solid #333;
+            border-radius: 10px; padding: 16px; 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .zona-titulo {
+            color: var(--ouro); font-size: 1.3rem; border-bottom: 1px solid #444;
+            padding-bottom: 6px; margin-bottom: 12px; display: flex; justify-content: space-between;
+        }
+
+        /* =========================================
+           ZONA 1: IDENTIDADE
+           ========================================= */
+        .card-espectro {
+            /* Degradê com a cor do Espectro */
+            background: linear-gradient(145deg, var(--bg-slot) 0%, rgba(0,0,0,0) 100%);
+            border-left: 4px solid var(--espectro-cor); 
+            padding: 12px; border-radius: 6px; font-size: 0.85rem;
+            box-shadow: -2px 0 10px -5px var(--espectro-cor);
+            transition: all 0.3s;
+        }
+        .juramento { font-style: italic; color: var(--espectro-cor); margin-bottom: 8px; display: block; }
+        
+        select, input[type="text"], textarea {
+            width: 100%; background: var(--bg-slot); color: var(--texto);
+            border: 1px solid #444; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-family: inherit;
+            outline: none;
+        }
+        select:focus, input:focus, textarea:focus { border-color: var(--espectro-cor); }
+
+        /* =========================================
+           ZONA 2: STATUS E ROLAGEM
+           ========================================= */
+        .status-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+        .gema-status { 
+            background: var(--bg-slot); 
+            border: 1px solid #333; 
+            border-top: 2px solid var(--espectro-cor);
+            border-radius: 8px; padding: 10px; text-align: center; 
+        }
+        .gema-valor { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--texto); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-mini { background: #2c2633; color: var(--texto); border: 1px solid #444; width: 24px; height: 24px; cursor: pointer; border-radius: 4px; }
+        .btn-mini:hover { border-color: var(--espectro-cor); color: var(--espectro-cor); }
+
+        .chamas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+        .chama-card { 
+            background: linear-gradient(180deg, var(--bg-slot) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid #333; border-radius: 8px; padding: 10px; text-align: center; 
+        }
+        .dados-visuais { font-size: 1.2rem; color: var(--espectro-cor); margin: 6px 0; letter-spacing: 3px; }
+        
+        .btn-rolar { 
+            width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; 
+            font-family: 'Bebas Neue'; font-size: 1rem; cursor: pointer; border-radius: 4px; 
+            transition: all 0.2s;
+        }
+        .btn-rolar:hover { background: var(--espectro-cor); color: #000; border-color: var(--espectro-cor); }
+        .btn-rolar.desafiar { background: #4a1c24; color: #ffccd5; border: 1px solid #e63946; }
+
+        .bandeja-dados { 
+            background: #09080a; 
+            border: 2px dashed var(--espectro-cor); 
+            border-radius: 10px; padding: 16px; text-align: center; margin-bottom: 16px; min-height: 130px; 
+        }
+        .d12-destaque { 
+            display: inline-block; font-family: 'Bebas Neue'; font-size: 3rem; 
+            padding: 4px 18px; border: 2px solid var(--espectro-cor); border-radius: 8px; margin: 6px; 
+            background: var(--bg-slot); color: var(--espectro-cor);
+        }
+        
+        /* Cores dos Resultados Absolutos */
+        .absoluto-1 { border-color: #e63946; color: #e63946; box-shadow: 0 0 15px #e63946; }
+        .absoluto-6 { border-color: #6c757d; color: #adb5bd; }
+        .absoluto-12 { border-color: #ffd166; color: #ffd166; box-shadow: 0 0 20px #ffd166; }
+
+        .pericias-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .pericia-item { background: var(--bg-slot); border: 1px solid #333; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+
+        /* =========================================
+           ZONA 3: DESCARTES E HISTÓRICO
+           ========================================= */
+        .pilha-descartes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
+        .slot-descarte { 
+            aspect-ratio: 1; background: var(--bg-slot); border: 1px dashed #555; border-radius: 6px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            font-family: 'Bebas Neue'; font-size: 1.2rem; cursor: pointer; 
+        }
+        .slot-descarte.cheio { background: #3a1d28; border: 1px solid #e63946; color: #fff; }
+
+        .inventario-slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .slot-item { background: var(--bg-slot); border: 1px solid #333; padding: 6px 8px; border-radius: 5px; font-size: 0.8rem; }
+        .slot-diario { border: 1px solid var(--espectro-cor); background: rgba(255,255,255,0.02); grid-column: span 2; }
+
+        .historico-box {
+            background: #111; border: 1px solid #333; border-radius: 6px; padding: 10px;
+            max-height: 200px; overflow-y: auto; font-size: 0.85rem; margin-top: 15px;
+        }
+        .historico-item { padding: 6px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        .historico-item:last-child { border-bottom: none; }
+
+        /* =========================================
+           RESPONSIVIDADE
+           ========================================= */
+        @media (max-width: 1100px) {
+            .tabuleiro-grid { grid-template-columns: 1fr 1fr; }
+            .zona:nth-child(3) { grid-column: span 2; } /* Joga a zona 3 pra baixo */
+        }
+        @media (max-width: 800px) {
+            body { padding-top: 100px; }
+            .top-nav { flex-direction: column; height: auto; padding: 10px; gap: 5px; }
+            .tabuleiro-grid { grid-template-columns: 1fr; }
+            .zona:nth-child(3) { grid-column: span 1; }
+            .chamas-grid { grid-template-columns: repeat(2, 1fr); }
+            .pericias-grid { grid-template-columns: repeat(2, 1fr); }
+            .status-bar { grid-template-columns: repeat(2, 1fr); }
+            .topbar-tabuleiro { flex-direction: column; gap: 15px; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- NAVBAR SUPERIOR -->
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <a href="../index.html" class="nav-brand">← Voltar</a>
         <div class="nav-user">
-            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Faça login</a>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Faça login</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <!-- LAYOUT DE MESA (3 COLUNAS) -->
-    <div class="conteudo-abas" style="margin-top: 80px;">
-        <div class="mesa-container">
-            
-            <!-- COLUNA 1: FICHA E ATRIBUTOS -->
-            <div class="coluna-ficha">
-                <div class="cabecalho-ficha">
-                    <h2>Ficha do Arquivista</h2>
-                </div>
-
-                <div class="secao-ficha">
-                    <div class="input-group">
-                        <label>Nome do Personagem</label>
-                        <input type="text" id="f-nome" placeholder="Quem é você?">
-                    </div>
-                    <div class="row-inputs" style="margin-top: 10px;">
-                        <div class="input-group">
-                            <label>Espectro</label>
-                            <select id="f-espectro" class="espectro-select">
-                                <option value="padrao">Padrão</option>
-                                <option value="igneo">Ígneo</option>
-                                <option value="celeste">Celeste</option>
-                                <option value="viridiano">Viridiano</option>
-                                <option value="solar">Solar</option>
-                                <option value="indigo">Índigo</option>
-                                <option value="alabastro">Alabastro</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Volume</label>
-                            <input type="number" id="f-volume" min="1" max="8" value="1">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="secao-ficha destaque">
-                    <h3>Recursos Vitais</h3>
-                    <div class="recurso-row">
-                        <label>Vida (PV)</label>
-                        <div class="botoes-recurso">
-                            <button onclick="alterarRecurso('pv', -1)">-</button>
-                            <span id="f-pv-atual" class="valor-recurso">10</span>
-                            <span class="separador">/</span>
-                            <input type="number" id="f-pv-max" class="max-recurso" value="10">
-                            <button onclick="alterarRecurso('pv', 1)">+</button>
-                        </div>
-                    </div>
-                    <div class="recurso-row">
-                        <label>Ímpeto (PI)</label>
-                        <div class="botoes-recurso">
-                            <button onclick="alterarRecurso('pi', -1)">-</button>
-                            <span id="f-pi-atual" class="valor-recurso">5</span>
-                            <span class="separador">/</span>
-                            <input type="number" id="f-pi-max" class="max-recurso" value="5">
-                            <button onclick="alterarRecurso('pi', 1)">+</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="secao-ficha">
-                    <h3>Atributos (d4)</h3>
-                    <div class="lista-rolagens">
-                        <div class="linha-rolagem">
-                            <div class="controle-dados">
-                                <button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button>
-                                <span id="val-vigor" class="valor-dado">0</span>
-                                <button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button>
-                            </div>
-                            <button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button>
-                        </div>
-                        <div class="linha-rolagem">
-                            <div class="controle-dados">
-                                <button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button>
-                                <span id="val-dinamismo" class="valor-dado">0</span>
-                                <button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button>
-                            </div>
-                            <button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button>
-                        </div>
-                        <div class="linha-rolagem">
-                            <div class="controle-dados">
-                                <button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button>
-                                <span id="val-razao" class="valor-dado">0</span>
-                                <button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button>
-                            </div>
-                            <button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button>
-                        </div>
-                        <div class="linha-rolagem">
-                            <div class="controle-dados">
-                                <button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button>
-                                <span id="val-determinacao" class="valor-dado">0</span>
-                                <button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button>
-                            </div>
-                            <button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COLUNA 2: PERÍCIAS -->
-            <div class="coluna-meio">
-                <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
-                    <h3>Perícias (d6)</h3>
-                    <div class="lista-rolagens">
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('barganha', -1)">-</button><span id="val-barganha" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('barganha', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Barganha', 'barganha', 6)">Barganha</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('combate', -1)">-</button><span id="val-combate" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('combate', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Combate', 'combate', 6)">Combate</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('tecnologia', -1)">-</button><span id="val-tecnologia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('tecnologia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Tecnologia', 'tecnologia', 6)">Tecnologia</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('resistencia', -1)">-</button><span id="val-resistencia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('resistencia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Resistência', 'resistencia', 6)">Resistência</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('intuicao', -1)">-</button><span id="val-intuicao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('intuicao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Intuição', 'intuicao', 6)">Intuição</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('medicina', -1)">-</button><span id="val-medicina" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('medicina', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Medicina', 'medicina', 6)">Medicina</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('investigar', -1)">-</button><span id="val-investigar" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('investigar', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Investigar', 'investigar', 6)">Investigar</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('invasao', -1)">-</button><span id="val-invasao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('invasao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Invasão', 'invasao', 6)">Invasão</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('pesquisa', -1)">-</button><span id="val-pesquisa" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('pesquisa', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Pesquisa', 'pesquisa', 6)">Pesquisa</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('arcanismo', -1)">-</button><span id="val-arcanismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('arcanismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Arcanismo', 'arcanismo', 6)">Arcanismo</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('imaginacao', -1)">-</button><span id="val-imaginacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('imaginacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Imaginação', 'imaginacao', 6)">Imaginação</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('historia', -1)">-</button><span id="val-historia" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('historia', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('História', 'historia', 6)">História</button></div>
-                    </div>
-                </div>
-
-                <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
-            </div>
-
-            <!-- COLUNA 3: HISTÓRICO E ROLAGEM -->
-            <div class="coluna-historico">
-                <div id="resultado-container">
-                    <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
-                    <div id="outros-dados-box" class="dice-box secundario"><span id="label-outros" class="dice-label">0d4</span><span id="dados-outros" class="dice-value">-</span></div>
-                    <div id="total-box"><span id="total-visual">Aguardando...</span></div>
-                </div>
-                <div class="historico-wrapper">
-                    <h3>Crônica (Sala: <span id="nome-sala-exibicao">sala-padrao</span>)</h3>
-                    <div class="input-group" style="margin-bottom: 15px; background: #111; padding: 10px; border-radius: 5px;">
-                        <label style="color: #c7a86b;">ID da Sala</label>
-                        <input type="text" id="sala-id" value="sala-padrao">
-                    </div>
-                    <ul id="lista-historico-global"></ul>
-                    <div id="aviso-historico-vazio" style="text-align: center; color: #666; margin-top: 30px; font-style: italic;">Nenhuma rolagem ainda...</div>
-                </div>
-            </div>
-
+    <header class="topbar-tabuleiro">
+        <div>
+            <input type="text" id="nome-char" value="Carregando..." style="font-family:'Bebas Neue'; font-size:1.8rem; background:transparent; border:none; color:var(--ouro); width:250px; margin:0;">
+            <div style="font-size:0.8rem; color:var(--texto-suave);">Caminho: <strong id="lbl-caminho">-</strong> • Deslocamento: <strong id="lbl-desloc">-</strong></div>
         </div>
-    </div>
-   
-    <!-- SCRIPTS -->
+
+        <div>
+            <div style="font-size:0.75rem; text-align:center; color:var(--ouro); margin-bottom:4px;">VOLUME DA HISTÓRIA</div>
+            <div class="trilha-volume" id="trilha-volume"></div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <button class="btn-rolar" style="padding:8px 14px; width:auto;" onclick="rolarIniciativa()">⚡ Iniciativa</button>
+            <button class="btn-rolar" style="padding:8px 14px; width:auto;" onclick="rolarClashDefesa()">🛡️ Clash Defesa</button>
+        </div>
+    </header>
+
+    <main class="tabuleiro-grid">
+        <!-- ZONA 1 -->
+        <section class="zona">
+            <div class="zona-titulo"><span>📖 O Diário</span></div>
+            
+            <label style="font-size:0.75rem; color:var(--ouro);">ESPECTRO DO ÍMPETO</label>
+            <select id="sel-espectro" onchange="atualizarEspectro()">
+                <option value="padrao">Padrão</option>
+                <option value="igneo">Ígneo (Ofensiva)</option>
+                <option value="celeste">Celeste (Controle)</option>
+                <option value="viridiano">Viridiano (Vida)</option>
+                <option value="solar">Solar (Liberdade)</option>
+                <option value="indigo">Índigo (Criatividade)</option>
+                <option value="alabastro">Alabastro (Equilíbrio)</option>
+            </select>
+            <div class="card-espectro" id="info-espectro"></div>
+
+            <div style="margin-top:14px;">
+                <label style="font-size:0.75rem; color:var(--ouro);">CAMINHO / VOCAÇÃO</label>
+                <select id="sel-caminho" onchange="recalcularTudo()">
+                    <option value="guerreiro">Guerreiro (Vida 6 | Ímpeto 2)</option>
+                    <option value="mago">Mago (Vida 3 | Ímpeto 8)</option>
+                    <option value="suporte">Suporte (Vida 5 | Ímpeto 4)</option>
+                    <option value="assassino">Assassino (Vida 4 | Ímpeto 3)</option>
+                    <option value="atirador">Atirador (Vida 4 | Ímpeto 4)</option>
+                </select>
+            </div>
+
+            <div style="margin-top:12px;">
+                <div class="zona-titulo" style="font-size:1rem;"><span>✒️ Registros</span></div>
+                <textarea id="diario-notas" rows="4" placeholder="Memórias gravadas..." style="font-size:0.8rem;"></textarea>
+            </div>
+        </section>
+
+        <!-- ZONA 2 -->
+        <section class="zona">
+            <div class="status-bar">
+                <div class="gema-status">
+                    <div style="font-size:0.75rem;">VIDA</div>
+                    <div class="gema-valor">
+                        <button class="btn-mini" onclick="alterarRecurso('pv', -1)">-</button>
+                        <span id="pv-atual">-</span>/<span id="pv-max">-</span>
+                        <button class="btn-mini" onclick="alterarRecurso('pv', 1)">+</button>
+                    </div>
+                </div>
+                <div class="gema-status">
+                    <div style="font-size:0.75rem;">VIDA TEMP.</div>
+                    <div class="gema-valor" style="color:#4cc9f0;">
+                        <button class="btn-mini" onclick="alterarRecurso('pvTemp', -1)">-</button>
+                        <span id="pv-temp">0</span>
+                        <button class="btn-mini" onclick="alterarRecurso('pvTemp', 1)">+</button>
+                    </div>
+                </div>
+                <div class="gema-status">
+                    <div style="font-size:0.75rem;">ÍMPETO</div>
+                    <div class="gema-valor" style="color:#c77dff;">
+                        <button class="btn-mini" onclick="alterarRecurso('pi', -1)">-</button>
+                        <span id="pi-atual">-</span>/<span id="pi-max">-</span>
+                        <button class="btn-mini" onclick="alterarRecurso('pi', 1)">+</button>
+                    </div>
+                </div>
+                <div class="gema-status">
+                    <div style="font-size:0.75rem;">CAÍDO</div>
+                    <div class="gema-valor" style="color:#e63946;">
+                        <input type="checkbox"> <input type="checkbox"> <input type="checkbox">
+                    </div>
+                </div>
+            </div>
+
+            <div class="zona-titulo"><span>🔥 Atributos (d4)</span></div>
+            <div class="chamas-grid" id="chamas-container"></div>
+
+            <div class="bandeja-dados" id="bandeja">
+                <div style="color:var(--texto-suave); font-size:0.9rem;">Aguardando rolagem...</div>
+            </div>
+
+            <div class="zona-titulo"><span>📜 Perícias (d6)</span></div>
+            <div class="pericias-grid" id="pericias-container"></div>
+        </section>
+
+        <!-- ZONA 3 -->
+        <section class="zona">
+            <div class="zona-titulo">
+                <span>⏳ Pilha de Descartes</span>
+                <span style="font-size:0.8rem; color:#e63946;" id="horas-perdidas">0h</span>
+            </div>
+            <div class="pilha-descartes" id="pilha-container"></div>
+
+            <div class="zona-titulo" style="margin-top:16px;"><span>🎒 Inventário (<span id="inv-cap">0</span>)</span></div>
+            <div class="inventario-slots" id="inventario-container"></div>
+
+            <div class="zona-titulo" style="margin-top:16px;"><span>📜 Crônica da Mesa</span></div>
+            <div class="input-group" style="margin-bottom: 10px; background: #111; padding: 5px; border-radius: 5px; display: flex; gap:5px;">
+                <input type="text" id="sala-id" value="sala-padrao" style="margin:0; padding:5px; font-size:0.8rem;">
+                <button class="btn-mini" style="width:auto; padding:0 10px;" onclick="conectarSala()">Conectar</button>
+            </div>
+            <div class="historico-box" id="historico-container">
+                <p style="color:#666; text-align:center;">Nenhuma rolagem.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- IMPORTAÇÃO DO FIREBASE E LÓGICA -->
+    <script type="module">
+        import { db, auth, idJogadorAtual } from '../js/firebase.js';
+        import { ref, get, set, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // 1. Configuração do Espectro e Cores
+        const ESPECTROS = {
+            padrao: { cor: "#d4af37", juramento: "O destino aguarda.", passivo: "Nenhum.", ativo: "Nenhum." },
+            igneo: { cor: "#e63946", juramento: "“Toda conquista exige um sacrifício.”", passivo: "+1d4 em um atributo e -1d4 em outro.", ativo: "Troca Equivalente: sacrifique algo real." },
+            celeste: { cor: "#4cc9f0", juramento: "“Conhecimento supera força.”", passivo: "+1 Perícia (1d6) e +1d6 1x/cena.", ativo: "Controle: obrigue alguém a agir contra a vontade." },
+            viridiano: { cor: "#2ec4b6", juramento: "“Enquanto houver vida, há esperança.”", passivo: "1x/cena, ao chegar a 0 PV, age até o fim do turno.", ativo: "Cura Xd6 ou +2d4 testes defensivos." },
+            solar: { cor: "#ffbe0b", juramento: "“Nenhum caminho é definitivo.”", passivo: "Substitua um dado por um Eco descartado (1x/rodada).", ativo: "Livre-arbítrio: quebre qualquer restrição." },
+            indigo: { cor: "#9b5de5", juramento: "“Toda resposta gera uma nova pergunta.”", passivo: "Ao descartar 9-12, faça 1 pergunta verdadeira.", ativo: "Dobrar Realidade: reescreva um detalhe da cena." },
+            alabastro: { cor: "#f8f9fa", juramento: "“Ninguém deve prevalecer.”", passivo: "-1d4 testes defensivos, +1d4 ofensivos.", ativo: "Balancear: divida dano com aliado." }
+        };
+
+        const CAMINHOS = {
+            guerreiro: { vida: 6, impeto: 2, desloc: "6m" },
+            mago: { vida: 3, impeto: 8, desloc: "7m" },
+            suporte: { vida: 5, impeto: 4, desloc: "6,5m" },
+            assassino: { vida: 4, impeto: 3, desloc: "8m" },
+            atirador: { vida: 4, impeto: 4, desloc: "7m" }
+        };
+
+        const estado = {
+            volume: 1,
+            atributos: { vigor: 0, dinamismo: 0, razao: 0, determinacao: 0 },
+            pericias: { Atletismo: 0, Combate: 0, Resistencia: 0, Acrobacia: 0, Furtividade: 0, Pontaria: 0, Investigacao: 0, Conhecimento: 0, Arcanismo: 0, Medicina: 0, Persuasao: 0, Intuicao: 0 },
+            pv: 0, pvTemp: 0, pi: 0,
+            pilha: []
+        };
+
+        // 2. Carregar Dados do Firebase (Baseado na URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const uidUrl = urlParams.get('id'); // ID de quem está dono da ficha
+        let fichaId = null;
+
+        async function carregarFicha() {
+            if(!idJogadorAtual) {
+                document.getElementById('nome-char').value = "Faça Login";
+                return;
+            }
+            
+            // Se tiver um ID na URL (vendo ficha de outro ou a sua), usa ele. Se não, usa o seu.
+            fichaId = uidUrl || idJogadorAtual; 
+            
+            const snap = await get(ref(db, `salas/sala-padrao/jogadores/${fichaId}`));
+            if(snap.exists()) {
+                const dados = snap.val();
+                document.getElementById('nome-char').value = dados.nome || "Arquivista";
+                document.getElementById('sel-espectro').value = dados.espectro || "padrao";
+                document.getElementById('sel-caminho').value = dados.caminho || "guerreiro";
+                estado.volume = dados.volume || 1;
+                
+                if(dados.dadosPersonagem) {
+                    for(let k in dados.dadosPersonagem) {
+                        if(estado.atributos[k] !== undefined) estado.atributos[k] = parseInt(dados.dadosPersonagem[k]) || 0;
+                    }
+                }
+                if(dados.pericias) {
+                    for(let p in estado.pericias) {
+                        if(dados.pericias[p] !== undefined) estado.pericias[p] = parseInt(dados.pericias[p]) || 0;
+                    }
+                }
+                estado.pv = dados.pvAtual || 10;
+                estado.pi = dados.piAtual || 5;
+                estado.pvTemp = dados.pvTemp || 0;
+            }
+            
+            iniciarTabuleiro();
+            conectarSala();
+        }
+
+        // 3. Renderizar Tabuleiro
+        function iniciarTabuleiro() {
+            const romanos = ["I","II","III","IV","V","VI","VII","VIII"];
+            document.getElementById("trilha-volume").innerHTML = romanos.map((r, i) =>
+                `<button class="selo-vol ${estado.volume === i+1 ? 'ativo' : ''}" onclick="mudarVolume(${i+1})">${r}</button>`
+            ).join("");
+            atualizarEspectro();
+            recalcularTudo();
+            renderizarAtributos();
+            renderizarPericias();
+            renderizarPilha();
+            document.getElementById('pv-atual').innerText = estado.pv;
+            document.getElementById('pi-atual').innerText = estado.pi;
+            document.getElementById('pv-temp').innerText = estado.pvTemp;
+        }
+
+        window.mudarVolume = (v) => { estado.volume = v; iniciarTabuleiro(); }
+
+        window.atualizarEspectro = () => {
+            const key = document.getElementById("sel-espectro").value;
+            const esp = ESPECTROS[key];
+            // Aplica a cor em todo o site
+            document.documentElement.style.setProperty('--espectro-cor', esp.cor);
+            document.getElementById("info-espectro").innerHTML = `
+                <span class="juramento">${esp.juramento}</span>
+                <p style="margin-bottom:6px;"><strong>Passivo:</strong> ${esp.passivo}</p>
+                <p><strong>Ativo:</strong> ${esp.ativo}</p>
+            `;
+        }
+
+        window.recalcularTudo = () => {
+            const cam = CAMINHOS[document.getElementById("sel-caminho").value];
+            const maxDet = estado.atributos.determinacao * 4;
+            const maxRaz = estado.atributos.razao * 4;
+            const maxVig = estado.atributos.vigor * 4;
+
+            const pvMax = 10 + (cam.vida * estado.volume) + maxDet;
+            const piMax = 5 + (cam.impeto * estado.volume) + maxRaz;
+            const invCap = 5 + maxVig;
+
+            document.getElementById("pv-max").innerText = pvMax;
+            document.getElementById("pi-max").innerText = piMax;
+            document.getElementById("lbl-desloc").innerText = cam.desloc;
+            document.getElementById("inv-cap").innerText = invCap;
+
+            let html = `<div class="slot-item slot-diario">📕 <strong>Diário</strong> (0 Esp)</div>`;
+            for (let i = 1; i <= invCap; i++) html += `<div class="slot-item"><input type="text" placeholder="Item ${i}..." style="background:transparent; border:none; margin:0; padding:0; font-size:0.78rem; color:#ccc;"></div>`;
+            document.getElementById("inventario-container").innerHTML = html;
+        }
+
+        window.renderizarAtributos = () => {
+            const nomes = { vigor: "Vigor", dinamismo: "Dinamismo", razao: "Razão", determinacao: "Determinação" };
+            document.getElementById("chamas-container").innerHTML = Object.keys(nomes).map(k => {
+                const qtd = estado.atributos[k];
+                return `
+                    <div class="chama-card">
+                        <div class="titulo-fonte" style="font-size:1.1rem;">${nomes[k]}</div>
+                        <div class="dados-visuais">${qtd > 0 ? "▲".repeat(qtd) : "0d4"}</div>
+                        <div style="margin-bottom:6px;">
+                            <button class="btn-mini" onclick="ajustarAttr('${k}', -1)">-</button>
+                            <span style="font-size:0.8rem;">${qtd}d4</span>
+                            <button class="btn-mini" onclick="ajustarAttr('${k}', 1)">+</button>
+                        </div>
+                        <button class="${qtd === 0 ? 'btn-rolar desafiar' : 'btn-rolar'}" onclick="rolarAtributo('${k}', '${nomes[k]}')">
+                            ${qtd === 0 ? '⚠️ Desafiar' : `Rolar`}
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.ajustarAttr = (k, delta) => { estado.atributos[k] = Math.max(0, estado.atributos[k] + delta); renderizarAtributos(); recalcularTudo(); }
+
+        window.renderizarPericias = () => {
+            document.getElementById("pericias-container").innerHTML = Object.keys(estado.pericias).map(p => {
+                const qtd = estado.pericias[p];
+                return `
+                    <div class="pericia-item">
+                        <span>${p} (${qtd}d6)</span>
+                        <div>
+                            <button class="btn-mini" onclick="ajustarPericia('${p}', 1)">+</button>
+                            <button class="btn-mini" style="background:var(--espectro-cor); color:#000;" onclick="rolarPericia('${p}')">🎲</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.ajustarPericia = (p, delta) => { estado.pericias[p] = Math.max(0, estado.pericias[p] + delta); renderizarPericias(); }
+
+        // 4. Lógica de Rolagem (Com Envio Global)
+        window.rolarAtributo = (key, label) => executarRolagem(label, estado.atributos[key], 4);
+        window.rolarPericia = (nome) => executarRolagem(nome, estado.pericias[nome], 6);
+
+        async function executarRolagem(titulo, qtdDados, faces) {
+            const bandeja = document.getElementById("bandeja");
+            let d12 = Math.floor(Math.random() * 12) + 1;
+            let avisoExtra = "";
+
+            if (qtdDados === 0) {
+                const d12_b = Math.floor(Math.random() * 12) + 1;
+                const escolhido = Math.max(d12, d12_b);
+                avisoExtra = `<div style="color:#ffccd5; font-size:0.8rem;">⚠️ Desafio (2d12: ${d12} e ${d12_b} → ${escolhido})</div>`;
+                d12 = escolhido;
+            }
+
+            let extras = [];
+            for (let i = 0; i < qtdDados; i++) extras.push(Math.floor(Math.random() * faces) + 1);
+            const total = d12 + extras.reduce((a, b) => a + b, 0) + estado.volume;
+
+            let classeAbs = "", msgAbs = "";
+            if (d12 === 1) { classeAbs = "absoluto-1"; msgAbs = "💀 CATÁSTROFE (1)!"; }
+            else if (d12 === 6) { classeAbs = "absoluto-6"; msgAbs = "🌑 FALHA (6)."; }
+            else if (d12 === 12) { classeAbs = "absoluto-12"; msgAbs = "✨ LENDÁRIO (12)!"; }
+
+            bandeja.innerHTML = `
+                <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">Teste de ${titulo}</div>
+                <div>
+                    <span class="d12-destaque ${classeAbs}">${d12}</span>
+                    <span style="font-size:1.2rem;">+ [${extras.join(", ") || "0"}] + Vol(${estado.volume}) = <strong style="font-size:1.8rem; color:var(--espectro-cor);">${total}</strong></span>
+                </div>
+                <div style="font-size:0.85rem; font-weight:bold;">${msgAbs}</div>
+                ${avisoExtra}
+                <button class="btn-mini" style="width:auto; padding:4px 10px; margin-top:8px;" onclick="enviarParaDescarte(${d12})">⏳ Descartar d12</button>
+            `;
+
+            // ENVIA PARA O FIREBASE
+            if(idJogadorAtual) {
+                const nome = document.getElementById('nome-char').value || "Arquivista";
+                await push(ref(db, `salas/sala-padrao/rolagens`), { 
+                    nome: `${nome} (${titulo})`, d12: d12, outros: extras.reduce((a, b) => a + b, 0), vol: estado.volume, total: total 
+                });
+            }
+        }
+
+        // 5. Pilha de Descartes
+        window.enviarParaDescarte = (valor) => {
+            if (estado.pilha.length >= 10) return alert("Limite de 10 dados!");
+            estado.pilha.push(valor);
+            renderizarPilha();
+        }
+
+        window.renderizarPilha = () => {
+            let html = "";
+            for (let i = 0; i < 10; i++) {
+                if (estado.pilha[i] !== undefined) {
+                    html += `<div class="slot-descarte cheio" onclick="gastarDescarte(${i})">d12<br>${estado.pilha[i]}</div>`;
+                } else {
+                    html += `<div class="slot-descarte" style="opacity:0.3;">Vazio</div>`;
+                }
+            }
+            document.getElementById("pilha-container").innerHTML = html;
+            document.getElementById("horas-perdidas").innerText = `${estado.pilha.length * 12}h`;
+        }
+
+        window.gastarDescarte = (index) => {
+            const memoria = prompt("Quais 12h você sacrifica?");
+            if (!memoria) return;
+            estado.pilha.splice(index, 1);
+            document.getElementById("diario-notas").value += `\n[Descarte]: ${memoria}.`;
+            renderizarPilha();
+        }
+
+        // 6. Recursos Vitais
+        window.alterarRecurso = (tipo, delta) => {
+            estado[tipo] = Math.max(0, estado[tipo] + delta);
+            const map = { pv: "pv-atual", pvTemp: "pv-temp", pi: "pi-atual" };
+            document.getElementById(map[tipo]).innerText = estado[tipo];
+        }
+
+        window.rolarIniciativa = () => {
+            const d12 = Math.floor(Math.random() * 12) + 1;
+            const maxDin = estado.atributos.dinamismo * 4;
+            document.getElementById("bandeja").innerHTML = `
+                <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">⚡ Iniciativa</div>
+                <div>1d12 (${d12}) + Dinamismo (${maxDin}) + Vol (${estado.volume}) = <strong style="font-size:1.8rem; color:var(--espectro-cor);">${d12 + maxDin + estado.volume}</strong></div>
+            `;
+        }
+
+        window.rolarClashDefesa = () => {
+            const d12 = Math.floor(Math.random() * 12) + 1;
+            const maxDin = estado.atributos.dinamismo * 4;
+            document.getElementById("bandeja").innerHTML = `
+                <div class="titulo-fonte" style="color:#4cc9f0; font-size:1.2rem;">🛡️ Clash Defensivo</div>
+                <div>1d12 (${d12}) + Dinamismo (${maxDin}) + Vol (${estado.volume}) = <strong style="font-size:1.8rem; color:#4cc9f0;">${d12 + maxDin + estado.volume}</strong></div>
+            `;
+        }
+
+        // 7. Histórico Global
+        window.conectarSala = () => {
+            const sala = document.getElementById('sala-id').value.trim() || "sala-padrao";
+            const container = document.getElementById('historico-container');
+            
+            onValue(ref(db, `salas/${sala}/rolagens`), (snapshot) => {
+                container.innerHTML = '';
+                const dados = snapshot.val();
+                if(!dados) { container.innerHTML = '<p style="color:#666; text-align:center;">Sem rolagens.</p>'; return; }
+                
+                Object.values(dados).reverse().slice(0, 10).forEach(r => {
+                    const div = document.createElement('div');
+                    div.className = 'historico-item';
+                    div.innerHTML = `<span>${r.nome}</span> <strong style="color:var(--espectro-cor);">${r.total}</strong>`;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        // Inicializa quando o usuário logar
+        window.addEventListener('usuarioLogado', carregarFicha);
+        
+        // Fallback caso o Firebase demore
+        setTimeout(() => {
+            if(document.getElementById('nome-char').value === "Carregando...") {
+                carregarFicha();
+            }
+        }, 1000);
+
+    </script>
+
     <script type="module" src="../js/firebase.js"></script>
-    <script type="module" src="../js/ficha.js"></script>
-    <script type="module" src="../js/rolagem.js"></script>
 </body>
 </html>
