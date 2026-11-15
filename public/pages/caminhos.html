@@ -3,21 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Rápido - B5A</title>
+    <title>Caminhos e Vocações - B5A</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para formatar os Caminhos e Vocações */
+        .caminho-bloco {
+            background: #1a1816;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .caminho-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .caminho-header h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--gold);
+            font-size: 2rem;
+            margin: 0;
+            border: none;
+            padding: 0;
+            text-align: left;
+        }
+        .caminho-header .arma-favorita {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #ccc;
+            font-size: 1.1rem;
+            background: #111;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .habilidade-volume {
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 3px solid #444;
+        }
+        .habilidade-volume strong {
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
+        .habilidade-volume .custo {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .habilidade-volume p {
+            margin-top: 5px;
+            font-size: 0.95rem;
+            color: #ccc;
+            text-align: left;
+        }
+        .tags-lista {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .tag {
+            background: #222;
+            color: #aaa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #444;
+        }
+        .tag.destaque {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+    </style>
 </head>
 <body>
     <nav class="top-nav" style="justify-content: flex-start;">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px;">
-        <h1>📖 Guia Rápido do Arquivista</h1>
-        <p>Bem-vindo à Biblioteca da 5ª Avenida. Este guia foi feito para que você possa jogar sem precisar ler o livro de regras inteiro.</p>
-        
-        <!-- Cole aqui o resto do texto do Guia -->
-        
+    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
+        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">⚔️ Caminhos e Vocações</h1>
+        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Escolha a sua vocação para definir como você enfrenta os desafios da Biblioteca.</p>
+
+        <!-- ============================================== -->
+        <!-- SEÇÃO: CAMINHOS (COMBATE) -->
+        <!-- ============================================== -->
+        <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">Caminhos (Combate)</h2>
+        <p style="margin-bottom: 30px;">Focados no combate direto, concedendo Armas Favoritas e habilidades de luta.</p>
+
+        <!-- GUERREIRO -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Guerreiro</h2>
+                <span class="arma-favorita">Soco-Inglês (Leve), Espada Longa (Média) ou Machado (Média)</span>
+            </div>
+            <p>A linha de frente. Sua força não vem apenas das armas, mas da determinação de continuar lutando quando qualquer outro já teria recuado.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d4 Vigor</span>
+                <span class="tag destaque">+1d4 Determinação</span>
+                <span class="tag">+1d6 Combate ou Resistência</span>
+                <span class="tag">Deslocamento: 6m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Sem Escapatória</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Gaste 2 PI para realizar uma Ação adicional (Mover-se ou Ataque Básico). Receba +1d6 em Combate ou Resistência.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Muralha de Aço</strong>
+                <p>Ao recuperar PV ou receber Vida Temporária por meio de uma Palavra de Afirmação, aumente esse valor em 1d8. Se estiver com Vida máxima, o excedente vira Vida Temporária.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Via de Mão Dupla</strong>
+                <p>Ao atingir uma criatura com um Ataque Básico, recupere 1d4 PV. Ao sofrer dano de um Ataque Básico, o atacante recebe 1d4 de dano.</p>
+            </div>
+        </div>
+
+        <!-- MAGO -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Mago</h2>
+                <span class="arma-favorita">Grimórios, Cajados ou Orbes (Catalisadores)</span>
+            </div>
+            <p>O estudioso do Ímpeto. Trata cada Palavra de Afirmação como parte da linguagem que sustenta a realidade.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">Perícia Arcanismo</span>
+                <span class="tag destaque">+2 PI Máximo por Volume</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d6 Intuição ou Conhecimento</span>
+                <span class="tag">Deslocamento: 7m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Mestre da Conjuração</strong>
+                <p>Sempre que conjurar uma Palavra de Afirmação, o custo da próxima Palavra é reduzido em 1 PI. (Não cumulativo).</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Motor Arcano</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Até o fim do turno, a próxima Palavra de Afirmação causa +1d8 de dano. (Não cumulativo).</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Abracadabra</strong> <span class="custo">Custo: 5 PI</span>
+                <p>Após realizar uma rolagem, ignore o resultado, role novamente e escolha qual dos dois usar.</p>
+            </div>
+        </div>
+
+        <!-- SUPORTE -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Suporte</h2>
+                <span class="arma-favorita">Componentes Ritualísticos, Grimórios ou Varinhas</span>
+            </div>
+            <p>O pilar do grupo. Fortalece, protege e cria oportunidades para que o grupo supere qualquer desafio.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1 Rolagem em Auxílio</span>
+                <span class="tag destaque">+2 Espaços de Inventário</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag">+1d6 Persuasão ou Medicina</span>
+                <span class="tag">Deslocamento: 6,5m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Mão Amiga</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Gaste 2 PI para aumentar em +1 dado o efeito de uma Palavra, Frase ou Título usado por você ou um aliado.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Tô Chegando</strong>
+                <p>Ao restaurar PV ou conceder Vida Temporária a um aliado com sua Arma Favorita, receba uma Ação Rápida (não pode ser usada para conjurar Palavra de Afirmação).</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Golpe Baixo</strong> <span class="custo">Custo: 5 PI</span>
+                <p>Role 1d6. Durante 4 turnos, reduza a Resistência da criatura em um valor igual ao resultado obtido.</p>
+            </div>
+        </div>
+
+        <!-- ASSASSINO -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Assassino</h2>
+                <span class="arma-favorita">Adagas e Agulhas (Leve)</span>
+            </div>
+            <p>A precisão fatal. Vencem batalhas antes do primeiro golpe, aguardando o momento perfeito para atacar pelas sombras.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">Perícia Acrobacia</span>
+                <span class="tag destaque">+2 Iniciativa</span>
+                <span class="tag">+1d4 Dinamismo</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d6 Furtividade ou Acrobacia</span>
+                <span class="tag">Deslocamento: 8m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Conhecimento Oculto</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Torne-se Oculto. Ao deixar esse estado, seu próximo Ataque Básico causa +2d4 de dano se o alvo estiver desprevenido.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Gosto de Sangue</strong>
+                <p>Receba +2 em Intuição. Ataques com Arma Favorita causam +1d6 de dano. Se não for Acerto Crítico, o alvo recebe Sangramento (1d4 por turno).</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Caçador Implacável</strong> <span class="custo">Custo: 4 PI</span>
+                <p>Realize uma Ação Rápida. Se usada para ficar Oculto, ao sair do estado, o próximo Ataque Básico causa +2d12. Se derrotar o alvo, recupera metade da Vida máxima dele.</p>
+            </div>
+        </div>
+
+        <!-- ATIRADOR -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Atirador</h2>
+                <span class="arma-favorita">Arcos, Bestas e Armas de Fogo (Precisão)</span>
+            </div>
+            <p>O mestre da distância. Transforma paciência em vantagem e cada disparo em uma oportunidade decisiva.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+2 PI Máximo por Volume</span>
+                <span class="tag destaque">+1 Iniciativa</span>
+                <span class="tag">+1d4 Dinamismo</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d6 Pontaria ou Intuição</span>
+                <span class="tag">Deslocamento: 7m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Bala no Alvo</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Seu próximo Ataque Básico à distância também aplica os efeitos de uma Palavra de Afirmação conhecida.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Bem na Mosca</strong> <span class="custo">Custo: 4 PI</span>
+                <p>Uma vez por turno, realize um disparo que ignora penalidades por cobertura, escuridão ou terreno. Avance para o topo da Iniciativa e o ataque causa +2d6 de dano.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Disparo Cataclísmico</strong> <span class="custo">Custo: 5 PI</span>
+                <p>O próximo Ataque Básico à distância causa +2d6 de dano e ignora o teste defensivo do alvo (acerta automaticamente).</p>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SEÇÃO: VOCAÇÕES (INVESTIGAÇÃO) -->
+        <!-- ============================================== -->
+        <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 60px; margin-bottom: 20px;">Vocações (Investigação)</h2>
+        <p style="margin-bottom: 30px;">Focadas na investigação, memória e manipulação da realidade. Perfeitas para quem prefere resolver mistérios e ajudar o grupo fora do combate.</p>
+
+        <!-- CRONISTA -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Cronista</h2>
+                <span class="arma-favorita">Pena de Prata, Livro em Branco, Tinteiro de Eco</span>
+            </div>
+            <p>Altera a forma como o mundo é lembrado. Uma história bem escrita pode mudar o destino de quem a vive.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Investigação</span>
+                <span class="tag destaque">+1d6 Conhecimento</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">Deslocamento: 6m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Reescrever</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Uma vez por cena, reexecute um teste que um aliado ou você falhou, desde que possa "registrar" o momento.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Registrar o Instante</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Escolha uma criatura visível. Ela faz Teste de Resistência contra sua TA. Se falhar, a próxima rolagem de ataque dela é anulada. Um aliado em alcance curto recebe +1d4 no próximo teste.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Registro Imortal</strong>
+                <p>Após 10 minutos estudando um local/objeto, faça uma pergunta ao Guardião e ele deve responder com uma pista verdadeira.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Página em Branco</strong> <span class="custo">Custo: 5 PI</span>
+                <p>Reescreva um detalhe de um evento recente (últimos 5 min). O Guardião define os limites.</p>
+            </div>
+        </div>
+
+        <!-- SELADOR -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Selador</h2>
+                <span class="arma-favorita">Martelo de Selar, Correntes de Silêncio, Lacre de Memória</span>
+            </div>
+            <p>O carcereiro de anomalias. Dedica a vida a impedir que histórias perigosas escapem das páginas da Biblioteca.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Arcanismo</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d4 Vigor</span>
+                <span class="tag">Deslocamento: 5,5m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Selar Fresta</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Uma vez por cena, impeça que uma anomalia se espalhe ou que um efeito narrativo se repita. O Guardião define o que é "selável".</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Marca de Contenção</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Inscreva um selo em uma área de 3m. Criaturas que entrarem fazem Teste de Resistência ou ficam Imobilizadas. Dura 2 turnos.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Barreira de Esquecimento</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Crie uma área de 6m onde Palavras de Afirmação e Frases de Efeito não podem ser conjuradas por 2 turnos (incluindo você).</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Selo Definitivo</strong> <span class="custo">Custo: 6 PI</span>
+                <p>Escolha uma criatura, objeto ou fenômeno. Ele fica imóvel e inerte por 2 turnos. Após o efeito, sofre Dano Real.</p>
+            </div>
+        </div>
+
+        <!-- GUARDIÃO DE MEMÓRIAS -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Guardião de Memórias</h2>
+                <span class="arma-favorita">Fragmento de Memória, Lâmpada de Lembranças, Diário Compartilhado</span>
+            </div>
+            <p>Preserva o que nenhuma espada protege. Caminha entre páginas esquecidas restaurando identidades perdidas.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Persuasão</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag destaque">Aliados: +1d4 cura e +1d4 Vida Temp. (início do turno)</span>
+                <span class="tag">Deslocamento: 6m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Âncora de Memória</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Escolha um aliado. Ele ignora Amedrontado, Atordoado ou Confuso por 2 turnos.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Eco de Proteção</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Aliado recebe +1d4 Vida Temporária no início de cada turno (máx 2 turnos). Se sofrer dano, pode gastar PI como Reação para aumentar a Vida Temporária em +1d4.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Recuperar Fragmento</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Toque um objeto/local. Recupere uma lembrança relacionada a ele, mesmo que tenha sido apagada.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Memória Coletiva</strong> <span class="custo">Custo: 5 PI</span>
+                <p>Todos os aliados em 9m compartilham uma memória. Ganham +1 em todos os testes relacionados a ela durante a cena.</p>
+            </div>
+        </div>
+
+        <!-- INVESTIGADOR DAS SOMBRAS -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Investigador das Sombras</h2>
+                <span class="arma-favorita">Lupa de Verdades, Fio de Ariadne, Cinzel de Rastro</span>
+            </div>
+            <p>Enxerga o que foi escondido. Rastros de Ímpeto, portas secretas e mentiras são o verdadeiro mapa da Biblioteca.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Intuição</span>
+                <span class="tag destaque">+1d6 Furtividade</span>
+                <span class="tag">+1d4 Dinamismo</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">Deslocamento: 8m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Ler Rastro</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Siga o rastro de Ímpeto deixado por qualquer criatura ou objeto nas últimas 24 horas.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Golpe das Sombras</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Próximo Ataque Básico causa +1d6. Se o alvo estiver desprevenido ou você Oculto, acerta automaticamente. Se atingir, mova-se 3m sem gastar Movimento.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Passagem Oculta</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Uma vez por cena, encontre uma passagem secreta, atalho ou entrada alternativa em qualquer ambiente.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Sombra Reveladora</strong> <span class="custo">Custo: 4 PI</span>
+                <p>Revele uma criatura oculta/invisível. Ela sofre -2 na rolagem de defesa por 3 turnos.</p>
+            </div>
+        </div>
+
+        <!-- CARTÓGRAFO DE REALIDADES -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Cartógrafo de Realidades</h2>
+                <span class="arma-favorita">Bússola de Realidades, Mapa em Branco, Lápis de Viagem</span>
+            </div>
+            <p>O mapa não mostra o mundo, o mapa cria o mundo. Dobra o espaço e encontra caminhos onde só existem paredes.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Conhecimento</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag">+1d4 Determinação</span>
+                <span class="tag">Deslocamento: 7m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Mapear Distorção</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Identifique qualquer anomalia espacial ou temporal em um raio de 30m.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Desvio Espacial</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Escolha uma criatura em alcance médio (até 9m). Ela faz Teste de Resistência contra sua TA. Se falhar, você a move até 1,5m horizontalmente. Se ela sair do alcance de um ataque, o ataque é cancelado.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Atalho Narrativo</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Uma vez por cena, reduza pela metade o tempo de deslocamento entre dois pontos conhecidos.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Reescrever Mapa</strong> <span class="custo">Custo: 6 PI</span>
+                <p>Altere para onde uma porta, corredor ou passagem leva, por até 10 minutos.</p>
+            </div>
+        </div>
+
+        <!-- ECOÍSTA -->
+        <div class="caminho-bloco">
+            <div class="caminho-header">
+                <h2>Ecoísta</h2>
+                <span class="arma-favorita">Fragmento de Eco, Espelho de Possibilidades, Ampulheta de Areia</span>
+            </div>
+            <p>O passado nunca morre. Invoca ecos de ações e objetos que já existiram para alterar o presente.</p>
+            <div class="tags-lista">
+                <span class="tag destaque">+1d6 Arcanismo</span>
+                <span class="tag destaque">+1d6 Acrobacia</span>
+                <span class="tag">+1d4 Razão</span>
+                <span class="tag">+1d4 Dinamismo</span>
+                <span class="tag">Deslocamento: 6,5m</span>
+            </div>
+            
+            <div class="habilidade-volume">
+                <strong>Volume I - Eco Pessoal</strong> <span class="custo">Custo: 3 PI</span>
+                <p>Crie uma cópia fantasmagórica de si mesmo que realiza uma ação simples (abrir porta, pegar objeto). Dura 1 turno.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume II - Eco de Ataque</strong> <span class="custo">Custo: 2 PI</span>
+                <p>Repita a rolagem de ataque de um ataque que já realizou neste combate (mesmo resultado). Alternativamente, crie uma cópia que causa 1d4 de dano e desaparece.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume III - Eco de Lugar</strong> <span class="custo">Custo: 4 PI</span>
+                <p>Toque uma superfície para ver brevemente o que aconteceu ali nas últimas 24 horas.</p>
+            </div>
+            <div class="habilidade-volume">
+                <strong>Volume V - Eco de Si</strong> <span class="custo">Custo: 6 PI</span>
+                <p>Crie uma versão sólida de si mesmo do passado (ex: 5 min atrás). Tem metade da Vida, age no seu turno e pode realizar uma Ação. Dura 2 turnos.</p>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

@@ -3,21 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Rápido - B5A</title>
+    <title>Guia do Arquivista - B5A</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos para o Guia / Wiki */
+        .guia-secao {
+            background: #1a1816;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .guia-secao h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+        .guia-secao h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #fff;
+            font-size: 1.4rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .guia-secao p, .guia-secao li {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        .guia-secao ul { padding-left: 20px; margin-bottom: 15px; }
+        .guia-secao li { margin-bottom: 5px; }
+        
+        .destaque-regra {
+            background: #111;
+            border-left: 4px solid var(--gold);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .destaque-regra strong { color: var(--gold); }
+        
+        /* Tabelas do Guia */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #111;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #222;
+            color: var(--gold);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+        }
+        td {
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+    </style>
 </head>
 <body>
     <nav class="top-nav" style="justify-content: flex-start;">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px;">
-        <h1>📖 Guia Rápido do Arquivista</h1>
-        <p>Bem-vindo à Biblioteca da 5ª Avenida. Este guia foi feito para que você possa jogar sem precisar ler o livro de regras inteiro.</p>
-        
-        <!-- Cole aqui o resto do texto do Guia -->
-        
+    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
+        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">📖 Guia do Arquivista</h1>
+        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Uma pequena wiki sobre o funcionamento da Biblioteca e do Ímpeto.</p>
+
+        <!-- 1. O QUE É SER UM ARQUIVISTA -->
+        <div class="guia-secao">
+            <h2>1. A Ordem dos Arquivistas</h2>
+            <p>Ser um Arquivista é aceitar que o mundo ainda guarda histórias que jamais deveriam ter sido escritas. A serviço do Bestiário das Almas, você investigará anomalias, explorará lugares esquecidos, recuperará registros perdidos e enfrentará criaturas surgidas dos vazamentos da Biblioteca.</p>
+            <p>Todo Arquivista vive segundo três princípios:</p>
+            <ul>
+                <li>Registrar, conter ou estudar tudo aquilo que encontrar;</li>
+                <li>Jamais abandonar um companheiro;</li>
+                <li>Preservar a continuidade da história do mundo.</li>
+            </ul>
+        </div>
+
+        <!-- 2. COMO O SISTEMA FUNCIONA (ROLAGENS) -->
+        <div class="guia-secao">
+            <h2>2. O Coração do Sistema (d12)</h2>
+            <p>O destino na Biblioteca não está escrito de antemão. Ele nasce do encontro entre o que seu personagem é capaz de fazer e o que os dados decidem. Toda ação incerta gera uma rolagem.</p>
+            
+            <div class="destaque-regra">
+                <strong>Fórmula do Teste:</strong> 1d12 + Dados de Atributo (d4) ou Perícia (d6) + Volume<br>
+                <strong>Desafiar o Destino:</strong> Se você tiver 0 dados, role 2d12, mantenha o maior e some o Volume.
+            </div>
+            
+            <h3>Os Três Resultados Absolutos</h3>
+            <p>O d12 tem faces especiais que mudam a narrativa, independente do cálculo normal de sucesso ou falha:</p>
+            <ul>
+                <li><strong style="color:#ff4d4d">1 (Catástrofe):</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</li>
+                <li><strong style="color:#ff9800">6 (Falha Absoluta):</strong> A ação falha, mesmo superando a TA.</li>
+                <li><strong style="color:#4caf50">12 (Momento Lendário):</strong> O sucesso é épico. Se falhar, algo positivo surge.</li>
+            </ul>
+        </div>
+
+        <!-- 3. CRIAÇÃO DE PERSONAGEM -->
+        <div class="guia-secao">
+            <h2>3. Criando seu Arquivista</h2>
+            <p>Antes de escolher armas e habilidades, o jogador define sua identidade:</p>
+            <ul>
+                <li><strong>Espectro do Ímpeto:</strong> Define a motivação profunda do personagem (Ígneo, Celeste, Viridiano, etc). Concede Efeitos Passivos e Ativos.</li>
+                <li><strong>Caminho ou Vocação:</strong> Define o estilo de combate ou investigação. Concede Arma Favorita e habilidades exclusivas por Volume.</li>
+            </ul>
+
+            <h3>Atributos e Perícias</h3>
+            <p>Os Atributos (Vigor, Dinamismo, Razão, Determinação) começam com <strong>0d4</strong>. Você recebe <strong>4d4</strong> adicionais para distribuir (limite de 2d4 em cada no Volume I). As Perícias começam com <strong>1d6</strong> e você escolhe 4 iniciais.</p>
+
+            <h3>Fórmulas de Valores Derivados</h3>
+            <table>
+                <tr>
+                    <th>Status</th>
+                    <th>Fórmula</th>
+                </tr>
+                <tr>
+                    <td>Vida (PV)</td>
+                    <td>10 + (Fator de Vida × Volume) + Valor Máximo de Determinação</td>
+                </tr>
+                <tr>
+                    <td>Ímpeto (PI)</td>
+                    <td>5 + (Fator de Ímpeto × Volume) + Valor Máximo de Razão</td>
+                </tr>
+                <tr>
+                    <td>Iniciativa</td>
+                    <td>1d12 + Valor Máximo de Dinamismo + Volume</td>
+                </tr>
+                <tr>
+                    <td>Inventário</td>
+                    <td>5 + Valor Máximo de Vigor</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 4. PALAVRAS, FRASES E TÍTULOS -->
+        <div class="guia-secao">
+            <h2>4. Habilidades de Ímpeto</h2>
+            <p>Todo Arquivista manipula a realidade de três formas. É a interpretação do jogador (junto ao Guardião) que dá poder a essas habilidades.</p>
+            
+            <h3>Palavras de Afirmação</h3>
+            <p>São a forma mais simples e pura de manifestar o Ímpeto. O jogador escolhe 2 no Volume I e ganha mais 1 por Volume.</p>
+            <p><em>Exemplo:</em> A palavra <strong>Registrar (1 PI)</strong> pode ser usada para anotar um golpe (+1d4 no próximo ataque), revelar um detalhe cena ou impedir que uma memória seja apagada.</p>
+            
+            <h3>Frases de Efeito</h3>
+            <p>São manifestações mais poderosas, com golpes e técnicas de efeito fixo. Você aprende 2 Frases a partir do Volume II e ganha mais 2 por Volume.</p>
+            <p><em>Exemplo:</em> <strong>"Lâmina Definitiva" (3 PI)</strong> — Causa +3d6 no próximo ataque. Pode usar o Descarte para adicionar +1d6 por dado descartado.</p>
+            
+            <h3>Títulos</h3>
+            <p>São o reconhecimento da Biblioteca sobre seus feitos. Apenas um Título fica ativo por vez. São conquistados a partir do Volume V ao realizar feitos narrativos importantes, como sobreviver a uma batalha ferido gravemente ou proteger um grupo inteiro.</p>
+        </div>
+
+        <!-- 5. O DIÁRIO E O DESCARTE -->
+        <div class="guia-secao">
+            <h2>5. O Diário e a Pilha de Descartes</h2>
+            <p>O Diário é o equipamento padrão de todo Arquivista. Ele registra todos os usos do Ímpeto para ganho próprio (seja para o bem ou para o mal).</p>
+            
+            <div class="destaque-regra">
+                <strong>Pilha de Descartes:</strong> Cada dado descartado no jogo representa 12 horas da vida do seu personagem sendo jogadas fora (sono, estudo, treino). Você deve narrar quais horas está perdendo para usar o Descarte.
+            </div>
+            <p>As memórias registradas no Diário (como obrigar um aliado a fazer algo contra a vontade) <strong>nunca podem ser descartadas</strong>. Elas ficam no livro para sempre.</p>
+        </div>
+
+        <!-- 6. COMBATE E CLASH -->
+        <div class="guia-secao">
+            <h2>6. O Clash (Combate)</h2>
+            <p>O combate não é uma rolagem contra um número fixo, mas sim uma <strong>disputa</strong> (Clash). Atacante e defensor rolam e o maior vence.</p>
+            <ul>
+                <li><strong>Atacante:</strong> 1d12 + Atributo + Volume.</li>
+                <li><strong>Defensor:</strong> 1d12 + Dinamismo + Volume + Bônus de Equipamento (Vida Temporária).</li>
+            </ul>
+            <p>Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o ataque é bloqueado. A única exceção é o <strong>Dano Real</strong>, que acerta automaticamente e causa sempre 1d6, ignorando o Clash e a Vida Temporária.</p>
+        </div>
+
+        <!-- 7. PROGRESSÃO -->
+        <div class="guia-secao">
+            <h2>7. Subindo de Volume</h2>
+            <p>O grupo sobe de Volume ao concluir <strong>3 missões importantes</strong> (ou marcos narrativos definidos pelo Guardião). Ao subir de Volume, o Arquivista:</p>
+            <ul>
+                <li>Recalcula seus valores derivados (Vida, Ímpeto, Iniciativa).</li>
+                <li>Recebe <strong>3d4</strong> adicionais para distribuir nos Atributos (sem o limite de 2d4).</li>
+                <li>Aprende 1 nova Palavra e 2 novas Frases de Efeito.</li>
+                <li>Melhora uma Perícia em +1d6 ou aprende uma nova.</li>
+                <li>Desbloqueia a próxima habilidade do seu Caminho ou Vocação.</li>
+            </ul>
+        </div>
+
     </div>
 </body>
 </html>
