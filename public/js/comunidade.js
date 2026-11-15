@@ -1,15 +1,14 @@
 import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
-import { ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { ref, set, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-// Variáveis globais da tela
-let cronicaAbertaId = null;
+let cronicaAbertaId = null; // Guarda o ID da crônica que está sendo editada
 let curtidasDaCronicaAtual = [];
 
 // ==========================================
 // 1. SALVAR / EDITAR CRÔNICA
 // ==========================================
 document.getElementById('btn-salvar-cronica')?.addEventListener('click', () => {
-    if (!idJogadorAtual) { alert("Faça login com o Google para salvar sua história!"); return; }
+    if (!idJogadorAtual) { alert("Faça login com o Google para publicar!"); return; }
     
     const titulo = document.getElementById('cronica-titulo').value.trim();
     const jogadores = parseInt(document.getElementById('cronica-jogadores').value) || 1;
@@ -19,34 +18,67 @@ document.getElementById('btn-salvar-cronica')?.addEventListener('click', () => {
     if (titulo.length < 3) { alert("Dê um título para a sua missão!"); return; }
     if (texto.length < 10) { alert("Escreva um pouco mais de resumo!"); return; }
 
-    const nome = auth.currentUser.displayName || "Arquivista Anônimo";
-    const cronicaRef = ref(db, `salas/${salaAtual}/cronicas/${idJogadorAtual}`);
+    const nome = auth.currentUser?.displayName || "Arquivista Anônimo";
+    const btn = document.getElementById('btn-salvar-cronica');
     const status = document.getElementById('status-cronica');
     
-    status.textContent = "Salvando...";
-    
-    // Pega as curtidas antigas (se existirem) para não apagar ao editar
-    onValue(cronicaRef, (snapshot) => {
-        const dadosAntigos = snapshot.val() || {};
-        const curtidasAntigas = dadosAntigos.curtidas || [];
+    btn.textContent = "Salvando...";
+    btn.disabled = true;
+    status.textContent = "";
 
-        set(cronicaRef, { 
+    // Se estiver editando, pega as curtidas antigas para não apagar
+    const salvarDados = (curtidasAntigas = []) => {
+        const payload = { 
             autor: nome, 
             titulo: titulo,
             jogadores: jogadores,
             imagem: imagem,
             historia: texto, 
             data: Date.now(),
-            curtidas: curtidasAntigas 
-        })
-        .then(() => {
-            status.textContent = "✅ Crônica publicada!";
+            curtidas: curtidasAntigas
+        };
+
+        let promessa;
+        if (cronicaAbertaId) {
+            // EDIÇÃO: Atualiza a crônica existente
+            const cronicaRef = ref(db, `salas/${salaAtual}/cronicas/${cronicaAbertaId}`);
+            promessa = update(cronicaRef, payload);
+        } else {
+            // NOVA CRÔNICA: Cria uma nova ID única
+            const novaRef = push(ref(db, `salas/${salaAtual}/cronicas`));
+            promessa = set(novaRef, payload);
+        }
+
+        promessa.then(() => {
+            status.textContent = cronicaAbertaId ? "✅ Crônica atualizada!" : "✅ Crônica publicada!";
+            status.style.color = "#4caf50";
+            
+            // Limpa o formulário
             document.getElementById('cronica-titulo').value = '';
             document.getElementById('cronica-texto').value = '';
             document.getElementById('cronica-imagem').value = '';
-            setTimeout(() => status.textContent = "", 3000);
+            
+            cronicaAbertaId = null; // Reseta o ID de edição
+            btn.textContent = "Publicar Crônica";
+            btn.disabled = false;
+            
+            setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
+        }).catch(e => {
+            console.error(e); 
+            status.textContent = "❌ Erro ao salvar.";
+            btn.textContent = "Publicar Crônica";
+            btn.disabled = false;
         });
-    }, { onlyOnce: true });
+    };
+
+    if (cronicaAbertaId) {
+        // Puxa as curtidas antigas antes de atualizar
+        get(ref(db, `salas/${salaAtual}/cronicas/${cronicaAbertaId}/curtidas`)).then(snap => {
+            salvarDados(snap.val() || []);
+        });
+    } else {
+        salvarDados();
+    }
 });
 
 // ==========================================
@@ -72,24 +104,24 @@ function carregarCronicas() {
         const dados = snapshot.val();
         
         if (!dados) {
-            lista.innerHTML = '<p style="color: #888; font-style: italic; grid-column: 1/-1;">Nenhuma história registrada ainda.</p>';
+            lista.innerHTML = '<p style="color: #888; font-style: italic; grid-column: 1/-1;">Nenhuma crônica registrada ainda.</p>';
             return;
         }
 
-        Object.keys(dados).forEach(idCronica => {
-            const c = dados[idCronica];
+        // Ordena do mais novo para o mais antigo
+        const cronicasArray = Object.keys(dados).map(id => ({ id, ...dados[id] }));
+        cronicasArray.sort((a, b) => b.data - a.data);
+
+        cronicasArray.forEach(c => {
             const qtdLikes = c.curtidas ? c.curtidas.length : 0;
-            
+            const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+
             const div = document.createElement('div');
             div.className = 'card-cronica';
-            div.onclick = () => abrirModalCronica(c, idCronica);
-
-            const imagemFinal = c.imagem && c.imagem.trim() !== '' 
-                ? c.imagem 
-                : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+            div.onclick = () => abrirModalCronica(c, c.id);
 
             div.innerHTML = `
-                <img src="${imagemFinal}" class="card-cronica-img" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80'">
+                <img src="${imgFinal}" class="card-cronica-img" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80'">
                 <div class="card-cronica-body">
                     <div class="card-cronica-titulo">${c.titulo || 'Crônica sem Título'}</div>
                     <div class="card-cronica-info">
@@ -109,37 +141,46 @@ function carregarCronicas() {
 }
 
 // ==========================================
-// 3. MODAL E LÓGICA DE LIKE
+// 3. MODAL (LEITURA E EDIÇÃO)
 // ==========================================
 function abrirModalCronica(c, idCronica) {
     cronicaAbertaId = idCronica;
     curtidasDaCronicaAtual = c.curtidas || [];
     
     const modal = document.getElementById('modal-cronica');
+    
     document.getElementById('modal-titulo').textContent = c.titulo || 'Crônica sem Título';
     document.getElementById('modal-autor').textContent = `Escrito por: ${c.autor}`;
     document.getElementById('modal-texto').textContent = c.historia;
     
-    const imagemFinal = c.imagem && c.imagem.trim() !== '' 
-        ? c.imagem 
-        : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
-    
-    document.getElementById('modal-img').src = imagemFinal;
+    const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+    document.getElementById('modal-img').src = imgFinal;
     
     modal.style.display = 'block';
 
     atualizarBotaoLike();
 
-    document.getElementById('btn-editar').style.display = (idJogadorAtual === idCronica) ? 'block' : 'none';
+    // MOSTRA O BOTÃO EDITAR SÓ SE FOR O DONO DA CRÔNICA
+    const btnEditar = document.getElementById('btn-editar');
+    if (c.autor === auth.currentUser?.displayName) {
+        btnEditar.style.display = 'block';
+    } else {
+        btnEditar.style.display = 'none';
+    }
 }
 
-function fecharModalCronica() {
+window.fecharModalCronica = function() {
     document.getElementById('modal-cronica').style.display = 'none';
+    cronicaAbertaId = null;
 }
 
+// ==========================================
+// 4. LIKES
+// ==========================================
 function atualizarBotaoLike() {
     const btn = document.getElementById('btn-like');
     const qtdSpan = document.getElementById('qtd-likes');
+    if(!btn) return;
     
     qtdSpan.textContent = curtidasDaCronicaAtual.length;
     
@@ -150,11 +191,10 @@ function atualizarBotaoLike() {
     }
 }
 
-async function alternarLike() {
-    if (!idJogadorAtual) { alert("Faça login para curtir a história!"); return; }
+window.alternarLike = async function() {
+    if (!idJogadorAtual) { alert("Faça login para curtir!"); return; }
 
     let novasCurtidas = [...curtidasDaCronicaAtual];
-    
     if (novasCurtidas.includes(idJogadorAtual)) {
         novasCurtidas = novasCurtidas.filter(id => id !== idJogadorAtual);
     } else {
@@ -169,32 +209,30 @@ async function alternarLike() {
 }
 
 // ==========================================
-// 4. PREPARAR EDIÇÃO
+// 5. PREPARAR EDIÇÃO (PUXA PARA O FORMULÁRIO)
 // ==========================================
-function prepararEdicao() {
+window.prepararEdicao = function() {
+    // Pega os dados do modal e joga para o formulário
     const titulo = document.getElementById('modal-titulo').textContent;
     const texto = document.getElementById('modal-texto').textContent;
     const img = document.getElementById('modal-img').src;
+    const jogadores = document.getElementById('modal-jogadores-info')?.textContent || 1; 
+    // Nota: se você não tem um campo de jogadores no modal, ele vai manter o padrão.
 
     document.getElementById('cronica-titulo').value = titulo;
     document.getElementById('cronica-texto').value = texto;
-    document.getElementById('cronica-imagem').value = img;
-
-    fecharModalCronica();
-    window.scrollTo(0, 0);
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-cronica');
-    if (event.target === modal) {
-        fecharModalCronica();
+    if(img.startsWith('data:')) {
+        document.getElementById('cronica-imagem').value = ""; // Se for Base64, limpa o campo
+    } else {
+        document.getElementById('cronica-imagem').value = img;
     }
-}
- 
-// Exporta para o HTML acessar
-window.abrirModalCronica = abrirModalCronica;
-window.fecharModalCronica = fecharModalCronica;
-window.alternarLike = alternarLike;
-window.prepararEdicao = prepararEdicao;
 
+    // Muda o texto do botão para avisar que é uma edição
+    document.getElementById('btn-salvar-cronica').textContent = "Salvar Alterações";
+    
+    fecharModalCronica();
+    window.scrollTo(0, 0); 
+}
+
+// Inicializa
 carregarCronicas();
