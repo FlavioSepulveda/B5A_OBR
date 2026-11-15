@@ -1,126 +1,52 @@
-import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+// js/home.js
+import { db } from './firebase.js';
+import { ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { conectarInteracoesCard } from './interacoes.js';
 
-const feedContainer = document.getElementById('feed-home');
+const feedHome = document.getElementById('feed-home') || document.getElementById('feed-unificado') || document.querySelector('.feed-container');
 
-// Função para formatar o tempo
-function tempoAtras(timestamp) {
-    if (!timestamp) return "Recentemente";
-    const segundos = Math.floor((Date.now() - timestamp) / 1000);
-    if (segundos < 60) return "Agora mesmo";
-    const minutos = Math.floor(segundos / 60);
-    if (minutos < 60) return `Há ${minutos} min`;
-    const horas = Math.floor(minutos / 60);
-    if (horas < 24) return `Há ${horas} horas`;
-    return `Há ${Math.floor(horas / 24)} dias`;
-}
+function carregarFeedHome() {
+    if (!feedHome) return;
 
-function carregarFeed() {
-    if(!feedContainer) return;
-
-    // O onValue escuta a sala em tempo real
-    onValue(ref(db, `salas/${salaAtual}`), (snapshot) => {
+    const cronicasRef = query(ref(db, 'cronicas'), limitToLast(10));
+    onValue(cronicasRef, (snapshot) => {
         const dados = snapshot.val();
-        
-        if(!dados) {
-            feedContainer.innerHTML = '<p style="color:#888; text-align:center;">Nenhuma atividade recente.</p>';
+        if (!dados) {
+            feedHome.innerHTML = '<p style="text-align:center; color:#888;">Nenhuma atividade recente na Biblioteca.</p>';
             return;
         }
 
-        let todasAtividades = [];
+        const recentes = Object.entries(dados)
+            .map(([id, val]) => ({ id, ...val }))
+            .sort((a, b) => b.timestamp - a.timestamp);
 
-        // Verifica se existe cada coleção antes de tentar ler (evita erro de undefined)
-        if(dados.monstros) {
-            Object.values(dados.monstros).forEach(m => {
-                todasAtividades.push({
-                    tipo: 'Bestiário', link: 'pages/monstros.html',
-                    titulo: m.titulo, autor: m.autor, autorId: m.autorId, data: m.data,
-                    imagem: m.imagem, texto: m.texto || 'Uma nova criatura catalogada.',
-                    icone: '👹'
-                });
-            });
-        }
+        feedHome.innerHTML = '';
 
-        if(dados.armas) {
-            Object.values(dados.armas).forEach(a => {
-                todasAtividades.push({
-                    tipo: 'Arsenal', link: 'pages/armas.html',
-                    titulo: a.titulo, autor: a.autor, autorId: a.autorId, data: a.data,
-                    imagem: a.imagem, texto: `Arma forjada na categoria ${a.categoria}.`,
-                    icone: '🛡️'
-                });
-            });
-        }
-
-        if(dados.cronicas) {
-            Object.values(dados.cronicas).forEach(c => {
-                todasAtividades.push({
-                    tipo: 'Crônica', link: 'pages/comunidade.html',
-                    titulo: c.titulo, autor: c.autor, autorId: c.autorId, data: c.data,
-                    imagem: c.imagem, texto: c.historia ? c.historia.substring(0, 100) + '...' : 'Nova história registrada.',
-                    icone: '🌍'
-                });
-            });
-        }
-
-        if(dados.habilidades) {
-            Object.values(dados.habilidades).forEach(h => {
-                todasAtividades.push({
-                    tipo: 'Grimório', link: 'pages/habilidades.html',
-                    titulo: h.titulo, autor: h.autor, autorId: h.autorId, data: h.data,
-                    imagem: h.imagem, texto: `Nova ${h.tipo || 'habilidade'} registrada.`,
-                    icone: '✨'
-                });
-            });
-        }
-
-        // Ordena do mais novo para o mais antigo
-        todasAtividades.sort((a, b) => b.data - a.data);
-        
-        // Pega os 10 mais recentes
-        const feedRecente = todasAtividades.slice(0, 10);
-
-        if(feedRecente.length === 0) {
-            feedContainer.innerHTML = '<p style="color:#888; text-align:center;">Nenhuma atividade recente.</p>';
-            return;
-        }
-
-        feedContainer.innerHTML = '';
-
-        feedRecente.forEach(item => {
-            const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=200&q=80';
-            const imgFinal = item.imagem && item.imagem.trim() !== '' ? item.imagem : imagemPadrao;
-
-            const card = document.createElement('a');
-            card.href = item.link;
-            card.className = 'post-card';
-
-            // Link do autor preparado para ir ao perfil
-            const linkAutor = item.autorId 
-                ? `<a href="pages/perfil.html?uid=${item.autorId}" style="color:var(--gold); text-decoration:none; font-weight:bold;" onclick="event.stopPropagation()">${item.autor}</a>`
-                : `<strong>${item.autor || 'Arquivista'}</strong>`;
+        recentes.forEach((item) => {
+            const card = document.createElement('div');
+            card.className = 'feed-item card-b5a';
+            card.style.cssText = 'background:#16161c; border:1px solid rgba(212,175,55,0.25); border-radius:8px; padding:16px; margin-bottom:16px;';
 
             card.innerHTML = `
-                <div class="post-header">
-                    <h3>${item.icone} ${item.titulo}</h3>
-                    <span>${tempoAtras(item.data)}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
+                    <a href="pages/perfil.html?uid=${item.autorUid}" style="color:#d4af37; font-weight:bold; text-decoration:none; font-size:0.9rem;">
+                        ✒️ ${item.autorNome}
+                    </a>
+                    <span style="font-size:0.75rem; color:#888;">${new Date(item.timestamp).toLocaleDateString('pt-BR')}</span>
                 </div>
-                <div class="post-body">
-                    <img src="${imgFinal}" class="post-img" onerror="this.src='${imagemPadrao}'">
-                    <div class="post-text">
-                        ${item.texto}
-                    </div>
-                </div>
-                <div class="post-footer">
-                    <span>Publicado no ${item.tipo}</span>
-                    <span>Por: ${linkAutor}</span>
-                </div>
+                <h4 style="margin:0 0 6px 0; color:#fff; font-size:1.05rem;">${item.titulo}</h4>
+                <p style="margin:0; color:#ccc; font-size:0.88rem; line-height:1.5;">
+                    ${item.conteudo.length > 220 ? item.conteudo.substring(0, 220) + '...' : item.conteudo}
+                </p>
+                <div id="home-interacoes-${item.id}"></div>
             `;
 
-            feedContainer.appendChild(card);
+            feedHome.appendChild(card);
+
+            const slot = document.getElementById(`home-interacoes-${item.id}`);
+            conectarInteracoesCard(slot, item.id, item.autorUid, `"${item.titulo}"`);
         });
     });
 }
 
-// Inicia o feed assim que a página carregar
-carregarFeed();
+carregarFeedHome();

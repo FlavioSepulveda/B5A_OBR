@@ -257,3 +257,281 @@ h1, h2, h3, .nav-brand, .btn-primario, .nav-btn, .btn-login-nav {
         height: 200px; /* Imagem ocupa a largura toda no celular */
     }
 }
+
+/* =========================================================
+   REDE SOCIAL B5A - NOTIFICAÇÕES E INTERAÇÕES (MOBILE-FIRST)
+   ========================================================= */
+.b5a-notif-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.b5a-notif-btn {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: #d4af37;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.b5a-notif-btn:hover {
+    background: rgba(212, 175, 55, 0.25);
+    transform: scale(1.05);
+}
+
+.b5a-notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #c0392b;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 1px solid #121216;
+}
+
+.b5a-notif-dropdown {
+    display: none;
+    position: absolute;
+    top: 46px;
+    right: 0;
+    width: 320px;
+    max-width: 90vw;
+    background: #16161c;
+    border: 1px solid #d4af37;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.b5a-notif-dropdown.ativo {
+    display: block;
+}
+
+.b5a-notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #1e1e26;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+.b5a-btn-limpar {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.b5a-notif-lista {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.b5a-notif-item {
+    display: block;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    color: #e0e0e0;
+    font-size: 0.82rem;
+    transition: background 0.2s;
+}
+
+.b5a-notif-item:hover {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.b5a-notif-item.nao-lida {
+    background: rgba(212, 175, 55, 0.12);
+    border-left: 3px solid #d4af37;
+}
+
+.b5a-notif-item small {
+    display: block;
+    color: #888;
+    font-size: 0.72rem;
+    margin-top: 4px;
+}
+
+.b5a-notif-vazio {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+    font-size: 0.82rem;
+}
+
+/* Barra de Reações e Comentários */
+.b5a-social-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.b5a-reacoes-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.b5a-btn-reacao, .b5a-btn-comentar {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ccc;
+    border-radius: 20px;
+    padding: 5px 11px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+}
+
+.b5a-btn-reacao:hover, .b5a-btn-comentar:hover {
+    border-color: #d4af37;
+    color: #fff;
+}
+
+.b5a-btn-reacao.ativo {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: #d4af37;
+    color: #d4af37;
+    font-weight: bold;
+}
+
+/* Caixa de Comentários */
+.b5a-comentarios-box {
+    margin-top: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.b5a-comentarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.b5a-comentario-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 10px;
+    border-radius: 5px;
+    border-left: 2px solid rgba(212, 175, 55, 0.5);
+}
+
+.b5a-comentario-topo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+}
+
+.b5a-comentario-autor {
+    color: #d4af37;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.b5a-comentario-data {
+    color: #777;
+}
+
+.b5a-comentario-texto {
+    margin: 0;
+    font-size: 0.84rem;
+    color: #e5e5e5;
+    word-break: break-word;
+}
+
+.b5a-sem-comentarios {
+    font-size: 0.8rem;
+    color: #777;
+    text-align: center;
+    margin: 6px 0;
+}
+
+.b5a-comentario-form {
+    display: flex;
+    gap: 8px;
+}
+
+.b5a-comentario-form input {
+    flex: 1;
+    min-width: 0;
+    background: #121216;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.b5a-comentario-form button {
+    background: #d4af37;
+    color: #121216;
+    border: none;
+    padding: 0 14px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Ajuste específico para mobile */
+@media (max-width: 600px) {
+    .b5a-notif-dropdown {
+        position: fixed;
+        top: 60px;
+        right: 5vw;
+        width: 90vw;
+    }
+    .b5a-social-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .b5a-reacoes-grupo {
+        justify-content: space-between;
+    }
+    .b5a-btn-reacao {
+        flex: 1;
+        justify-content: center;
+    }
+    .b5a-btn-comentar {
+        justify-content: center;
+    }
+}
