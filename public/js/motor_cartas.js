@@ -2,7 +2,7 @@ import { db, auth, idJogadorAtual, salaAtual } from './firebase.js';
 import { ref, set, onValue, update, push, get, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 let colecaoAtual = "";
-let idItemAbertoNoModal = null; // ID do item que está sendo lido no momento
+let idItemAbertoNoModal = null; 
 let curtidasDoItem = [];
 
 window.iniciarCartas = function(colecao) {
@@ -12,7 +12,7 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (CRIAR OU ATUALIZAR)
+// 1. SALVAR ITEM
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
@@ -21,7 +21,6 @@ function configurarFormulario() {
         const titulo = document.getElementById('form-titulo')?.value.trim() || "";
         if (titulo.length < 3) { alert("Dê um nome com pelo menos 3 letras."); return; }
 
-        // Verifica o campo oculto de edição
         const editId = document.getElementById('edit-item-id')?.value || "";
 
         const btnSalvar = document.getElementById('btn-salvar-form');
@@ -43,8 +42,14 @@ function configurarFormulario() {
                 if (colecaoAtual === "monstros") {
                     payload.vida = document.getElementById('form-vida')?.value || 10;
                     payload.ta = document.getElementById('form-ta')?.value || 12;
+                    payload.nivel = document.getElementById('form-nivel')?.value || "Comum";
+                    payload.vigor = document.getElementById('form-vigor')?.value || "0d4";
+                    payload.dinamismo = document.getElementById('form-dinamismo')?.value || "0d4";
+                    payload.razao = document.getElementById('form-razao')?.value || "0d4";
+                    payload.determinacao = document.getElementById('form-determinacao')?.value || "0d4";
                     payload.dominante = document.getElementById('form-dominante')?.value || "Vigor";
                     payload.espectro = document.getElementById('form-espectro')?.value || 'padrao';
+                    
                     payload.habilidades = [];
                     for(let i=1; i<=3; i++) {
                         let custo = document.getElementById(`form-hab${i}-custo`)?.value || "";
@@ -65,11 +70,9 @@ function configurarFormulario() {
 
                 let promessa;
                 if (editId) {
-                    // ATUALIZAR EXISTENTE
                     const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${editId}`);
                     promessa = update(itemRef, payload);
                 } else {
-                    // CRIAR NOVO
                     payload.curtidas = [];
                     const novaRef = push(ref(db, `salas/${salaAtual}/${colecaoAtual}`));
                     promessa = set(novaRef, payload);
@@ -79,7 +82,6 @@ function configurarFormulario() {
                     const status = document.getElementById('status-form');
                     status.textContent = editId ? "✅ Item atualizado!" : "✅ Item criado!";
                     status.style.color = "#4caf50";
-                    
                     resetarFormulario();
                     setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
                 }).catch((error) => {
@@ -127,7 +129,7 @@ function configurarFormulario() {
 }
 
 window.resetarFormulario = function() {
-    document.getElementById('edit-item-id').value = ""; // Limpa o ID invisível
+    document.getElementById('edit-item-id').value = ""; 
     
     document.getElementById('form-titulo').value = "";
     if(document.getElementById('form-texto')) document.getElementById('form-texto').value = "";
@@ -168,7 +170,14 @@ function carregarCartas() {
 
             let statusHtml = "";
             if (colecaoAtual === "monstros") {
-                statusHtml = `<div class="carta-status"><span>PV: ${item.vida}</span><span>TA: ${item.ta}</span></div>`;
+                // Adicionado Nível na parte de cima do card
+                statusHtml = `
+                    <div class="carta-status" style="flex-direction: column; gap: 5px;">
+                        <div style="display:flex; justify-content:space-between; width:100%;">
+                            <span>PV: ${item.vida}</span><span>TA: ${item.ta}</span>
+                        </div>
+                        <div style="font-size:0.7rem; color:#aaa;">Nível: ${item.nivel || 'Comum'}</div>
+                    </div>`;
             } else if (colecaoAtual === "armas") {
                 statusHtml = `<div class="carta-status" style="justify-content: flex-start; gap: 10px;">
                     <span style="color: var(--gold);">Dano: ${item.dano || '1d6'}</span>
@@ -230,7 +239,11 @@ function abrirModal(item, id) {
     const classeEspectro = item.espectro && item.espectro !== 'padrao' ? `espectro-${item.espectro}` : '';
     
     let sub = `<strong>${item.autor}</strong>`;
-    if(colecaoAtual === "monstros") sub += ` | PV: ${item.vida} | TA: ${item.ta} | Dom: ${item.dominante}`;
+    if(colecaoAtual === "monstros") {
+        // Adicionando Atributos no subtítulo do modal
+        sub += `<br>PV: ${item.vida} | TA: ${item.ta} | Nível: ${item.nivel || 'Comum'} | Dom: ${item.dominante}`;
+        sub += `<br><span style="font-size:0.75rem; color:#888;">Atributos: VIG ${item.vigor || '0d4'} | DIN ${item.dinamismo || '0d4'} | RAZ ${item.razao || '0d4'} | DET ${item.determinacao || '0d4'}</span>`;
+    }
     if(colecaoAtual === "armas") {
         sub += ` | ${item.categoria} | Dano: ${item.dano} | Crítico: ${item.critico}`;
         if (item.efeito && item.efeito !== "Nenhum") sub += ` | Efeito: ${item.efeito}`;
@@ -305,7 +318,6 @@ window.prepararEdicao = function() {
         const item = snapshot.val();
         if (!item) return;
 
-        // A MÁGICA ESTÁ AQUI: Joga o ID para o input invisível do formulário
         document.getElementById('edit-item-id').value = idItemAbertoNoModal;
 
         document.getElementById('form-titulo').value = item.titulo;
@@ -315,8 +327,14 @@ window.prepararEdicao = function() {
         if (colecaoAtual === "monstros") {
             document.getElementById('form-vida').value = item.vida;
             document.getElementById('form-ta').value = item.ta;
+            document.getElementById('form-nivel').value = item.nivel || "Comum";
+            document.getElementById('form-vigor').value = item.vigor || "0d4";
+            document.getElementById('form-dinamismo').value = item.dinamismo || "0d4";
+            document.getElementById('form-razao').value = item.razao || "0d4";
+            document.getElementById('form-determinacao').value = item.determinacao || "0d4";
             document.getElementById('form-dominante').value = item.dominante;
             if(document.getElementById('form-espectro')) document.getElementById('form-espectro').value = item.espectro || "padrao";
+            
             if(item.habilidades) {
                 for(let i=1; i<=3; i++) {
                     let h = item.habilidades[i-1] || { custo: "", desc: "" };

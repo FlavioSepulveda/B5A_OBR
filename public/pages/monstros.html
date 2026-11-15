@@ -22,7 +22,6 @@
         <div class="painel-escrita">
             <h2>Registrar Monstro</h2>
             
-            <!-- CAMPO OCULTO PARA EDIÇÃO -->
             <input type="hidden" id="edit-item-id" value="">
 
             <div class="input-group" style="background: #111; padding: 15px; border-radius: 5px; border: 1px solid var(--gold); display: flex; flex-direction: column; gap: 10px;">
@@ -41,9 +40,41 @@
                         <label>Defesa (TA)</label>
                         <input type="number" id="form-ta" value="12">
                     </div>
+                    <div class="input-group">
+                        <label>Nível de Ameaça</label>
+                        <select id="form-nivel">
+                            <option value="Comum">Comum</option>
+                            <option value="Ameaça">Ameaça</option>
+                            <option value="Chefe">Chefe</option>
+                        </select>
+                    </div>
                 </div>
-                
+
+                <!-- NOVA SEÇÃO DE ATRIBUTOS -->
+                <label style="color: var(--gold); margin-top: 10px; margin-bottom: 5px; display: block; font-size: 0.9rem;">Atributos Base (Dados d4)</label>
                 <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Vigor</label>
+                        <input type="text" id="form-vigor" placeholder="Ex: 2d4" value="1d4">
+                    </div>
+                    <div class="input-group">
+                        <label>Dinamismo</label>
+                        <input type="text" id="form-dinamismo" placeholder="Ex: 1d4" value="1d4">
+                    </div>
+                </div>
+                <div class="row-inputs" style="margin-top: 5px;">
+                    <div class="input-group">
+                        <label>Razão</label>
+                        <input type="text" id="form-razao" placeholder="Ex: 1d4" value="1d4">
+                    </div>
+                    <div class="input-group">
+                        <label>Determinação</label>
+                        <input type="text" id="form-determinacao" placeholder="Ex: 1d4" value="1d4">
+                    </div>
+                </div>
+                <!-- FIM DA SEÇÃO DE ATRIBUTOS -->
+                
+                <div class="row-inputs" style="margin-top: 10px;">
                     <div class="input-group">
                         <label>Atributo Dominante</label>
                         <select id="form-dominante">
@@ -109,11 +140,7 @@
     <script type="module" src="../js/motor_cartas.js"></script>
     <script>
         window.onload = () => {
-            if (typeof iniciarCartas === 'function') {
-                iniciarCartas("monstros");
-            } else {
-                setTimeout(() => iniciarCartas("monstros"), 500);
-            }
+            if (typeof iniciarCartas === 'function') iniciarCartas("monstros");
         };
     </script>
 </body>
