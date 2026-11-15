@@ -9,13 +9,12 @@ let curtidasDaCronicaAtual = [];
 document.getElementById('btn-salvar-cronica')?.addEventListener('click', () => {
     if (!idJogadorAtual) { alert("Faça login com o Google para publicar!"); return; }
     
-    // Pega o ID oculto. Se estiver vazio, é uma crônica nova.
     const idEdicao = document.getElementById('edit-cronica-id').value;
-
     const titulo = document.getElementById('cronica-titulo').value.trim();
     const jogadores = parseInt(document.getElementById('cronica-jogadores').value) || 1;
-    const imagem = document.getElementById('cronica-imagem').value.trim();
+    const imagemUrl = document.getElementById('cronica-imagem').value.trim();
     const texto = document.getElementById('cronica-texto').value.trim();
+    const arquivoInput = document.getElementById('cronica-arquivo');
     
     if (titulo.length < 3) { alert("Dê um título para a sua missão!"); return; }
     if (texto.length < 10) { alert("Escreva um pouco mais de resumo!"); return; }
@@ -28,40 +27,73 @@ document.getElementById('btn-salvar-cronica')?.addEventListener('click', () => {
     btn.disabled = true;
     status.textContent = "";
 
-    const payload = { 
-        autor: nome, 
-        titulo: titulo,
-        jogadores: jogadores,
-        imagem: imagem,
-        historia: texto, 
-        data: Date.now()
+    // Função que salva no banco após processar a imagem (se houver)
+    const salvarNoBanco = (imagemFinal) => {
+        const payload = { 
+            autor: nome, 
+            titulo: titulo,
+            jogadores: jogadores,
+            imagem: imagemFinal,
+            historia: texto, 
+            data: Date.now()
+        };
+
+        let promessa;
+
+        if (idEdicao) {
+            // Se tem ID de edição, atualiza apenas o que mudou
+            const cronicaRef = ref(db, `salas/${salaAtual}/cronicas/${idEdicao}`);
+            promessa = update(cronicaRef, payload); 
+        } else {
+            // Se é nova, cria uma ID única e zera curtidas
+            payload.curtidas = [];
+            const novaRef = push(ref(db, `salas/${salaAtual}/cronicas`));
+            promessa = set(novaRef, payload);
+        }
+
+        promessa.then(() => {
+            status.textContent = idEdicao ? "✅ Crônica atualizada!" : "✅ Crônica publicada!";
+            status.style.color = "#4caf50";
+            
+            resetarFormulario();
+            setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
+        }).catch(e => {
+            console.error(e); 
+            status.textContent = "❌ Erro ao salvar.";
+            btn.textContent = idEdicao ? "Salvar Alterações" : "Publicar Crônica";
+            btn.disabled = false;
+        });
     };
 
-    let promessa;
-
-    if (idEdicao) {
-        // ATUALIZAR EXISTENTE
-        const cronicaRef = ref(db, `salas/${salaAtual}/cronicas/${idEdicao}`);
-        promessa = update(cronicaRef, payload); // UPDATE não apaga as curtidas
-    } else {
-        // CRIAR NOVA
-        payload.curtidas = [];
-        const novaRef = push(ref(db, `salas/${salaAtual}/cronicas`));
-        promessa = set(novaRef, payload);
-    }
-
-    promessa.then(() => {
-        status.textContent = idEdicao ? "✅ Crônica atualizada!" : "✅ Crônica publicada!";
-        status.style.color = "#4caf50";
+    // Verifica se o jogador subiu um arquivo do PC
+    if (arquivoInput && arquivoInput.files.length > 0) {
+        const arquivo = arquivoInput.files[0];
+        const reader = new FileReader();
         
-        resetarFormulario();
-        setTimeout(() => { status.textContent = ""; status.style.color = "#888"; }, 3000);
-    }).catch(e => {
-        console.error(e); 
-        status.textContent = "❌ Erro ao salvar.";
-        btn.textContent = idEdicao ? "Salvar Alterações" : "Publicar Crônica";
-        btn.disabled = false;
-    });
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // Redimensiona a imagem para no máximo 600px (evita erro no Firebase)
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 600;
+                const scale = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scale;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Converte para Base64 (comprimido)
+                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                salvarNoBanco(base64);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(arquivo);
+    } else {
+        // Se não subiu arquivo, usa o link digitado
+        salvarNoBanco(imagemUrl);
+    }
 });
 
 function resetarFormulario() {
@@ -69,6 +101,7 @@ function resetarFormulario() {
     document.getElementById('cronica-titulo').value = "";
     document.getElementById('cronica-jogadores').value = 4;
     document.getElementById('cronica-imagem').value = "";
+    if(document.getElementById('cronica-arquivo')) document.getElementById('cronica-arquivo').value = "";
     document.getElementById('cronica-texto').value = "";
     
     const btnSalvar = document.getElementById('btn-salvar-cronica');
@@ -81,7 +114,7 @@ function resetarFormulario() {
 }
 
 // ==========================================
-// 2. RENDERIZAR OS CARDS
+// 2. RENDERIZAR OS CARDS (COM CORREÇÃO DE IMAGEM BASE64)
 // ==========================================
 function tempoAtras(timestamp) {
     if (!timestamp) return "Recentemente";
@@ -112,14 +145,17 @@ function carregarCronicas() {
 
         cronicasArray.forEach(c => {
             const qtdLikes = c.curtidas ? c.curtidas.length : 0;
-            const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+            
+            const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+            const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : imagemPadrao;
 
             const div = document.createElement('div');
             div.className = 'card-cronica';
             div.onclick = () => abrirModalCronica(c, c.id);
 
+            // O SRC da imagem é injetado via JS depois para não quebrar com Base64 longo
             div.innerHTML = `
-                <img src="${imgFinal}" class="card-cronica-img" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80'">
+                <img class="card-cronica-img" alt="Capa da crônica">
                 <div class="card-cronica-body">
                     <div class="card-cronica-titulo">${c.titulo || 'Crônica sem Título'}</div>
                     <div class="card-cronica-info">
@@ -133,13 +169,18 @@ function carregarCronicas() {
                     </div>
                 </div>
             `;
+
+            const imgElement = div.querySelector('.card-cronica-img');
+            imgElement.src = imgFinal;
+            imgElement.onerror = () => { imgElement.src = imagemPadrao; };
+
             lista.appendChild(div);
         });
     });
 }
 
 // ==========================================
-// 3. MODAL E LÓGICA DE EDIÇÃO
+// 3. MODAL E LÓGICA DE EDIÇÃO/DELETAR
 // ==========================================
 function abrirModalCronica(c, idCronica) {
     curtidasDaCronicaAtual = c.curtidas || [];
@@ -150,8 +191,13 @@ function abrirModalCronica(c, idCronica) {
     document.getElementById('modal-autor').textContent = `Escrito por: ${c.autor}`;
     document.getElementById('modal-texto').textContent = c.historia;
     
-    const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
-    document.getElementById('modal-img').src = imgFinal;
+    const imagemPadrao = 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80';
+    const imgFinal = c.imagem && c.imagem.trim() !== '' ? c.imagem : imagemPadrao;
+    
+    const modalImg = document.getElementById('modal-img');
+    modalImg.src = imgFinal;
+    modalImg.onerror = () => { modalImg.src = imagemPadrao; };
+    
     modal.style.display = 'block';
 
     atualizarBotaoLike();
@@ -163,11 +209,16 @@ function abrirModalCronica(c, idCronica) {
         if(btnEditar) {
             btnEditar.style.display = 'block';
             btnEditar.onclick = () => {
-                document.getElementById('edit-cronica-id').value = idCronica; // O SEGREDO ESTÁ AQUI
+                document.getElementById('edit-cronica-id').value = idCronica;
                 document.getElementById('cronica-titulo').value = c.titulo;
                 document.getElementById('cronica-jogadores').value = c.jogadores || 1;
                 document.getElementById('cronica-texto').value = c.historia;
-                document.getElementById('cronica-imagem').value = (c.imagem && c.imagem.startsWith('http')) ? c.imagem : "";
+                
+                if (c.imagem && c.imagem.startsWith('http')) {
+                    document.getElementById('cronica-imagem').value = c.imagem;
+                } else {
+                    document.getElementById('cronica-imagem').value = "";
+                }
                 
                 const btnSalvar = document.getElementById('btn-salvar-cronica');
                 btnSalvar.textContent = "Salvar Alterações";
@@ -190,10 +241,11 @@ function abrirModalCronica(c, idCronica) {
                 window.scrollTo(0, 0);
             };
         }
+        
         if(btnDeletar) {
             btnDeletar.style.display = 'block';
             btnDeletar.onclick = () => {
-                if(confirm("Tem certeza que deseja APAGAR essa crônica para sempre?")) {
+                if(confirm("Tem certeza que deseja APAGAR essa crônica?")) {
                     remove(ref(db, `salas/${salaAtual}/cronicas/${idCronica}`)).then(() => {
                         fecharModalCronica();
                     });
