@@ -1,142 +1,249 @@
-// js/comunidade.js
-import { auth, db } from './firebase.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { ref, push, set, onValue, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { conectarInteracoesCard } from './interacoes.js';
+import { auth, db, storage } from './firebase.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { ref as dbRef, push, set, onValue, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { alternarCurtida, adicionarComentario, renderizarComentarios, registrarNotificacao } from './interacoes.js';
 
-const feedContainer = document.getElementById('feed-cronicas') || document.getElementById('lista-cronicas') || document.querySelector('.cronicas-grid');
-const formCronica = document.getElementById('form-cronica') || document.querySelector('form');
-const inputImagem = document.getElementById('cronica-imagem') || document.querySelector('input[type="file"]');
+const inputTitulo = document.getElementById('cronica-titulo');
+const inputConteudo = document.getElementById('cronica-conteudo');
+const inputArquivo = document.getElementById('cronica-arquivo');
+const inputImagemUrl = document.getElementById('cronica-imagem');
+const btnSalvar = document.getElementById('btn-salvar-cronica');
+const statusPostagem = document.getElementById('status-postagem');
+const feedCronicas = document.getElementById('feed-cronicas');
 
-let imagemBase64Atual = '';
+let usuarioLogado = null;
+let cronicaAbertaId = null;
 
-// Compressão leve da imagem para manter o Realtime Database rápido e leve no mobile
-if (inputImagem) {
-    inputImagem.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+onAuthStateChanged(auth, (user) => {
+    usuarioLogado = user;
+    const statusUser = document.getElementById('user-status-bar');
+    if (statusUser) {
+        statusUser.textContent = user ? `Conectado como ${user.displayName || user.email}` : 'Modo Leitura (Faça login para publicar)';
+    }
+    carregarFeedCronicas();
+});
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800;
-                const scale = Math.min(1, MAX_WIDTH / img.width);
-                canvas.width = img.width * scale;
-                canvas.height = img.height * scale;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                imagemBase64Atual = canvas.toDataURL('image/jpeg', 0.72);
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
+async function uploadImagemCronica(file, uid) {
+    const extensao = file.name.split('.').pop();
+    const nomeArquivo = `cronicas/${uid}_${Date.now()}.${extensao}`;
+    const arquivoRef = storageRef(storage, nomeArquivo);
+    await uploadBytes(arquivoRef, file);
+    return await getDownloadURL(arquivoRef);
 }
 
-// Publicar nova crônica
-if (formCronica) {
-    formCronica.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) return alert('Você precisa entrar com sua conta Google para publicar uma crônica.');
-
-        const tituloEl = document.getElementById('cronica-titulo') || formCronica.querySelector('input[type="text"]');
-        const conteudoEl = document.getElementById('cronica-texto') || formCronica.querySelector('textarea');
-        const tagEl = document.getElementById('cronica-tag') || formCronica.querySelector('select');
-
-        const titulo = tituloEl ? tituloEl.value.trim() : 'Registro sem Título';
-        const conteudo = conteudoEl ? conteudoEl.value.trim() : '';
-        const tag = tagEl ? tagEl.value : 'Relato';
-
-        if (!conteudo) return alert('Escreva o conteúdo da sua crônica antes de publicar.');
-
-        const btnSubmit = formCronica.querySelector('button[type="submit"]');
-        if (btnSubmit) btnSubmit.disabled = true;
-
-        try {
-            const novaCronicaRef = push(ref(db, 'cronicas'));
-            await set(novaCronicaRef, {
-                titulo: titulo,
-                conteudo: conteudo,
-                tag: tag,
-                imagem: imagemBase64Atual || null,
-                autorUid: user.uid,
-                autorNome: user.displayName || 'Viajante da 5ª Avenida',
-                autorFoto: user.photoURL || '../assets/img/default-avatar.png',
-                timestamp: Date.now()
-            });
-
-            formCronica.reset();
-            imagemBase64Atual = '';
-        } catch (err) {
-            console.error('Erro ao publicar crônica:', err);
-            alert('Falha ao registrar crônica na Biblioteca.');
-        } finally {
-            if (btnSubmit) btnSubmit.disabled = false;
-        }
-    });
-}
-
-// Carregar e renderizar crônicas em tempo real
-function carregarCronicas() {
-    if (!feedContainer) return;
-
-    const cronicasQuery = query(ref(db, 'cronicas'), orderByChild('timestamp'));
-    onValue(cronicasQuery, (snapshot) => {
-        const dados = snapshot.val();
-        if (!dados) {
-            feedContainer.innerHTML = '<p style="text-align:center; color:#888; padding:2rem;">Nenhuma crônica registrada ainda. Seja o primeiro a escrever na história da Biblioteca.</p>';
+if (btnSalvar) {
+    btnSalvar.addEventListener('click', async () => {
+        if (!usuarioLogado) {
+            alert("Você precisa estar logado para publicar na comunidade.");
             return;
         }
 
-        const lista = Object.entries(dados)
-            .map(([id, val]) => ({ id, ...val }))
-            .sort((a, b) => b.timestamp - a.timestamp);
+        const titulo = inputTitulo?.value.trim();
+        const conteudo = inputConteudo?.value.trim();
 
-        feedContainer.innerHTML = '';
+        if (!titulo || !conteudo) {
+            alert("Preencha o título e o texto da crônica.");
+            return;
+        }
 
-        lista.forEach((post) => {
-            const card = document.createElement('article');
-            card.className = 'cronica-card card-b5a';
-            card.style.cssText = 'background:#16161c; border:1px solid rgba(212,175,55,0.28); border-radius:8px; padding:18px; margin-bottom:18px;';
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = "Publicando...";
+        if (statusPostagem) statusPostagem.textContent = "Enviando para os arquivos...";
 
-            const dataFormatada = new Date(post.timestamp).toLocaleDateString('pt-BR', {
-                day: '2-digit', month: 'short', year: 'numeric'
+        try {
+            let imagemUrl = inputImagemUrl?.value.trim() || "";
+
+            if (inputArquivo && inputArquivo.files && inputArquivo.files[0]) {
+                const file = inputArquivo.files[0];
+                if (!file.type.startsWith('image/')) {
+                    throw new Error("Por favor, selecione apenas arquivos de imagem.");
+                }
+                imagemUrl = await uploadImagemCronica(file, usuarioLogado.uid);
+            }
+
+            const cronicasRef = dbRef(db, 'cronicas');
+            const novaCronicaRef = push(cronicasRef);
+
+            await set(novaCronicaRef, {
+                titulo,
+                conteudo,
+                imagemUrl,
+                autorId: usuarioLogado.uid,
+                autorNome: usuarioLogado.displayName || usuarioLogado.email.split('@')[0],
+                autorFoto: usuarioLogado.photoURL || "",
+                timestamp: serverTimestamp()
             });
 
-            card.innerHTML = `
-                <div class="cronica-header" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
-                    <a href="perfil.html?uid=${post.autorUid}" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:#d4af37;">
-                        <img src="${post.autorFoto || ''}" alt="${post.autorNome}" onerror="this.style.display='none'" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid #d4af37;">
-                        <div>
-                            <strong style="display:block; font-size:0.95rem;">${post.autorNome}</strong>
-                            <small style="color:#888; font-size:0.75rem;">${dataFormatada}</small>
+            if (inputTitulo) inputTitulo.value = "";
+            if (inputConteudo) inputConteudo.value = "";
+            if (inputArquivo) inputArquivo.value = "";
+            if (inputImagemUrl) inputImagemUrl.value = "";
+            if (statusPostagem) statusPostagem.textContent = "Crônica publicada com sucesso!";
+            setTimeout(() => { if (statusPostagem) statusPostagem.textContent = ""; }, 3000);
+
+        } catch (erro) {
+            console.error("Erro ao publicar crônica:", erro);
+            alert("Erro ao publicar: " + erro.message);
+            if (statusPostagem) statusPostagem.textContent = "";
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = "Publicar nos Arquivos";
+        }
+    });
+}
+
+function carregarFeedCronicas() {
+    if (!feedCronicas) return;
+
+    const cronicasRef = dbRef(db, 'cronicas');
+    onValue(cronicasRef, (snapshot) => {
+        if (!snapshot.exists()) {
+            feedCronicas.innerHTML = `<p style="color:#94a3b8; text-align:center; grid-column: 1/-1; padding: 30px;">Nenhuma crônica arquivada ainda. Seja o primeiro a relatar!</p>`;
+            return;
+        }
+
+        const lista = [];
+        snapshot.forEach(child => {
+            lista.push({ id: child.key, ...child.val() });
+        });
+
+        lista.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        feedCronicas.innerHTML = lista.map(post => {
+            const curtidasObj = post.curtidas || {};
+            const totalCurtidas = Object.keys(curtidasObj).length;
+            const curtiu = usuarioLogado && curtidasObj[usuarioLogado.uid];
+            const totalComentarios = post.comentarios ? Object.keys(post.comentarios).length : 0;
+            const ehAutor = usuarioLogado && post.autorId === usuarioLogado.uid;
+            const dataTxt = post.timestamp ? new Date(post.timestamp).toLocaleDateString('pt-BR') : 'Recente';
+
+            return `
+                <article class="post-card" style="background: rgba(19, 24, 35, 0.85); border: 1px solid #2a3142; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <a href="perfil.html?uid=${post.autorId}" style="color: #c5a059; font-size: 0.85rem; text-decoration: none; font-weight: bold;">
+                                ✒️ ${post.autorNome || 'Agente Anônimo'}
+                            </a>
+                            <small style="color: #64748b; font-size: 0.75rem;">${dataTxt}</small>
                         </div>
-                    </a>
-                    ${post.tag ? `<span class="cronica-tag" style="background:rgba(212,175,55,0.15); color:#d4af37; border:1px solid rgba(212,175,55,0.4); padding:3px 10px; border-radius:12px; font-size:0.75rem;">${post.tag}</span>` : ''}
-                </div>
-                <h3 style="color:#f5f5f5; margin:0 0 8px 0; font-size:1.2rem;">${escaparHTML(post.titulo)}</h3>
-                <p style="color:#d0d0d0; line-height:1.6; white-space:pre-line; font-size:0.92rem; margin:0;">${escaparHTML(post.conteudo)}</p>
-                ${post.imagem ? `<img src="${post.imagem}" alt="Ilustração da crônica" style="width:100%; max-height:420px; object-fit:cover; border-radius:6px; margin-top:12px; border:1px solid rgba(255,255,255,0.1);">` : ''}
-                <div id="interacoes-${post.id}"></div>
+
+                        <h3 style="margin: 0 0 10px 0; color: #f8fafc; font-size: 1.15rem;">${post.titulo}</h3>
+
+                        ${post.imagemUrl ? `<img src="${post.imagemUrl}" alt="${post.titulo}" style="width: 100%; max-height: 220px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; border: 1px solid #2a3142;">` : ''}
+
+                        <p style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.5; white-space: pre-line; max-height: 140px; overflow: hidden;">${post.conteudo}</p>
+                    </div>
+
+                    <div style="border-top: 1px solid #2a3142; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-curtir-post" data-id="${post.id}" data-autor="${post.autorId}" data-titulo="${post.titulo}" style="background: ${curtiu ? 'rgba(239,68,68,0.18)' : 'transparent'}; border: 1px solid ${curtiu ? '#ef4444' : '#2a3142'}; color: ${curtiu ? '#fca5a5' : '#94a3b8'}; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                ❤️ ${totalCurtidas}
+                            </button>
+                            <button class="btn-abrir-modal" data-id="${post.id}" style="background: transparent; border: 1px solid #2a3142; color: #94a3b8; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                💬 Ler & Comentar (${totalComentarios})
+                            </button>
+                        </div>
+                        ${ehAutor ? `<button class="btn-excluir-post" data-id="${post.id}" title="Excluir" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.85rem;">🗑️</button>` : ''}
+                    </div>
+                </article>
             `;
+        }).join('');
 
-            feedContainer.appendChild(card);
+        // Eventos dos cards
+        document.querySelectorAll('.btn-curtir-post').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!usuarioLogado) return alert("Faça login para curtir.");
+                const postId = btn.dataset.id;
+                const autorId = btn.dataset.autor;
+                const titulo = btn.dataset.titulo;
+                const curtiuAgora = await alternarCurtida(`cronicas/${postId}`, usuarioLogado.uid);
+                if (curtiuAgora && autorId && autorId !== usuarioLogado.uid) {
+                    const nome = usuarioLogado.displayName || usuarioLogado.email.split('@')[0];
+                    await registrarNotificacao(autorId, `<strong>${nome}</strong> curtiu sua crônica "<em>${titulo}</em>".`, `pages/comunidade.html`);
+                }
+            });
+        });
 
-            // Conecta reações e comentários ao vivo
-            const slotInteracoes = document.getElementById(`interacoes-${post.id}`);
-            conectarInteracoesCard(slotInteracoes, post.id, post.autorUid, `"${post.titulo}"`);
+        document.querySelectorAll('.btn-abrir-modal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const post = lista.find(p => p.id === btn.dataset.id);
+                if (post) abrirModalCronica(post);
+            });
+        });
+
+        document.querySelectorAll('.btn-excluir-post').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm("Deseja apagar esta crônica permanentemente?")) {
+                    await remove(dbRef(db, `cronicas/${btn.dataset.id}`));
+                }
+            });
         });
     });
 }
 
-function escaparHTML(str = '') {
-    return str.replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[tag]));
+// Integração com a Modal de Leitura e Comentários de comunidade.html
+function abrirModalCronica(post) {
+    const modal = document.getElementById('modal-cronica');
+    if (!modal) return;
+
+    cronicaAbertaId = post.id;
+    document.getElementById('modal-titulo').textContent = post.titulo;
+    document.getElementById('modal-autor').textContent = `Relatado por ${post.autorNome || 'Agente Anônimo'}`;
+    document.getElementById('modal-texto').textContent = post.conteudo;
+
+    const imgEl = document.getElementById('modal-img');
+    if (imgEl) {
+        if (post.imagemUrl) {
+            imgEl.src = post.imagemUrl;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+    }
+
+    const totalCurtidas = post.curtidas ? Object.keys(post.curtidas).length : 0;
+    const likesCount = document.getElementById('modal-likes-count');
+    if (likesCount) likesCount.textContent = totalCurtidas;
+
+    const btnLikeModal = document.getElementById('btn-like-modal');
+    if (btnLikeModal) {
+        btnLikeModal.onclick = async () => {
+            if (!usuarioLogado) return alert("Faça login para curtir.");
+            await alternarCurtida(`cronicas/${post.id}`, usuarioLogado.uid);
+        };
+    }
+
+    const listaComentariosEl = document.getElementById('lista-comentarios');
+    if (listaComentariosEl) {
+        renderizarComentarios(post.comentarios, listaComentariosEl, usuarioLogado?.uid, `cronicas/${post.id}`);
+    }
+
+    const btnEnviarComent = document.getElementById('btn-enviar-comentario');
+    const inputComent = document.getElementById('novo-comentario');
+    if (btnEnviarComent && inputComent) {
+        btnEnviarComent.onclick = async () => {
+            if (!usuarioLogado) return alert("Faça login para comentar.");
+            const texto = inputComent.value.trim();
+            if (!texto) return;
+
+            btnEnviarComent.disabled = true;
+            await adicionarComentario(`cronicas/${post.id}`, usuarioLogado, texto);
+            inputComent.value = "";
+            btnEnviarComent.disabled = false;
+
+            if (post.autorId && post.autorId !== usuarioLogado.uid) {
+                const nome = usuarioLogado.displayName || usuarioLogado.email.split('@')[0];
+                await registrarNotificacao(post.autorId, `<strong>${nome}</strong> comentou na sua crônica "<em>${post.titulo}</em>".`, `pages/comunidade.html`);
+            }
+        };
+    }
+
+    modal.style.display = 'flex';
 }
 
-carregarCronicas();
+window.fecharModalCronica = function () {
+    const modal = document.getElementById('modal-cronica');
+    if (modal) modal.style.display = 'none';
+    cronicaAbertaId = null;
+};
