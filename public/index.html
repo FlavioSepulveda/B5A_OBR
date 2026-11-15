@@ -9,7 +9,6 @@
 </head>
 <body>
 
-    <!-- NAVBAR SUPERIOR SIMPLES -->
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">🏛️ B5A</a>
         <div class="nav-user">
@@ -18,10 +17,8 @@
         </div>
     </nav>
 
-    <!-- LAYOUT PRINCIPAL (FEED E MENU LATERAL) -->
     <div class="home-layout">
-        
-        <!-- COLUNA ESQUERDA: O FEED -->
+        <!-- FEED -->
         <div class="feed-container">
             <div class="logo-topo">
                 <img src="logo.svg" alt="Biblioteca da 5ª Avenida" class="logo-principal">
@@ -30,60 +27,39 @@
 
             <h2 class="titulo-feed">🌟 Movimento Recente na Biblioteca</h2>
             
-            <!-- O JS vai injetar os cards aqui -->
             <div id="feed-home" class="feed-posts">
                 <p style="text-align:center; color:#888; font-style:italic;">Carregando as últimas histórias...</p>
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: O MENU -->
+        <!-- MENU -->
         <div class="sidebar-menu">
             <div class="menu-card">
                 <h3>Navegação</h3>
-                <a href="pages/ficha.html" class="menu-item">
-                    <span class="icone">📜</span> Mesa de Jogo
-                </a>
-                <a href="pages/estante.html" class="menu-item destaque">
-                    <span class="icone">📚</span> Minha Estante
-                </a>
+                <a href="pages/ficha.html" class="menu-item"><span class="icone">📜</span> Mesa de Jogo</a>
+                <a href="pages/estante.html" class="menu-item destaque"><span class="icone">📚</span> Minha Estante</a>
             </div>
-
             <div class="menu-card">
                 <h3>Comunidade</h3>
-                <a href="pages/comunidade.html" class="menu-item">
-                    <span class="icone">🌍</span> Crônicas
-                </a>
-                <a href="pages/monstros.html" class="menu-item">
-                    <span class="icone">👹</span> Bestiário
-                </a>
-                <a href="pages/armas.html" class="menu-item">
-                    <span class="icone">🛡️</span> Arsenal
-                </a>
-                <a href="pages/habilidades.html" class="menu-item">
-                    <span class="icone">✨</span> Grimório
-                </a>
+                <a href="pages/comunidade.html" class="menu-item"><span class="icone">🌍</span> Crônicas</a>
+                <a href="pages/monstros.html" class="menu-item"><span class="icone">👹</span> Bestiário</a>
+                <a href="pages/armas.html" class="menu-item"><span class="icone">🛡️</span> Arsenal</a>
+                <a href="pages/habilidades.html" class="menu-item"><span class="icone">✨</span> Grimório</a>
             </div>
-
             <div class="menu-card">
                 <h3>Consultas</h3>
-                <a href="pages/guia.html" class="menu-item">
-                    <span class="icone">📖</span> Guia Rápido
-                </a>
-                <a href="pages/regras.html" class="menu-item">
-                    <span class="icone">🎲</span> Regras
-                </a>
-                <a href="pages/espectros.html" class="menu-item">
-                    <span class="icone">🔥</span> Espectros
-                </a>
-                <a href="pages/caminhos.html" class="menu-item">
-                    <span class="icone">⚔️</span> Caminhos
-                </a>
+                <a href="pages/guia.html" class="menu-item"><span class="icone">📖</span> Guia Rápido</a>
+                <a href="pages/regras.html" class="menu-item"><span class="icone">🎲</span> Regras</a>
+                <a href="pages/espectros.html" class="menu-item"><span class="icone">🔥</span> Espectros</a>
+                <a href="pages/caminhos.html" class="menu-item"><span class="icone">⚔️</span> Caminhos</a>
             </div>
         </div>
-
     </div>
 
+    <!-- Carrega o Firebase primeiro -->
     <script type="module" src="./js/firebase.js"></script>
+    
+    <!-- Depois carrega a lógica da Home -->
     <script type="module" src="./js/home.js"></script>
 </body>
 </html>

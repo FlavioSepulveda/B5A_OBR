@@ -3,6 +3,7 @@ import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase
 
 const feedContainer = document.getElementById('feed-home');
 
+// Função para formatar o tempo
 function tempoAtras(timestamp) {
     if (!timestamp) return "Recentemente";
     const segundos = Math.floor((Date.now() - timestamp) / 1000);
@@ -17,8 +18,10 @@ function tempoAtras(timestamp) {
 function carregarFeed() {
     if(!feedContainer) return;
 
+    // O onValue escuta a sala em tempo real
     onValue(ref(db, `salas/${salaAtual}`), (snapshot) => {
         const dados = snapshot.val();
+        
         if(!dados) {
             feedContainer.innerHTML = '<p style="color:#888; text-align:center;">Nenhuma atividade recente.</p>';
             return;
@@ -26,6 +29,7 @@ function carregarFeed() {
 
         let todasAtividades = [];
 
+        // Verifica se existe cada coleção antes de tentar ler (evita erro de undefined)
         if(dados.monstros) {
             Object.values(dados.monstros).forEach(m => {
                 todasAtividades.push({
@@ -64,13 +68,16 @@ function carregarFeed() {
                 todasAtividades.push({
                     tipo: 'Grimório', link: 'pages/habilidades.html',
                     titulo: h.titulo, autor: h.autor, autorId: h.autorId, data: h.data,
-                    imagem: h.imagem, texto: `Nova ${h.tipo} registrada.`,
+                    imagem: h.imagem, texto: `Nova ${h.tipo || 'habilidade'} registrada.`,
                     icone: '✨'
                 });
             });
         }
 
+        // Ordena do mais novo para o mais antigo
         todasAtividades.sort((a, b) => b.data - a.data);
+        
+        // Pega os 10 mais recentes
         const feedRecente = todasAtividades.slice(0, 10);
 
         if(feedRecente.length === 0) {
@@ -91,7 +98,7 @@ function carregarFeed() {
             // Link do autor preparado para ir ao perfil
             const linkAutor = item.autorId 
                 ? `<a href="pages/perfil.html?uid=${item.autorId}" style="color:var(--gold); text-decoration:none; font-weight:bold;" onclick="event.stopPropagation()">${item.autor}</a>`
-                : `<strong>${item.autor}</strong>`;
+                : `<strong>${item.autor || 'Arquivista'}</strong>`;
 
             card.innerHTML = `
                 <div class="post-header">
@@ -115,5 +122,5 @@ function carregarFeed() {
     });
 }
 
-window.addEventListener('usuarioLogado', carregarFeed);
-setTimeout(carregarFeed, 1000);
+// Inicia o feed assim que a página carregar
+carregarFeed();
