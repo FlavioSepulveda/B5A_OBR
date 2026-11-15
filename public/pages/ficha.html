@@ -155,7 +155,7 @@
         .historico-box { background: #111; border: 1px solid #333; border-radius: 6px; padding: 10px; max-height: 150px; overflow-y: auto; font-size: 0.85rem; margin-top: 15px; }
         .historico-item { padding: 6px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
 
-        /* MODAL DE TÍTULOS */
+        /* MODAL */
         .modal-titulos {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
@@ -445,7 +445,6 @@
                 document.getElementById('sel-vocacao').value = dados.vocacao || "nenhuma";
                 estado.volume = dados.volume || 1;
                 
-                // Carrega dados salvos da arma
                 if(dados.arma) {
                     document.getElementById('arma-nome').value = dados.arma.nome || "";
                     document.getElementById('arma-categoria').value = dados.arma.categoria || "Média";
@@ -468,6 +467,7 @@
                 estado.pvTemp = dados.pvTemp || 0;
                 estado.tituloAtivo = dados.tituloAtivo || null;
                 
+                // RECALCULA OS PONTOS RESTANTES CORRETAMENTE
                 let totalAttr = Object.values(estado.atributosBase).reduce((a,b) => a+b, 0);
                 estado.pontosAtributoRestantes = 4 - totalAttr;
                 
@@ -576,12 +576,12 @@
         window.renderizarAtributos = () => {
             const nomes = { vigor: "Vigor", dinamismo: "Dinamismo", razao: "Razão", determinacao: "Determinação" };
             
-            // Só mostra o texto de dados restantes se for Volume 1
+            const lblPontos = document.getElementById("lbl-pontos-attr");
             if(estado.volume === 1) {
-                document.getElementById("lbl-pontos-attr").innerText = `${estado.pontosAtributoRestantes}d4 restantes`;
-                document.getElementById("lbl-pontos-attr").style.display = "inline";
+                lblPontos.innerText = `${estado.pontosAtributoRestantes}d4 restantes`;
+                lblPontos.style.display = "inline";
             } else {
-                document.getElementById("lbl-pontos-attr").style.display = "none";
+                lblPontos.style.display = "none";
             }
             
             document.getElementById("chamas-container").innerHTML = Object.keys(nomes).map(k => {
@@ -589,7 +589,6 @@
                 const qtdFinal = estado.atributos[k];
                 const icones = qtdFinal > 0 ? "▲".repeat(qtdFinal) : "0d4";
                 
-                // O limite de 2d4 SÓ EXISTE no Volume 1
                 const limiteAtingido = (estado.volume === 1 && qtdBase >= 2);
                 const semPontos = (estado.volume === 1 && estado.pontosAtributoRestantes <= 0);
                 
@@ -611,34 +610,41 @@
         }
 
         window.ajustarAttr = (k, delta) => {
-            // Lógica de limite e gasto de pontos (só se aplica no Volume 1)
+            // Calcula o total atual para garantir que não passou de 4
+            let totalAtual = Object.values(estado.atributosBase).reduce((a,b) => a+b, 0);
+
             if (estado.volume === 1) {
-                if (delta > 0 && estado.pontosAtributoRestantes <= 0) return alert("Você não tem mais dados para distribuir nos Atributos!");
+                // Se estiver tentando adicionar e não tem pontos OU atingiu o limite de 2d4
+                if (delta > 0 && totalAtual >= 4) return alert("Você já distribuiu todos os 4 dados de Atributo!");
                 if (delta > 0 && estado.atributosBase[k] >= 2) return alert("O limite é 2d4 por Atributo no Volume I.");
-                estado.pontosAtributoRestantes -= delta;
             }
             
             let novoValor = estado.atributosBase[k] + delta;
             if (novoValor < 0 || novoValor > 10) return;
 
             estado.atributosBase[k] = novoValor;
+            
+            // Recalcula os pontos restantes com base na soma real
+            let novoTotal = Object.values(estado.atributosBase).reduce((a,b) => a+b, 0);
+            estado.pontosAtributoRestantes = 4 - novoTotal;
+
             aplicarBonus(); 
         }
 
         // --- PERÍCIAS ---
         window.renderizarPericias = () => {
+            const lblPontos = document.getElementById("lbl-pontos-per");
             if(estado.volume === 1) {
-                document.getElementById("lbl-pontos-per").innerText = `${estado.pontosPericiaRestantes} Perícias livres`;
-                document.getElementById("lbl-pontos-per").style.display = "inline";
+                lblPontos.innerText = `${estado.pontosPericiaRestantes} Perícias livres`;
+                lblPontos.style.display = "inline";
             } else {
-                document.getElementById("lbl-pontos-per").style.display = "none";
+                lblPontos.style.display = "none";
             }
             
             document.getElementById("pericias-container").innerHTML = Object.keys(estado.pericias).map(p => {
                 const qtdBase = estado.periciasBase[p];
                 const qtdFinal = estado.pericias[p];
                 
-                // O botão de + só aparece se for Vol 1 e o jogador tiver pontos
                 let btnMais = "";
                 if (estado.volume === 1) {
                     btnMais = `<button class="btn-mini" onclick="ajustarPericia('${p}', 1)" ${estado.pontosPericiaRestantes <= 0 || qtdBase > 0 ? 'disabled style="opacity:0.2;"' : ''}>+</button>`;
@@ -687,19 +693,17 @@
             const critStr = document.getElementById("arma-critico").value;
             const efeito = document.getElementById("arma-efeito").value;
 
-            // Se for catalisador, usa Arcanismo
             let qtdArcanismo = estado.pericias["Arcanismo"];
             let totalDano = 0;
 
             if (cat === "Catalisador") {
                 for(let i=0; i<qtdArcanismo; i++) totalDano += Math.floor(Math.random() * 6) + 1;
-                if (qtdArcanismo === 0) totalDano = Math.floor(Math.random() * 6) + 1; // Fallback
+                if (qtdArcanismo === 0) totalDano = Math.floor(Math.random() * 6) + 1;
             } else {
                 const qtdBase = parseInt(danoStr.split('d')[1]);
-                const qtdCrit = parseInt(critStr.split('d')[1]);
                 for(let i=0; i<qtdBase; i++) totalDano += Math.floor(Math.random() * (cat === "Pesada" ? 10 : (cat === "Leve" ? 4 : 6))) + 1;
                 if (critStr !== "-") {
-                    for(let i=0; i<1; i++) totalDano += Math.floor(Math.random() * (cat === "Pesada" ? 10 : (cat === "Leve" ? 4 : 6))) + 1;
+                    totalDano += Math.floor(Math.random() * (cat === "Pesada" ? 10 : (cat === "Leve" ? 4 : 6))) + 1;
                 }
             }
 
