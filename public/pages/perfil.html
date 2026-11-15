@@ -21,10 +21,13 @@
         <div class="perfil-identidade">
             <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="avatar">
             <h2 id="perfil-nome">Carregando...</h2>
+            <span id="perfil-titulo" style="display: block; color: var(--gold); font-size: 0.85rem; margin-bottom: 8px;">Investigador</span>
             <p id="perfil-bio" class="bio-texto">"Sem juramento registrado."</p>
             
-            <div class="stats-seguidores">
+            <div class="stats-seguidores" style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
                 <span>👥 <strong id="qtd-seguidores">0</strong> Seguidores</span>
+                <span>🧭 <strong id="qtd-seguindo">0</strong> Seguindo</span>
+                <span>📖 <strong id="qtd-personagens">0</strong> Fichas</span>
             </div>
 
             <div id="area-botoes-perfil" class="botoes-perfil-wrapper">
@@ -34,22 +37,11 @@
         </div>
 
         <div class="perfil-conteudo">
-            <h3 class="titulo-secao">Conquistas da Biblioteca</h3>
-            <div id="lista-selos" class="selos-grid">
-                <p style="color: #666; font-style: italic;">Nenhum selo conquistado ainda.</p>
-            </div>
+            <h3 class="titulo-secao">Estante Pública</h3>
+            <div id="lista-estante-publica" class="grid-mini-cards" style="margin-bottom: 24px;"></div>
 
-            <div class="abas-perfil">
-                <button class="tab-btn active" onclick="mudarTabPerfil(event, 'tab-estante')">Estante Pública</button>
-                <button class="tab-btn" onclick="mudarTabPerfil(event, 'tab-obras')">Obras Criadas</button>
-            </div>
-
-            <div id="tab-estante" class="tab-conteudo active">
-                <div id="lista-estante-publica" class="grid-mini-cards"></div>
-            </div>
-            <div id="tab-obras" class="tab-conteudo">
-                <div id="lista-obras-publicas" class="grid-mini-cards"></div>
-            </div>
+            <h3 class="titulo-secao">Crônicas Publicadas</h3>
+            <div id="feed-pessoal"></div>
         </div>
     </div>
 
@@ -60,24 +52,20 @@
             <h2>Editar Identidade</h2>
             
             <div class="input-group">
+                <label>Foto de Perfil (Opcional)</label>
+                <input type="file" id="edit-foto-file" accept="image/*">
+            </div>
+            <div class="input-group">
                 <label>Apelido de Arquivista</label>
-                <input type="text" id="edit-apelido" placeholder="Como quer ser chamado?">
+                <input type="text" id="edit-nome" placeholder="Como quer ser chamado?">
+            </div>
+            <div class="input-group">
+                <label>Título / Patente</label>
+                <input type="text" id="edit-titulo" placeholder="Ex: Investigador da 5ª Avenida">
             </div>
             <div class="input-group">
                 <label>Juramento / Bio</label>
                 <textarea id="edit-bio" rows="3" placeholder="Sua frase de efeito..."></textarea>
-            </div>
-            <div class="input-group">
-                <label>Seu Espectro Principal (Muda a cor do perfil)</label>
-                <select id="edit-espectro">
-                    <option value="padrao">Nenhum (Padrão)</option>
-                    <option value="igneo">Ígneo (Vermelho)</option>
-                    <option value="celeste">Celeste (Azul)</option>
-                    <option value="viridiano">Viridiano (Verde)</option>
-                    <option value="solar">Solar (Amarelo)</option>
-                    <option value="indigo">Índigo (Roxo)</option>
-                    <option value="alabastro">Alabastro (Branco)</option>
-                </select>
             </div>
             <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 20px; width: 100%;">Salvar Alterações</button>
         </div>
@@ -85,9 +73,6 @@
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/perfil.js"></script>
-
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
-
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>

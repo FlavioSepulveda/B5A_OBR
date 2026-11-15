@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Estilos específicos para formatar os Caminhos e Vocações */
         .caminho-bloco {
             background: #1a1816;
             border: 1px solid #333;
@@ -83,17 +82,18 @@
     </style>
 </head>
 <body>
-    <nav class="top-nav" style="justify-content: flex-start;">
+    <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
     </nav>
 
     <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
         <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">⚔️ Caminhos e Vocações</h1>
         <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Escolha a sua vocação para definir como você enfrenta os desafios da Biblioteca.</p>
 
-        <!-- ============================================== -->
-        <!-- SEÇÃO: CAMINHOS (COMBATE) -->
-        <!-- ============================================== -->
         <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">Caminhos (Combate)</h2>
         <p style="margin-bottom: 30px;">Focados no combate direto, concedendo Armas Favoritas e habilidades de luta.</p>
 
@@ -110,7 +110,6 @@
                 <span class="tag">+1d6 Combate ou Resistência</span>
                 <span class="tag">Deslocamento: 6m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Sem Escapatória</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Gaste 2 PI para realizar uma Ação adicional (Mover-se ou Ataque Básico). Receba +1d6 em Combate ou Resistência.</p>
@@ -140,7 +139,6 @@
                 <span class="tag">+1d6 Intuição ou Conhecimento</span>
                 <span class="tag">Deslocamento: 7m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Mestre da Conjuração</strong>
                 <p>Sempre que conjurar uma Palavra de Afirmação, o custo da próxima Palavra é reduzido em 1 PI. (Não cumulativo).</p>
@@ -170,7 +168,6 @@
                 <span class="tag">+1d6 Persuasão ou Medicina</span>
                 <span class="tag">Deslocamento: 6,5m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Mão Amiga</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Gaste 2 PI para aumentar em +1 dado o efeito de uma Palavra, Frase ou Título usado por você ou um aliado.</p>
@@ -200,7 +197,6 @@
                 <span class="tag">+1d6 Furtividade ou Acrobacia</span>
                 <span class="tag">Deslocamento: 8m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Conhecimento Oculto</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Torne-se Oculto. Ao deixar esse estado, seu próximo Ataque Básico causa +2d4 de dano se o alvo estiver desprevenido.</p>
@@ -230,7 +226,6 @@
                 <span class="tag">+1d6 Pontaria ou Intuição</span>
                 <span class="tag">Deslocamento: 7m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Bala no Alvo</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Seu próximo Ataque Básico à distância também aplica os efeitos de uma Palavra de Afirmação conhecida.</p>
@@ -245,9 +240,6 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- SEÇÃO: VOCAÇÕES (INVESTIGAÇÃO) -->
-        <!-- ============================================== -->
         <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 60px; margin-bottom: 20px;">Vocações (Investigação)</h2>
         <p style="margin-bottom: 30px;">Focadas na investigação, memória e manipulação da realidade. Perfeitas para quem prefere resolver mistérios e ajudar o grupo fora do combate.</p>
 
@@ -265,7 +257,6 @@
                 <span class="tag">+1d4 Determinação</span>
                 <span class="tag">Deslocamento: 6m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Reescrever</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Uma vez por cena, reexecute um teste que um aliado ou você falhou, desde que possa "registrar" o momento.</p>
@@ -297,7 +288,6 @@
                 <span class="tag">+1d4 Vigor</span>
                 <span class="tag">Deslocamento: 5,5m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Selar Fresta</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Uma vez por cena, impeça que uma anomalia se espalhe ou que um efeito narrativo se repita. O Guardião define o que é "selável".</p>
@@ -330,7 +320,6 @@
                 <span class="tag destaque">Aliados: +1d4 cura e +1d4 Vida Temp. (início do turno)</span>
                 <span class="tag">Deslocamento: 6m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Âncora de Memória</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Escolha um aliado. Ele ignora Amedrontado, Atordoado ou Confuso por 2 turnos.</p>
@@ -363,7 +352,6 @@
                 <span class="tag">+1d4 Determinação</span>
                 <span class="tag">Deslocamento: 8m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Ler Rastro</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Siga o rastro de Ímpeto deixado por qualquer criatura ou objeto nas últimas 24 horas.</p>
@@ -395,7 +383,6 @@
                 <span class="tag">+1d4 Determinação</span>
                 <span class="tag">Deslocamento: 7m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Mapear Distorção</strong> <span class="custo">Custo: 2 PI</span>
                 <p>Identifique qualquer anomalia espacial ou temporal em um raio de 30m.</p>
@@ -428,7 +415,6 @@
                 <span class="tag">+1d4 Dinamismo</span>
                 <span class="tag">Deslocamento: 6,5m</span>
             </div>
-            
             <div class="habilidade-volume">
                 <strong>Volume I - Eco Pessoal</strong> <span class="custo">Custo: 3 PI</span>
                 <p>Crie uma cópia fantasmagórica de si mesmo que realiza uma ação simples (abrir porta, pegar objeto). Dura 1 turno.</p>
@@ -446,9 +432,9 @@
                 <p>Crie uma versão sólida de si mesmo do passado (ex: 5 min atrás). Tem metade da Vida, age no seu turno e pode realizar uma Ação. Dura 2 turnos.</p>
             </div>
         </div>
-
     </div>
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
+
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>

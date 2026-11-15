@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Estilos para o Guia / Wiki */
         .guia-secao {
             background: #1a1816;
             border: 1px solid #333;
@@ -50,7 +49,6 @@
         }
         .destaque-regra strong { color: var(--gold); }
         
-        /* Tabelas do Guia */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -75,15 +73,18 @@
     </style>
 </head>
 <body>
-    <nav class="top-nav" style="justify-content: flex-start;">
+    <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
     </nav>
 
     <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
         <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">📖 Guia do Arquivista</h1>
         <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Uma pequena wiki sobre o funcionamento da Biblioteca e do Ímpeto.</p>
 
-        <!-- 1. O QUE É SER UM ARQUIVISTA -->
         <div class="guia-secao">
             <h2>1. A Ordem dos Arquivistas</h2>
             <p>Ser um Arquivista é aceitar que o mundo ainda guarda histórias que jamais deveriam ter sido escritas. A serviço do Bestiário das Almas, você investigará anomalias, explorará lugares esquecidos, recuperará registros perdidos e enfrentará criaturas surgidas dos vazamentos da Biblioteca.</p>
@@ -95,7 +96,6 @@
             </ul>
         </div>
 
-        <!-- 2. COMO O SISTEMA FUNCIONA (ROLAGENS) -->
         <div class="guia-secao">
             <h2>2. O Coração do Sistema (d12)</h2>
             <p>O destino na Biblioteca não está escrito de antemão. Ele nasce do encontro entre o que seu personagem é capaz de fazer e o que os dados decidem. Toda ação incerta gera uma rolagem.</p>
@@ -106,7 +106,7 @@
             </div>
             
             <h3>Os Três Resultados Absolutos</h3>
-            <p>O d12 tem faces especiais que mudam a narrativa, independente do cálculo normal de sucesso ou falha:</p>
+            <p>O d12 possui faces especiais que mudam a narrativa, independente do cálculo normal de sucesso ou falha:</p>
             <ul>
                 <li><strong style="color:#ff4d4d">1 (Catástrofe):</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</li>
                 <li><strong style="color:#ff9800">6 (Falha Absoluta):</strong> A ação falha, mesmo superando a TA.</li>
@@ -114,7 +114,6 @@
             </ul>
         </div>
 
-        <!-- 3. CRIAÇÃO DE PERSONAGEM -->
         <div class="guia-secao">
             <h2>3. Criando seu Arquivista</h2>
             <p>Antes de escolher armas e habilidades, o jogador define sua identidade:</p>
@@ -151,7 +150,6 @@
             </table>
         </div>
 
-        <!-- 4. PALAVRAS, FRASES E TÍTULOS -->
         <div class="guia-secao">
             <h2>4. Habilidades de Ímpeto</h2>
             <p>Todo Arquivista manipula a realidade de três formas. É a interpretação do jogador (junto ao Guardião) que dá poder a essas habilidades.</p>
@@ -168,7 +166,6 @@
             <p>São o reconhecimento da Biblioteca sobre seus feitos. Apenas um Título fica ativo por vez. São conquistados a partir do Volume V ao realizar feitos narrativos importantes, como sobreviver a uma batalha ferido gravemente ou proteger um grupo inteiro.</p>
         </div>
 
-        <!-- 5. O DIÁRIO E O DESCARTE -->
         <div class="guia-secao">
             <h2>5. O Diário e a Pilha de Descartes</h2>
             <p>O Diário é o equipamento padrão de todo Arquivista. Ele registra todos os usos do Ímpeto para ganho próprio (seja para o bem ou para o mal).</p>
@@ -179,7 +176,6 @@
             <p>As memórias registradas no Diário (como obrigar um aliado a fazer algo contra a vontade) <strong>nunca podem ser descartadas</strong>. Elas ficam no livro para sempre.</p>
         </div>
 
-        <!-- 6. COMBATE E CLASH -->
         <div class="guia-secao">
             <h2>6. O Clash (Combate)</h2>
             <p>O combate não é uma rolagem contra um número fixo, mas sim uma <strong>disputa</strong> (Clash). Atacante e defensor rolam e o maior vence.</p>
@@ -190,7 +186,6 @@
             <p>Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o ataque é bloqueado. A única exceção é o <strong>Dano Real</strong>, que acerta automaticamente e causa sempre 1d6, ignorando o Clash e a Vida Temporária.</p>
         </div>
 
-        <!-- 7. PROGRESSÃO -->
         <div class="guia-secao">
             <h2>7. Subindo de Volume</h2>
             <p>O grupo sobe de Volume ao concluir <strong>3 missões importantes</strong> (ou marcos narrativos definidos pelo Guardião). Ao subir de Volume, o Arquivista:</p>
@@ -202,11 +197,9 @@
                 <li>Desbloqueia a próxima habilidade do seu Caminho ou Vocação.</li>
             </ul>
         </div>
-
     </div>
 
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
-
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>

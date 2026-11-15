@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Estilos específicos para formatar os Espectros */
         .espectro-bloco {
             background: #1a1816;
             border: 1px solid #333;
@@ -17,8 +16,6 @@
             position: relative;
             overflow: hidden;
         }
-        
-        /* Uma linha colorida no topo para cada Espectro */
         .espectro-bloco::before {
             content: '';
             position: absolute;
@@ -27,8 +24,6 @@
             width: 100%;
             height: 4px;
         }
-
-        /* Cores de cada Espectro */
         .esp-igneo::before { background: #ff4d4d; }
         .esp-celeste::before { background: #8eb1d9; }
         .esp-viridiano::before { background: #4caf50; }
@@ -44,7 +39,6 @@
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
-
         .espectro-header h2 {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 2rem;
@@ -53,7 +47,6 @@
             padding: 0;
             text-align: left;
         }
-        
         .esp-igneo .espectro-header h2 { color: #ff4d4d; }
         .esp-celeste .espectro-header h2 { color: #8eb1d9; }
         .esp-viridiano .espectro-header h2 { color: #4caf50; }
@@ -67,7 +60,6 @@
             font-style: italic;
             color: #aaa;
         }
-
         .efeito-box {
             background: #111;
             border: 1px solid #333;
@@ -75,7 +67,6 @@
             padding: 15px;
             margin-bottom: 15px;
         }
-
         .efeito-box strong {
             display: block;
             font-family: 'Bebas Neue', sans-serif;
@@ -83,13 +74,11 @@
             color: var(--gold);
             margin-bottom: 5px;
         }
-
         .efeito-box p {
             margin: 0;
             font-size: 0.95rem;
             line-height: 1.5;
         }
-
         .efeito-box .gatilho {
             color: #aaa;
             font-size: 0.9rem;
@@ -97,7 +86,6 @@
             border-top: 1px dashed #444;
             padding-top: 10px;
         }
-
         .efeito-box .registro {
             color: #ff9999;
             font-size: 0.85rem;
@@ -106,8 +94,12 @@
     </style>
 </head>
 <body>
-    <nav class="top-nav" style="justify-content: flex-start;">
+    <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
     </nav>
 
     <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
@@ -129,12 +121,10 @@
                 <span class="juramento">"Toda conquista exige um sacrifício."</span>
             </div>
             <p><strong>Ofensiva, sacrifício e ambição.</strong> O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece. Ele consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Aumente um atributo em +1d4 e reduza outro atributo em -1d4.</p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Troca Equivalente</strong>
                 <p>O Arquivista sacrifica algo (um item, uma informação, uma memória, um aliado) e recebe algo em troca. O Guardião define o que é equivalente.</p>
@@ -151,12 +141,10 @@
                 <span class="juramento">"Conhecimento supera força."</span>
             </div>
             <p><strong>Controle, ordem e precisão.</strong> O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Para eles, uma mente disciplinada sempre supera uma espada desembainhada.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Receba 1 Perícia adicional (1d6). Uma vez por cena, ao realizar um teste usando essa Perícia, adicione +1d6 à rolagem.</p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Controle</strong>
                 <p>O Arquivista exerce controle sobre alguém — obriga um aliado a fazer o que não quer, força um guarda a atacar o chefe, impede que um inimigo morra para torturá-lo por mais tempo.</p>
@@ -173,12 +161,10 @@
                 <span class="juramento">"Enquanto houver vida, há esperança."</span>
             </div>
             <p><strong>Vida, perseverança e crescimento.</strong> O Ímpeto Verde é a essência da Vida. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Na primeira vez em cada cena que seus Pontos de Vida chegarem a 0, você permanece consciente até o fim do turno.</p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Cura ou Resistência</strong>
                 <p>O Arquivista cura ferimentos que não deveriam ser curados, ou resiste a algo que deveria matá-lo.</p>
@@ -196,12 +182,10 @@
                 <span class="juramento">"Nenhum caminho é definitivo."</span>
             </div>
             <p><strong>Liberdade, mobilidade e adaptação.</strong> O Ímpeto Solar é a manifestação da Liberdade. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Uma vez por rodada, após realizar uma rolagem, você pode substituir o dado escolhido por um de seus Ecos (dados descartados). No Volume I você começa com 1 Eco (ganha +1 Eco por Volume).</p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Livre-arbítrio sem limites</strong>
                 <p>O Arquivista concede a alguém — ou a si mesmo — a capacidade de agir sem restrições. Nenhuma corrente o prende. Nenhuma regra o limita.</p>
@@ -218,7 +202,6 @@
                 <span class="juramento">"Toda resposta gera uma nova pergunta."</span>
             </div>
             <p><strong>Criatividade, conhecimento e imaginação.</strong> O Ímpeto Violeta é a manifestação do Conhecimento. Pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem o impossível.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Sempre que descartar um resultado 9, 10, 11 ou 12, escolha um dos efeitos:</p>
@@ -226,7 +209,6 @@
                 <p><strong>Improviso:</strong> você pode usar uma Palavra de Afirmação que não conhece, uma vez.</p>
                 <p><em>O dado é descartado normalmente.</em></p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Dobrar a realidade</strong>
                 <p>O Arquivista reescreve um detalhe da realidade, inventa uma possibilidade, cria o que não existia.</p>
@@ -243,12 +225,10 @@
                 <span class="juramento">"Ninguém deve prevalecer."</span>
             </div>
             <p><strong>Equilíbrio, proteção e união.</strong> O Ímpeto Alabastro é a manifestação da Ordem e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição.</p>
-            
             <div class="efeito-box">
                 <strong>Efeito Passivo</strong>
                 <p>Seus testes defensivos têm -1d4, mas seus testes ofensivos ganham +1d4.</p>
             </div>
-
             <div class="efeito-box">
                 <strong>Efeito Ativo: Balancear, julgar, proteger</strong>
                 <p>O Arquivista restaura o equilíbrio — impede que um lado domine o outro, protege os indefesos, julga com imparcialidade.</p>
@@ -258,10 +238,9 @@
                 <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para julgar ou proteger em benefício próprio, ele anota.</div>
             </div>
         </div>
-
     </div>
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
 
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>

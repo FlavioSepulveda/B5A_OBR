@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Estilos para o Guia Rápido */
         .guia-secao {
             background: #1a1816;
             border: 1px solid #333;
@@ -56,7 +55,6 @@
             color: var(--gold);
         }
         
-        /* Cores dos Resultados Absolutos */
         .res-1 { color: #ff4d4d; font-weight: bold; }
         .res-6 { color: #ff9800; font-weight: bold; }
         .res-12 { color: #4caf50; font-weight: bold; }
@@ -84,15 +82,18 @@
     </style>
 </head>
 <body>
-    <nav class="top-nav" style="justify-content: flex-start;">
+    <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
     </nav>
 
     <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
         <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">📖 Guia Rápido do Arquivista</h1>
         <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Um resumo das regras essenciais para jogar na Biblioteca da 5ª Avenida.</p>
 
-        <!-- 1. A ROLAGEM BÁSICA -->
         <div class="guia-secao">
             <h2>1. A Rolagem Básica</h2>
             <p>Quando o resultado de uma ação for incerto ou perigoso, o Guardião pedirá um teste. A fórmula base é:</p>
@@ -105,7 +106,6 @@
             <p><em>Exceção:</em> Se você tiver 0 dados em um Atributo ou não possuir a Perícia exigida, você <strong>Desafia o Destino</strong>: role 2d12, mantenha o maior e some o Volume. O dado descartado é ignorado.</p>
         </div>
 
-        <!-- 2. RESULTADOS ABSOLUTOS -->
         <div class="guia-secao">
             <h2>2. Os Três Resultados Absolutos</h2>
             <p>O d12 possui faces especiais que mudam a narrativa da cena, independentemente da TA:</p>
@@ -116,7 +116,6 @@
             </ul>
         </div>
 
-        <!-- 3. O CLASH (COMBATE) -->
         <div class="guia-secao">
             <h2>3. Clash e Combate</h2>
             <p>O combate é uma disputa direta (Clash). Não há defesa fixa. Ambos os lados rolam e quem tiver o maior resultado vence a disputa.</p>
@@ -125,14 +124,13 @@
                 <li><strong>Atacante:</strong> 1d12 + Atributo (Vigor para corpo a corpo, Dinamismo para distância, Razão para catalisadores) + Volume.</li>
                 <li><strong>Defensor:</strong> 1d12 + Dinamismo + Volume + bônus de itens (Vida Temporária).</li>
             </ul>
-            <p>Se o atacante vencer, o dano da arma é aplicado. Se o defensor vencer, o ataque é bloqueado (exceto Dano Real).</p>
+            <p>Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o ataque é bloqueado (exceto Dano Real).</p>
             
             <div class="destaque-regra">
                 <strong>Dano Real:</strong> É o único dano que ignora o Clash e acerta automaticamente. Ele é sempre fixo em <strong>1d6</strong>, não soma e não é absorvido por Vida Temporária.
             </div>
         </div>
 
-        <!-- 4. CRIAÇÃO DE PERSONAGEM -->
         <div class="guia-secao">
             <h2>4. Criação de Personagem</h2>
             <p>Todos os Atributos começam com <strong>0d4</strong>. Você recebe <strong>4d4</strong> adicionais para distribuir, com um limite de <strong>2d4</strong> por Atributo no Volume I.</p>
@@ -163,7 +161,6 @@
             </table>
         </div>
 
-        <!-- 5. PILHA DE DESCARTE -->
         <div class="guia-secao">
             <h2>5. Pilha de Descartes</h2>
             <p>Quando você usar o Ímpeto para modificar uma rolagem (adicionando 1d12 extra) ou usar habilidades que exigem descarte, o dado descartado vai para a Pilha de Descartes.</p>
@@ -171,7 +168,6 @@
             <p><em>Exceção:</em> Memórias do Ímpeto (usos do Efeito Ativo para ganho próprio) <strong>não podem ser descartadas</strong>. Elas ficam no Diário para sempre.</p>
         </div>
 
-        <!-- 6. PROGRESSÃO -->
         <div class="guia-secao">
             <h2>6. Subindo de Volume</h2>
             <p>O grupo sobe de Volume ao concluir <strong>3 missões importantes</strong> (ou antes, por marcos narrativos definidos pelo Guardião).</p>
@@ -184,10 +180,9 @@
                 <li>Desbloqueia a próxima habilidade do Caminho ou Vocação.</li>
             </ul>
         </div>
-
     </div>
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
 
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>
