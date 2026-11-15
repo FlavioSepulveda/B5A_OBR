@@ -1,106 +1,375 @@
+/* =========================================
+   VARIÁVEIS DE TEMA POR ESPECTRO
+   ========================================= */
+body {
+    --cor-destaque: var(--gold);
+}
+
+body.espectro-igneo { --cor-destaque: #ff4d4d; }
+body.espectro-celeste { --cor-destaque: #4cc9f0; }
+body.espectro-viridiano { --cor-destaque: #4caf50; }
+body.espectro-solar { --cor-destaque: #fbc02d; }
+body.espectro-indigo { --cor-destaque: #b285c9; }
+body.espectro-alabastro { --cor-destaque: #ffffff; }
+
+/* =========================================
+   LAYOUT PRINCIPAL DO PERFIL
+   ========================================= */
 .perfil-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 320px 1fr;
     gap: 30px;
-    max-width: 1200px;
-    margin: 100px auto 40px auto;
+    max-width: 1250px;
+    width: 100%;
+    margin: 90px auto 40px auto;
     padding: 0 20px;
-    align-items: flex-start;
+    align-items: start;
 }
 
+/* CARTÃO LATERAL DE IDENTIDADE */
 .perfil-identidade {
-    flex: 0 0 300px;
     background: var(--bg-panel);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    padding: 25px;
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--cor-destaque);
+    border-radius: 10px;
+    padding: 30px 20px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    transition: border-color 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 80px;
 }
-
-/* As cores do Espectro na borda do perfil */
-body.espectro-igneo .perfil-identidade { border-color: #ff4d4d; }
-body.espectro-celeste .perfil-identidade { border-color: #8eb1d9; }
-body.espectro-viridiano .perfil-identidade { border-color: #4caf50; }
-body.espectro-solar .perfil-identidade { border-color: #fbc02d; }
-body.espectro-indigo .perfil-identidade { border-color: #b285c9; }
-body.espectro-alabastro .perfil-identidade { border-color: #e0e0e0; }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    border: 3px solid var(--gold);
     object-fit: cover;
+    border: 3px solid var(--cor-destaque);
     margin-bottom: 15px;
-    background: #111;
+    background-color: #111;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
 }
 
-.perfil-identidade h2 { font-family: 'Bebas Neue', sans-serif; color: var(--gold); font-size: 2.2rem; margin: 0; }
+.perfil-identidade h2 {
+    color: var(--cor-destaque);
+    font-size: 2rem;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
 
-.perfil-conteudo { flex: 1; display: flex; flex-direction: column; }
+.bio-texto {
+    color: #bbb;
+    font-style: italic;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
 
+.stats-seguidores {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-bottom: 18px;
+}
+
+.stats-seguidores strong {
+    color: var(--cor-destaque);
+}
+
+.botoes-perfil-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.botoes-perfil-wrapper .btn-primario {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.15rem;
+    background-color: var(--cor-destaque);
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.botoes-perfil-wrapper .btn-primario:hover {
+    opacity: 0.9;
+}
+
+.botoes-perfil-wrapper .btn-secundario {
+    background-color: #252525;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.botoes-perfil-wrapper .btn-primario.seguindo {
+    background-color: #222;
+    color: var(--cor-destaque);
+    border: 1px solid var(--cor-destaque);
+}
+
+/* ÁREA DE CONTEÚDO (DIREITA) */
+.perfil-conteudo {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    min-width: 0;
+}
+
+.titulo-secao {
+    color: var(--cor-destaque);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* SELOS E CONQUISTAS */
 .selos-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 10px;
-    background: #111;
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px dashed #333;
-    min-height: 80px;
+    margin-bottom: 25px;
 }
 
 .selo-item {
-    background: rgba(199, 168, 107, 0.1);
-    border: 1px solid var(--gold);
-    border-radius: 50px;
-    padding: 5px 15px;
+    background: #111;
+    border: 1px solid var(--cor-destaque);
+    color: var(--cor-destaque);
+    padding: 6px 14px;
+    border-radius: 20px;
     font-size: 0.85rem;
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* ABAS DE NAVEGAÇÃO */
 .abas-perfil {
     display: flex;
-    gap: 15px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
+    gap: 10px;
+    border-bottom: 2px solid #2a2a2a;
+    margin-bottom: 20px;
 }
 
 .tab-btn {
     background: transparent;
-    color: #888;
     border: none;
-    padding: 5px 10px;
+    color: #888;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.4rem;
+    padding: 10px 18px;
     cursor: pointer;
-    transition: color 0.2s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
 }
 
-.tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
-.tab-conteudo { display: none; margin-top: 15px; }
-.tab-conteudo.active { display: block; }
+.tab-btn:hover {
+    color: #ddd;
+}
 
+.tab-btn.active {
+    color: var(--cor-destaque);
+    border-bottom-color: var(--cor-destaque);
+}
+
+.tab-conteudo {
+    display: none;
+}
+
+.tab-conteudo.active {
+    display: block;
+}
+
+/* CARDS DE ACERVO E OBRAS */
 .grid-mini-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 15px;
 }
 
 .mini-card {
-    background: var(--bg-panel);
+    display: block;
+    text-decoration: none;
+    background: var(--bg-input);
     border: 1px solid #333;
+    border-left: 3px solid var(--cor-destaque);
     border-radius: 6px;
     padding: 15px;
-    text-decoration: none;
-    color: #fff;
-    transition: border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s;
 }
-.mini-card:hover { border-color: var(--gold); }
-.mini-card h4 { font-family: 'Bebas Neue', sans-serif; color: var(--gold); font-size: 1.3rem; margin: 0 0 5px 0; }
-.mini-card p { font-size: 0.8rem; color: #888; margin: 0; }
+
+.mini-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cor-destaque);
+}
+
+.mini-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.35rem;
+    color: var(--cor-destaque);
+    margin-bottom: 5px;
+}
+
+.mini-card p {
+    font-size: 0.82rem;
+    color: #aaa;
+}
+
+/* MODAL DE EDIÇÃO */
+.modal-leitura {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.modal-leitura-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--cor-destaque);
+    border-radius: 10px;
+    padding: 25px;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.modal-leitura-content h2 {
+    color: var(--cor-destaque);
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: var(--cor-destaque);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    color: var(--cor-destaque);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Merriweather', serif;
+    font-size: 0.9rem;
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--cor-destaque);
+}
+
+/* =========================================
+   RESPONSIVIDADE (TABLET E CELULAR)
+   ========================================= */
+@media (max-width: 850px) {
+    .perfil-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-top: 80px;
+    }
+
+    .perfil-identidade {
+        position: static;
+        padding: 25px 15px;
+    }
+
+    .botoes-perfil-wrapper {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 15px;
+        gap: 8px;
+    }
+
+    .nav-user {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .perfil-container {
+        margin-top: 115px;
+        padding: 0 12px;
+    }
+
+    .perfil-conteudo {
+        padding: 18px 14px;
+    }
+
+    .avatar {
+        width: 105px;
+        height: 105px;
+    }
+
+    .abas-perfil {
+        gap: 4px;
+    }
+
+    .tab-btn {
+        flex: 1;
+        font-size: 1.2rem;
+        padding: 8px 6px;
+        text-align: center;
+    }
+
+    .grid-mini-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-leitura-content {
+        padding: 20px 15px;
+    }
+}

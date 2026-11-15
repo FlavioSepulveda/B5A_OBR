@@ -19,27 +19,29 @@
 
     <div class="perfil-container" id="perfil-visitado">
         <div class="perfil-identidade">
-            <img id="perfil-avatar" src="" alt="Avatar" class="avatar">
+            <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="avatar">
             <h2 id="perfil-nome">Carregando...</h2>
-            <p id="perfil-bio" style="color: #aaa; font-style: italic; margin-top: 5px;">"Sem juramento registrado."</p>
+            <p id="perfil-bio" class="bio-texto">"Sem juramento registrado."</p>
             
-            <div id="area-botoes-perfil" style="margin-top: 20px; display: none;">
-                <button id="btn-seguir" class="btn-primario" style="padding: 10px; font-size: 1.1rem; background: #c7a86b;">Seguir Arquivista</button>
-                <button id="btn-editar-perfil" class="btn-primario" style="padding: 10px; font-size: 1.1rem; background: #333;">Editar Meu Perfil</button>
+            <div class="stats-seguidores">
+                <span>👥 <strong id="qtd-seguidores">0</strong> Seguidores</span>
+            </div>
+
+            <div id="area-botoes-perfil" class="botoes-perfil-wrapper">
+                <button id="btn-seguir" class="btn-primario" style="display: none;">Seguir Arquivista</button>
+                <button id="btn-editar-perfil" class="btn-primario btn-secundario" style="display: none;">Editar Meu Perfil</button>
             </div>
         </div>
 
         <div class="perfil-conteudo">
-            <!-- Selos e Conquistas -->
-            <h3 style="color: var(--gold); font-family: 'Bebas Neue'; font-size: 1.8rem; border-bottom: 1px solid #333; padding-bottom: 5px;">Conquistas da Biblioteca</h3>
+            <h3 class="titulo-secao">Conquistas da Biblioteca</h3>
             <div id="lista-selos" class="selos-grid">
                 <p style="color: #666; font-style: italic;">Nenhum selo conquistado ainda.</p>
             </div>
 
-            <!-- Abas de Acervo Público -->
-            <div class="abas-perfil" style="margin-top: 20px;">
-                <button class="tab-btn active" onclick="mudarTabPerfil('tab-estante')">Estante Pública</button>
-                <button class="tab-btn" onclick="mudarTabPerfil('tab-obras')">Obras Criadas</button>
+            <div class="abas-perfil">
+                <button class="tab-btn active" onclick="mudarTabPerfil(event, 'tab-estante')">Estante Pública</button>
+                <button class="tab-btn" onclick="mudarTabPerfil(event, 'tab-obras')">Obras Criadas</button>
             </div>
 
             <div id="tab-estante" class="tab-conteudo active">
@@ -51,22 +53,22 @@
         </div>
     </div>
 
-    <!-- Modal de Edição (Só aparece pro dono) -->
+    <!-- Modal de Edição -->
     <div id="modal-editar-perfil" class="modal-leitura" style="display:none;">
         <div class="modal-leitura-content">
             <span class="close-btn" onclick="document.getElementById('modal-editar-perfil').style.display='none'">&times;</span>
             <h2>Editar Identidade</h2>
             
-            <div class="input-group" style="margin-top: 15px;">
+            <div class="input-group">
                 <label>Apelido de Arquivista</label>
                 <input type="text" id="edit-apelido" placeholder="Como quer ser chamado?">
             </div>
-            <div class="input-group" style="margin-top: 10px;">
+            <div class="input-group">
                 <label>Juramento / Bio</label>
                 <textarea id="edit-bio" rows="3" placeholder="Sua frase de efeito..."></textarea>
             </div>
-            <div class="input-group" style="margin-top: 10px;">
-                <label>Seu Espectro Principal (Muda a cor do site)</label>
+            <div class="input-group">
+                <label>Seu Espectro Principal (Muda a cor do perfil)</label>
                 <select id="edit-espectro">
                     <option value="padrao">Nenhum (Padrão)</option>
                     <option value="igneo">Ígneo (Vermelho)</option>
@@ -77,7 +79,7 @@
                     <option value="alabastro">Alabastro (Branco)</option>
                 </select>
             </div>
-            <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 20px;">Salvar Alterações</button>
+            <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 20px; width: 100%;">Salvar Alterações</button>
         </div>
     </div>
 
