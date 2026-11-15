@@ -7,16 +7,24 @@
     align-items: flex-start;
 }
 
-/* Lado Esquerdo: Identidade */
 .perfil-identidade {
     flex: 0 0 300px;
     background: var(--bg-panel);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 25px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: border-color 0.3s;
 }
+
+/* As cores do Espectro na borda do perfil */
+body.espectro-igneo .perfil-identidade { border-color: #ff4d4d; }
+body.espectro-celeste .perfil-identidade { border-color: #8eb1d9; }
+body.espectro-viridiano .perfil-identidade { border-color: #4caf50; }
+body.espectro-solar .perfil-identidade { border-color: #fbc02d; }
+body.espectro-indigo .perfil-identidade { border-color: #b285c9; }
+body.espectro-alabastro .perfil-identidade { border-color: #e0e0e0; }
 
 .avatar {
     width: 120px;
@@ -28,116 +36,71 @@
     background: #111;
 }
 
-.perfil-identidade h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    color: var(--gold);
-    font-size: 2rem;
-    margin-bottom: 5px;
-    border: none;
-}
+.perfil-identidade h2 { font-family: 'Bebas Neue', sans-serif; color: var(--gold); font-size: 2.2rem; margin: 0; }
 
-/* Lado Direito: Conteúdo */
-.perfil-conteudo {
-    flex: 1;
+.perfil-conteudo { flex: 1; display: flex; flex-direction: column; }
+
+.selos-grid {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* Estatísticas */
-.estatisticas-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-}
-
-.stat-box {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    background: #111;
     padding: 15px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
+    border-radius: 6px;
+    border: 1px dashed #333;
+    min-height: 80px;
 }
 
-.stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
+.selo-item {
+    background: rgba(199, 168, 107, 0.1);
+    border: 1px solid var(--gold);
+    border-radius: 50px;
+    padding: 5px 15px;
+    font-size: 0.85rem;
     color: var(--gold);
-    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.stat-label {
-    font-size: 0.8rem;
-    color: #888;
-    text-transform: uppercase;
-    margin-top: 5px;
-}
-
-/* Abas */
 .abas-perfil {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
-    overflow-x: auto;
 }
 
 .tab-btn {
     background: transparent;
     color: #888;
-    border: 1px solid transparent;
-    padding: 8px 15px;
+    border: none;
+    padding: 5px 10px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
+    transition: color 0.2s;
 }
 
-.tab-btn:hover { color: #ccc; }
 .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+.tab-conteudo { display: none; margin-top: 15px; }
+.tab-conteudo.active { display: block; }
 
-.tab-conteudo { display: none; }
-.tab-conteudo.active { display: block; animation: fadeIn 0.3s; }
-
-/* Grid de Mini Cards (para o Acervo) */
 .grid-mini-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 15px;
-    margin-top: 15px;
 }
 
 .mini-card {
-    background: #111;
+    background: var(--bg-panel);
     border: 1px solid #333;
     border-radius: 6px;
     padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
     text-decoration: none;
     color: #fff;
     transition: border-color 0.2s;
 }
-
 .mini-card:hover { border-color: var(--gold); }
-
-.mini-card h4 {
-    font-family: 'Bebas Neue', sans-serif;
-    color: var(--gold);
-    font-size: 1.3rem;
-    margin: 0;
-    line-height: 1;
-}
-
+.mini-card h4 { font-family: 'Bebas Neue', sans-serif; color: var(--gold); font-size: 1.3rem; margin: 0 0 5px 0; }
 .mini-card p { font-size: 0.8rem; color: #888; margin: 0; }
-
-/* Responsividade */
-@media (max-width: 900px) {
-    .perfil-container { flex-direction: column; }
-    .perfil-identidade { flex: auto; width: 100%; }
-    .estatisticas-grid { grid-template-columns: repeat(2, 1fr); }
-}

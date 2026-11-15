@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Arquivista - B5A</title>
+    <title>Perfil - B5A</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/perfil.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
@@ -12,74 +12,72 @@
     <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
-            <button id="btn-logout" class="btn-login-nav" style="display:none; background: #a83232; color: white; margin-left: 5px;">Sair</button>
         </div>
     </nav>
 
-    <div class="perfil-container">
-        <!-- CARTÃO DE IDENTIDADE -->
+    <div class="perfil-container" id="perfil-visitado">
         <div class="perfil-identidade">
             <img id="perfil-avatar" src="" alt="Avatar" class="avatar">
             <h2 id="perfil-nome">Carregando...</h2>
-            <p id="perfil-email" style="color: #888; font-size: 0.9rem;">Email</p>
-            <p id="perfil-uid" style="color: #555; font-size: 0.7rem;">UID</p>
+            <p id="perfil-bio" style="color: #aaa; font-style: italic; margin-top: 5px;">"Sem juramento registrado."</p>
+            
+            <div id="area-botoes-perfil" style="margin-top: 20px; display: none;">
+                <button id="btn-seguir" class="btn-primario" style="padding: 10px; font-size: 1.1rem; background: #c7a86b;">Seguir Arquivista</button>
+                <button id="btn-editar-perfil" class="btn-primario" style="padding: 10px; font-size: 1.1rem; background: #333;">Editar Meu Perfil</button>
+            </div>
+        </div>
+
+        <div class="perfil-conteudo">
+            <!-- Selos e Conquistas -->
+            <h3 style="color: var(--gold); font-family: 'Bebas Neue'; font-size: 1.8rem; border-bottom: 1px solid #333; padding-bottom: 5px;">Conquistas da Biblioteca</h3>
+            <div id="lista-selos" class="selos-grid">
+                <p style="color: #666; font-style: italic;">Nenhum selo conquistado ainda.</p>
+            </div>
+
+            <!-- Abas de Acervo Público -->
+            <div class="abas-perfil" style="margin-top: 20px;">
+                <button class="tab-btn active" onclick="mudarTabPerfil('tab-estante')">Estante Pública</button>
+                <button class="tab-btn" onclick="mudarTabPerfil('tab-obras')">Obras Criadas</button>
+            </div>
+
+            <div id="tab-estante" class="tab-conteudo active">
+                <div id="lista-estante-publica" class="grid-mini-cards"></div>
+            </div>
+            <div id="tab-obras" class="tab-conteudo">
+                <div id="lista-obras-publicas" class="grid-mini-cards"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição (Só aparece pro dono) -->
+    <div id="modal-editar-perfil" class="modal-leitura" style="display:none;">
+        <div class="modal-leitura-content">
+            <span class="close-btn" onclick="document.getElementById('modal-editar-perfil').style.display='none'">&times;</span>
+            <h2>Editar Identidade</h2>
             
             <div class="input-group" style="margin-top: 15px;">
                 <label>Apelido de Arquivista</label>
-                <input type="text" id="perfil-apelido" placeholder="Como quer ser chamado?">
+                <input type="text" id="edit-apelido" placeholder="Como quer ser chamado?">
             </div>
             <div class="input-group" style="margin-top: 10px;">
                 <label>Juramento / Bio</label>
-                <textarea id="perfil-bio" rows="2" placeholder="Sua frase de efeito..."></textarea>
+                <textarea id="edit-bio" rows="3" placeholder="Sua frase de efeito..."></textarea>
             </div>
-            <button id="btn-salvar-perfil" class="btn-primario" style="margin-top: 10px; padding: 8px; font-size: 1rem;">Salvar Identidade</button>
-        </div>
-
-        <!-- CONTEÚDO PRINCIPAL (ESTATÍSTICAS E ACERVO) -->
-        <div class="perfil-conteudo">
-            <!-- ESTATÍSTICAS -->
-            <div class="estatisticas-grid">
-                <div class="stat-box">
-                    <span id="stat-cronicas" class="stat-num">0</span>
-                    <span class="stat-label">Crônicas</span>
-                </div>
-                <div class="stat-box">
-                    <span id="stat-monstros" class="stat-num">0</span>
-                    <span class="stat-label">Monstros</span>
-                </div>
-                <div class="stat-box">
-                    <span id="stat-armas" class="stat-num">0</span>
-                    <span class="stat-label">Armas</span>
-                </div>
-                <div class="stat-box">
-                    <span id="stat-likes" class="stat-num">0</span>
-                    <span class="stat-label">Likes Recebidos</span>
-                </div>
+            <div class="input-group" style="margin-top: 10px;">
+                <label>Seu Espectro Principal (Muda a cor do site)</label>
+                <select id="edit-espectro">
+                    <option value="padrao">Nenhum (Padrão)</option>
+                    <option value="igneo">Ígneo (Vermelho)</option>
+                    <option value="celeste">Celeste (Azul)</option>
+                    <option value="viridiano">Viridiano (Verde)</option>
+                    <option value="solar">Solar (Amarelo)</option>
+                    <option value="indigo">Índigo (Roxo)</option>
+                    <option value="alabastro">Alabastro (Branco)</option>
+                </select>
             </div>
-
-            <!-- ABAS DO ACERVO -->
-            <div class="abas-perfil">
-                <button class="tab-btn active" onclick="mudarTabPerfil('tab-estante')">Minha Estante</button>
-                <button class="tab-btn" onclick="mudarTabPerfil('tab-cronicas')">Minhas Crônicas</button>
-                <button class="tab-btn" onclick="mudarTabPerfil('tab-bestias')">Meu Bestiário</button>
-                <button class="tab-btn" onclick="mudarTabPerfil('tab-favoritos')">Favoritos</button>
-            </div>
-
-            <!-- CONTEÚDO DAS ABAS -->
-            <div id="tab-estante" class="tab-conteudo active">
-                <div id="lista-estante" class="grid-mini-cards"></div>
-            </div>
-            <div id="tab-cronicas" class="tab-conteudo">
-                <div id="lista-cronicas" class="grid-mini-cards"></div>
-            </div>
-            <div id="tab-bestias" class="tab-conteudo">
-                <div id="lista-monstros" class="grid-mini-cards"></div>
-            </div>
-            <div id="tab-favoritos" class="tab-conteudo">
-                <div id="lista-favoritos" class="grid-mini-cards"></div>
-            </div>
+            <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 20px;">Salvar Alterações</button>
         </div>
     </div>
 

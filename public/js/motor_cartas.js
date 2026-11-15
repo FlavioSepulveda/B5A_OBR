@@ -33,7 +33,7 @@ function configurarFormulario() {
                 
                 let payload = {
                     autor: auth.currentUser?.displayName || "Arquivista",
-                    autorId: idJogadorAtual, // NOVO: Salva o ID do usuário
+                    autorId: idJogadorAtual, 
                     titulo: titulo,
                     texto: texto,
                     imagem: imagemFinal,
@@ -257,6 +257,12 @@ function abrirModal(item, id) {
         habsModal += `</ul></div>`;
     }
 
+    // Verificação de dono para os botões
+    const isDono = item.autorId ? item.autorId === idJogadorAtual : item.autor === auth.currentUser?.displayName;
+    const displayEditar = isDono ? 'block' : 'none';
+    const displayDeletar = isDono ? 'block' : 'none';
+    const displayEquipar = (colecaoAtual === "armas" || colecaoAtual === "habilidades") ? 'block' : 'none'; // NOVO: Botão Equipar
+
     modal.innerHTML = `
         <div class="modal-carta ${classeEspectro}">
             <span class="close-btn" onclick="fecharModalCartas()" style="z-index:10; font-size:40px; text-shadow:0 0 5px #000;">&times;</span>
@@ -269,10 +275,14 @@ function abrirModal(item, id) {
                 <p style="white-space:pre-wrap; line-height:1.5; margin-bottom:15px;">${item.texto || ''}</p>
                 ${habsModal}
                 
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex:1;">❤️ <span id="qtd-likes">0</span></button>
-                    <button id="btn-editar" class="btn-primario" style="display:none; flex:1;" onclick="prepararEdicao()">Editar</button>
-                    <button id="btn-deletar-modal" style="display:none; background:#a83232; color:white; border:none; border-radius:4px; cursor:pointer; flex:1; font-family: 'Bebas Neue', sans-serif; font-size:1.2rem;" onclick="deletarItem('${id}')">Apagar</button>
+                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
+                    <button id="btn-like" class="btn-curtir" onclick="alternarLike()" style="flex:1; min-width: 100px;">❤️ <span id="qtd-likes">0</span></button>
+                    
+                    <!-- NOVO BOTÃO DE EQUIPAR -->
+                    <button id="btn-equipar" class="btn-primario" style="display:${displayEquipar}; flex:1; min-width: 100px; background: #3d5a80;" onclick="equiparNaFicha()">Equipar</button>
+
+                    <button id="btn-editar" class="btn-primario" style="display:${displayEditar}; flex:1; min-width: 100px;" onclick="prepararEdicao()">Editar</button>
+                    <button id="btn-deletar-modal" style="display:${displayDeletar}; background:#a83232; color:white; border:none; border-radius:4px; cursor:pointer; flex:1; min-width: 100px; font-family: 'Bebas Neue', sans-serif; font-size:1.2rem;" onclick="deletarItem('${id}')">Apagar</button>
                 </div>
 
                 <div class="secao-comentarios">
@@ -292,15 +302,6 @@ function abrirModal(item, id) {
     modalImg.onerror = () => { modalImg.src = imagemPadrao; };
 
     modal.style.display = 'block';
-    
-    // NOVO: Verificação Segura de Autor (usa autorId se existir, senão usa autor)
-    const isDono = item.autorId ? item.autorId === idJogadorAtual : item.autor === auth.currentUser?.displayName;
-    
-    if (isDono) {
-        document.getElementById('btn-editar').style.display = 'block';
-        document.getElementById('btn-deletar-modal').style.display = 'block';
-    }
-
     atualizarBotaoLike();
     carregarComentarios(id);
 }
@@ -308,6 +309,39 @@ function abrirModal(item, id) {
 window.fecharModalCartas = function() { 
     document.getElementById('modal-dinamico').style.display = 'none'; 
     idItemAbertoNoModal = null; 
+}
+
+// ==========================================
+// NOVA FUNÇÃO: EQUIPAR NA FICHA
+// ==========================================
+window.equiparNaFicha = async function() {
+    if(!idJogadorAtual) { alert("Faça login para equipar!"); return; }
+    if(!idItemAbertoNoModal) return;
+
+    const itemSnap = await get(ref(db, `salas/${salaAtual}/${colecaoAtual}/${idItemAbertoNoModal}`));
+    const item = itemSnap.val();
+
+    const fichaRef = ref(db, `salas/${salaAtual}/jogadores/${idJogadorAtual}`);
+    const fichaSnap = await get(fichaRef);
+    let ficha = fichaSnap.val();
+
+    if(!ficha) { alert("Crie uma ficha primeiro na Mesa de Jogo!"); return; }
+
+    if(!ficha.inventario) ficha.inventario = [];
+    if(!ficha.grimorio) ficha.grimorio = [];
+
+    if(colecaoAtual === "armas") {
+        ficha.inventario.push({
+            nome: item.titulo, tipo: "Arma", dano: item.dano, efeito: item.efeito, idOrigem: idItemAbertoNoModal
+        });
+    } else if(colecaoAtual === "habilidades") {
+        ficha.grimorio.push({
+            nome: item.titulo, tipo: item.tipo, custo: item.custo, desc: item.texto, idOrigem: idItemAbertoNoModal
+        });
+    }
+
+    await update(fichaRef, ficha);
+    alert(`✅ ${item.titulo} adicionado à sua ficha!`);
 }
 
 // ==========================================

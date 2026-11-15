@@ -3,7 +3,6 @@ import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase
 
 const feedContainer = document.getElementById('feed-home');
 
-// Função para formatar o tempo (Há 2 horas, etc)
 function tempoAtras(timestamp) {
     if (!timestamp) return "Recentemente";
     const segundos = Math.floor((Date.now() - timestamp) / 1000);
@@ -18,7 +17,6 @@ function tempoAtras(timestamp) {
 function carregarFeed() {
     if(!feedContainer) return;
 
-    // Vamos ouvir a sala inteira
     onValue(ref(db, `salas/${salaAtual}`), (snapshot) => {
         const dados = snapshot.val();
         if(!dados) {
@@ -28,58 +26,51 @@ function carregarFeed() {
 
         let todasAtividades = [];
 
-        // Junta Monstros
         if(dados.monstros) {
             Object.values(dados.monstros).forEach(m => {
                 todasAtividades.push({
                     tipo: 'Bestiário', link: 'pages/monstros.html',
-                    titulo: m.titulo, autor: m.autor, data: m.data,
+                    titulo: m.titulo, autor: m.autor, autorId: m.autorId, data: m.data,
                     imagem: m.imagem, texto: m.texto || 'Uma nova criatura catalogada.',
                     icone: '👹'
                 });
             });
         }
 
-        // Junta Armas
         if(dados.armas) {
             Object.values(dados.armas).forEach(a => {
                 todasAtividades.push({
                     tipo: 'Arsenal', link: 'pages/armas.html',
-                    titulo: a.titulo, autor: a.autor, data: a.data,
+                    titulo: a.titulo, autor: a.autor, autorId: a.autorId, data: a.data,
                     imagem: a.imagem, texto: `Arma forjada na categoria ${a.categoria}.`,
                     icone: '🛡️'
                 });
             });
         }
 
-        // Junta Crônicas
         if(dados.cronicas) {
             Object.values(dados.cronicas).forEach(c => {
                 todasAtividades.push({
                     tipo: 'Crônica', link: 'pages/comunidade.html',
-                    titulo: c.titulo, autor: c.autor, data: c.data,
+                    titulo: c.titulo, autor: c.autor, autorId: c.autorId, data: c.data,
                     imagem: c.imagem, texto: c.historia ? c.historia.substring(0, 100) + '...' : 'Nova história registrada.',
                     icone: '🌍'
                 });
             });
         }
 
-        // Junta Habilidades
         if(dados.habilidades) {
             Object.values(dados.habilidades).forEach(h => {
                 todasAtividades.push({
                     tipo: 'Grimório', link: 'pages/habilidades.html',
-                    titulo: h.titulo, autor: h.autor, data: h.data,
+                    titulo: h.titulo, autor: h.autor, autorId: h.autorId, data: h.data,
                     imagem: h.imagem, texto: `Nova ${h.tipo} registrada.`,
                     icone: '✨'
                 });
             });
         }
 
-        // Ordena pelas mais recentes
         todasAtividades.sort((a, b) => b.data - a.data);
-
-        // Pega apenas as 10 últimas para não pesar a tela
         const feedRecente = todasAtividades.slice(0, 10);
 
         if(feedRecente.length === 0) {
@@ -97,6 +88,11 @@ function carregarFeed() {
             card.href = item.link;
             card.className = 'post-card';
 
+            // Link do autor preparado para ir ao perfil
+            const linkAutor = item.autorId 
+                ? `<a href="pages/perfil.html?uid=${item.autorId}" style="color:var(--gold); text-decoration:none; font-weight:bold;" onclick="event.stopPropagation()">${item.autor}</a>`
+                : `<strong>${item.autor}</strong>`;
+
             card.innerHTML = `
                 <div class="post-header">
                     <h3>${item.icone} ${item.titulo}</h3>
@@ -110,7 +106,7 @@ function carregarFeed() {
                 </div>
                 <div class="post-footer">
                     <span>Publicado no ${item.tipo}</span>
-                    <span>Por: <strong>${item.autor}</strong></span>
+                    <span>Por: ${linkAutor}</span>
                 </div>
             `;
 
@@ -119,8 +115,5 @@ function carregarFeed() {
     });
 }
 
-// Escuta o login para carregar o feed
 window.addEventListener('usuarioLogado', carregarFeed);
-
-// Tenta carregar o feed mesmo se o usuário ainda não tiver clicado em login
 setTimeout(carregarFeed, 1000);
