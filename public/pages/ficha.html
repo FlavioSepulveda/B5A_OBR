@@ -3,27 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesa - B5A</title>
-    <!-- O CSS GLOBAL -->
+    <title>Mesa de Jogo - B5A</title>
+    <!-- CSS GLOBAL -->
     <link rel="stylesheet" href="../style.css">
-    <!-- O CSS ESPECÍFICO DA FICHA -->
+    <!-- CSS ESPECÍFICO DA FICHA -->
     <link rel="stylesheet" href="../css/ficha.css">
     <!-- FONTES -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- NAVBAR SUPERIOR -->
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar</a>
+        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
         <div class="nav-user">
-            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
+            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Faça login</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
+    <!-- LAYOUT DE MESA (3 COLUNAS) -->
     <div class="conteudo-abas" style="margin-top: 80px;">
         <div class="mesa-container">
+            
+            <!-- COLUNA 1: FICHA E ATRIBUTOS -->
             <div class="coluna-ficha">
-                <div class="cabecalho-ficha"><h2>Ficha do Arquivista</h2></div>
+                <div class="cabecalho-ficha">
+                    <h2>Ficha do Arquivista</h2>
+                </div>
+
                 <div class="secao-ficha">
                     <div class="input-group">
                         <label>Nome do Personagem</label>
@@ -76,14 +84,43 @@
                 <div class="secao-ficha">
                     <h3>Atributos (d4)</h3>
                     <div class="lista-rolagens">
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button><span id="val-vigor" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button><span id="val-dinamismo" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button><span id="val-razao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button></div>
-                        <div class="linha-rolagem"><div class="controle-dados"><button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button><span id="val-determinacao" class="valor-dado">0</span><button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button></div><button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button></div>
+                        <div class="linha-rolagem">
+                            <div class="controle-dados">
+                                <button class="btn-ajuste" onclick="ajustarDado('vigor', -1)">-</button>
+                                <span id="val-vigor" class="valor-dado">0</span>
+                                <button class="btn-ajuste" onclick="ajustarDado('vigor', 1)">+</button>
+                            </div>
+                            <button class="btn-rolar-nome" onclick="rolarTeste('Vigor', 'vigor', 4)">Vigor</button>
+                        </div>
+                        <div class="linha-rolagem">
+                            <div class="controle-dados">
+                                <button class="btn-ajuste" onclick="ajustarDado('dinamismo', -1)">-</button>
+                                <span id="val-dinamismo" class="valor-dado">0</span>
+                                <button class="btn-ajuste" onclick="ajustarDado('dinamismo', 1)">+</button>
+                            </div>
+                            <button class="btn-rolar-nome" onclick="rolarTeste('Dinamismo', 'dinamismo', 4)">Dinamismo</button>
+                        </div>
+                        <div class="linha-rolagem">
+                            <div class="controle-dados">
+                                <button class="btn-ajuste" onclick="ajustarDado('razao', -1)">-</button>
+                                <span id="val-razao" class="valor-dado">0</span>
+                                <button class="btn-ajuste" onclick="ajustarDado('razao', 1)">+</button>
+                            </div>
+                            <button class="btn-rolar-nome" onclick="rolarTeste('Razão', 'razao', 4)">Razão</button>
+                        </div>
+                        <div class="linha-rolagem">
+                            <div class="controle-dados">
+                                <button class="btn-ajuste" onclick="ajustarDado('determinacao', -1)">-</button>
+                                <span id="val-determinacao" class="valor-dado">0</span>
+                                <button class="btn-ajuste" onclick="ajustarDado('determinacao', 1)">+</button>
+                            </div>
+                            <button class="btn-rolar-nome" onclick="rolarTeste('Determinação', 'determinacao', 4)">Determinação</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- COLUNA 2: PERÍCIAS -->
             <div class="coluna-meio">
                 <div class="secao-ficha" style="max-height: 450px; overflow-y: auto;">
                     <h3>Perícias (d6)</h3>
@@ -106,6 +143,7 @@
                 <button id="btn-desafiar" class="btn-primario" style="background: #a83232;">Desafiar o Destino (2d12)</button>
             </div>
 
+            <!-- COLUNA 3: HISTÓRICO E ROLAGEM -->
             <div class="coluna-historico">
                 <div id="resultado-container">
                     <div id="d12-box" class="dice-box principal"><span class="dice-label">d12</span><span id="dado-d12" class="dice-value">-</span></div>
@@ -122,9 +160,11 @@
                     <div id="aviso-historico-vazio" style="text-align: center; color: #666; margin-top: 30px; font-style: italic;">Nenhuma rolagem ainda...</div>
                 </div>
             </div>
+
         </div>
     </div>
    
+    <!-- SCRIPTS -->
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/ficha.js"></script>
     <script type="module" src="../js/rolagem.js"></script>
