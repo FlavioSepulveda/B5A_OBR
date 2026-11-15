@@ -12,7 +12,7 @@ window.iniciarCartas = function(colecao) {
 };
 
 // ==========================================
-// 1. SALVAR ITEM (COM UPLOAD DE ARQUIVO)
+// 1. SALVAR ITEM (CORRIGIDO PARA NÃO APAGAR OS OUTROS)
 // ==========================================
 function configurarFormulario() {
     document.getElementById('btn-salvar-form')?.addEventListener('click', () => {
@@ -25,7 +25,6 @@ function configurarFormulario() {
         btnSalvar.textContent = "Salvando...";
         btnSalvar.disabled = true;
 
-        // Função interna para montar o objeto e salvar no Firebase
         const salvarNoBanco = (imagemFinal) => {
             try {
                 const texto = document.getElementById('form-texto')?.value.trim() || "";
@@ -34,7 +33,7 @@ function configurarFormulario() {
                     autor: auth.currentUser?.displayName || "Arquivista",
                     titulo: titulo,
                     texto: texto,
-                    imagem: imagemFinal, // Pode ser o link ou o Base64
+                    imagem: imagemFinal,
                     data: Date.now()
                 };
 
@@ -61,10 +60,19 @@ function configurarFormulario() {
                     payload.descarte = document.getElementById('form-descarte')?.value || "";
                 }
 
-                const idGerado = itemAbertoId || `${colecaoAtual}_${Date.now()}`;
-                const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${idGerado}`);
+                // AQUI ESTÁ A CORREÇÃO: Se for edição, atualiza. Se for novo, gera um ID com push()
+                let promessa;
+                if (itemAbertoId) {
+                    // Atualiza mantendo os dados antigos (como likes e comentários)
+                    const itemRef = ref(db, `salas/${salaAtual}/${colecaoAtual}/${itemAbertoId}`);
+                    promessa = update(itemRef, payload);
+                } else {
+                    // Cria uma nova referência com ID único gerada pelo Firebase
+                    const novaRef = push(ref(db, `salas/${salaAtual}/${colecaoAtual}`));
+                    promessa = set(novaRef, payload);
+                }
 
-                set(itemRef, payload).then(() => {
+                promessa.then(() => {
                     const status = document.getElementById('status-form');
                     status.textContent = "✅ Salvo com sucesso!";
                     status.style.color = "#4caf50";
@@ -92,7 +100,6 @@ function configurarFormulario() {
             }
         };
 
-        // Lógica para ler a imagem
         const arquivoInput = document.getElementById('form-arquivo');
         const urlInput = document.getElementById('form-imagem')?.value.trim() || "";
 
@@ -101,10 +108,8 @@ function configurarFormulario() {
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                // Cria uma imagem virtual para redimensionar
                 const img = new Image();
                 img.onload = function() {
-                    // Redimensiona para no máximo 500px (para não pesar no banco)
                     const canvas = document.createElement('canvas');
                     const MAX_WIDTH = 500;
                     const scale = MAX_WIDTH / img.width;
@@ -114,7 +119,6 @@ function configurarFormulario() {
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    // Converte para Base64 comprimido
                     const base64 = canvas.toDataURL('image/jpeg', 0.7);
                     salvarNoBanco(base64);
                 };
@@ -122,14 +126,13 @@ function configurarFormulario() {
             };
             reader.readAsDataURL(arquivo);
         } else {
-            // Se não tem arquivo, usa o link da URL
             salvarNoBanco(urlInput);
         }
     });
 }
 
 // ==========================================
-// 2. DESENHAR AS CARTAS (MANTIDO)
+// 2. DESENHAR AS CARTAS
 // ==========================================
 function carregarCartas() {
     const lista = document.getElementById('lista-cartas');
@@ -190,7 +193,7 @@ function carregarCartas() {
 }
 
 // ==========================================
-// 3, 4 e 5. MODAL, LIKES, COMENTÁRIOS E EDIÇÃO (MANTIDOS)
+// 3. MODAL, LIKES E COMENTÁRIOS
 // ==========================================
 function abrirModal(item, id) {
     itemAbertoId = id;
@@ -307,8 +310,7 @@ function prepararEdicao() {
 
         document.getElementById('form-titulo').value = item.titulo;
         if(document.getElementById('form-texto')) document.getElementById('form-texto').value = item.texto || "";
-        if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = item.imagem.startsWith('data:image') ? "" : item.imagem; 
-        // Nota: se for Base64, não mostra o texto gigante no input.
+        if(document.getElementById('form-imagem')) document.getElementById('form-imagem').value = item.imagem && item.imagem.startsWith('data:image') ? "" : (item.imagem || "");
 
         if (colecaoAtual === "monstros") {
             document.getElementById('form-vida').value = item.vida;
