@@ -2,438 +2,702 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caminhos e Vocações - B5A</title>
-    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Caminhos & Vocações - Biblioteca da 5ª Avenida</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        .caminho-bloco {
-            background: #1a1816;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
         }
-        .caminho-header {
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-top: 82px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--gold);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .caminho-header h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--gold);
-            font-size: 2rem;
-            margin: 0;
-            border: none;
-            padding: 0;
-            text-align: left;
-        }
-        .caminho-header .arma-favorita {
-            font-family: 'Bebas Neue', sans-serif;
-            color: #ccc;
-            font-size: 1.1rem;
-            background: #111;
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: 1px solid #444;
-        }
-        .habilidade-volume {
-            margin-bottom: 15px;
-            padding-left: 15px;
-            border-left: 3px solid #444;
-        }
-        .habilidade-volume strong {
-            color: var(--gold);
-            font-size: 1.1rem;
-        }
-        .habilidade-volume .custo {
-            color: #ff4d4d;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .habilidade-volume p {
-            margin-top: 5px;
-            font-size: 0.95rem;
-            color: #ccc;
-            text-align: left;
-        }
-        .tags-lista {
-            display: flex;
+            padding: 8px 20px;
+            z-index: 1000;
             gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
         }
-        .tag {
-            background: #222;
-            color: #aaa;
-            padding: 3px 8px;
-            border-radius: 4px;
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-size: 1.4rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-item {
+            color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.ativo {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
             font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+        }
+
+        /* CONTEÚDO */
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--ouro);
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--texto-suave);
+            font-size: 0.92rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .filtros-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 18px 0 26px 0;
+        }
+
+        .btn-filtro {
+            background: var(--bg-slot);
+            color: #bbb;
+            border: 1px solid #383240;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-filtro:hover {
+            border-color: var(--ouro);
+            color: #fff;
+        }
+
+        .btn-filtro.ativo {
+            background: var(--ouro);
+            color: #000;
+            border-color: var(--ouro);
+            font-weight: bold;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .caminho-card {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-top: 3px solid var(--ouro);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            transition: transform 0.15s, border-color 0.2s;
+        }
+
+        .caminho-card:hover {
+            transform: translateY(-3px);
+            border-color: #555;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .tipo-badge {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.84rem;
+            letter-spacing: 0.8px;
+            padding: 2px 9px;
+            border-radius: 4px;
+            background: #221e29;
             border: 1px solid #444;
         }
-        .tag.destaque {
-            color: var(--gold);
-            border-color: var(--gold);
+
+        .foco-tag {
+            font-size: 0.74rem;
+            color: var(--texto-suave);
+        }
+
+        .caminho-card h3 {
+            font-size: 1.6rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .status-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .stat-pill {
+            background: #110f13;
+            border: 1px solid #2c2733;
+            color: #d8d0c3;
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .stat-pill strong {
+            color: var(--ouro);
+        }
+
+        .tracos-box {
+            background: #110f13;
+            border: 1px solid #25212b;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            color: #b5ada0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tracos-box strong {
+            color: var(--ouro);
+        }
+
+        .habilidades-lista {
+            background: #0e0c10;
+            border: 1px solid #25212b;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.77rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .habilidades-lista p {
+            line-height: 1.45;
+        }
+
+        .habilidades-lista strong {
+            color: var(--ouro);
+        }
+
+        .btn-usar-ficha {
+            display: block;
+            text-align: center;
+            background: var(--bg-slot);
+            border: 1px solid #444;
+            color: var(--texto);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
+            transition: all 0.15s;
+        }
+
+        .btn-usar-ficha:hover {
+            background: var(--ouro);
+            color: #000;
+            border-color: var(--ouro);
+        }
+
+        /* CARD DESTAQUE HÍBRIDO */
+        .hibrido-banner {
+            background: linear-gradient(135deg, #1b1622 0%, #141118 100%);
+            border: 1px solid #3d334a;
+            border-left: 4px solid #9b5de5;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-top: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hibrido-banner h3 {
+            font-size: 1.5rem;
+            color: #c792ea;
+            margin-bottom: 4px;
+        }
+
+        .hibrido-banner p {
+            font-size: 0.84rem;
+            color: #ccc;
+            max-width: 760px;
+        }
+
+        @media (max-width: 1020px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding-top: 104px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="guia.html" class="nav-item">📖 Guia</a>
+            <a href="espectros.html" class="nav-item">✦ Espectros</a>
+            <a href="caminhos.html" class="nav-item ativo">🛡️ Caminhos</a>
+            <a href="regras.html" class="nav-item">⚖️ Regras</a>
+        </div>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
-        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">⚔️ Caminhos e Vocações</h1>
-        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Escolha a sua vocação para definir como você enfrenta os desafios da Biblioteca.</p>
+    <main class="container">
+        <header class="page-header">
+            <h1>🛡️ Caminhos & Vocações</h1>
+            <p>Escolha a especialização que define os atributos bônus, os recursos por Volume e as habilidades exclusivas do seu Arquivista.</p>
 
-        <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">Caminhos (Combate)</h2>
-        <p style="margin-bottom: 30px;">Focados no combate direto, concedendo Armas Favoritas e habilidades de luta.</p>
+            <div class="filtros-bar" id="filtros-caminhos">
+                <button class="btn-filtro ativo" data-tipo="todos">Todos (11)</button>
+                <button class="btn-filtro" data-tipo="caminho">⚔️ Caminhos — Combate (5)</button>
+                <button class="btn-filtro" data-tipo="vocacao">🔍 Vocações — Investigação & Suporte (6)</button>
+            </div>
+        </header>
 
-        <!-- GUERREIRO -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Guerreiro</h2>
-                <span class="arma-favorita">Soco-Inglês (Leve), Espada Longa (Média) ou Machado (Média)</span>
-            </div>
-            <p>A linha de frente. Sua força não vem apenas das armas, mas da determinação de continuar lutando quando qualquer outro já teria recuado.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d4 Vigor</span>
-                <span class="tag destaque">+1d4 Determinação</span>
-                <span class="tag">+1d6 Combate ou Resistência</span>
-                <span class="tag">Deslocamento: 6m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Sem Escapatória</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Gaste 2 PI para realizar uma Ação adicional (Mover-se ou Ataque Básico). Receba +1d6 em Combate ou Resistência.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Muralha de Aço</strong>
-                <p>Ao recuperar PV ou receber Vida Temporária por meio de uma Palavra de Afirmação, aumente esse valor em 1d8. Se estiver com Vida máxima, o excedente vira Vida Temporária.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Via de Mão Dupla</strong>
-                <p>Ao atingir uma criatura com um Ataque Básico, recupere 1d4 PV. Ao sofrer dano de um Ataque Básico, o atacante recebe 1d4 de dano.</p>
-            </div>
+        <div class="cards-grid" id="grid-caminhos">
+            <!-- ==================== CAMINHOS ==================== -->
+            <article class="caminho-card" data-categoria="caminho" style="border-top-color: #e63946;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #e63946;">⚔️ Caminho</span>
+                        <span class="foco-tag">Vanguarda & Pressão</span>
+                    </div>
+                    <h3>Guerreiro</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+6 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+2 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>6m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Vigor, +1d4 Determinação</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Combate, Resistência</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Sem Escapatória (2 PI):</strong> Ação adicional (Mover ou Ataque Básico) e +1d6 em Combate ou Resistência.</p>
+                        <p><strong>Vol III - Muralha de Aço:</strong> +1d8 em cura/Vida Temp. por Palavra de Afirmação (excedente vira Vida Temp.).</p>
+                        <p><strong>Vol V - Via de Mão Dupla:</strong> Acerto básico recupera 1d4 PV; sofrer ataque básico causa 1d4 ao atacante.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="caminho" style="border-top-color: #9b5de5;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #9b5de5;">⚔️ Caminho</span>
+                        <span class="foco-tag">Conjuração & Ímpeto</span>
+                    </div>
+                    <h3>Mago</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+3 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+10 PI</strong>/Vol (8+2)</span>
+                        <span class="stat-pill">👟 <strong>7m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Razão, +1d4 Determinação</div>
+                        <div><strong>Perícias:</strong> Arcanismo (1d6 fixa) • +1d6 em Intuição ou Conhecimento</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Mestre da Conjuração:</strong> Conjurar Palavra reduz o custo da próxima em 1 PI (não cumulativo).</p>
+                        <p><strong>Vol III - Motor Arcano (3 PI):</strong> Até o fim do turno, próxima Palavra causa +1d8 de dano.</p>
+                        <p><strong>Vol V - Abracadabra (5 PI):</strong> Role novamente um teste e escolha o melhor resultado.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="caminho" style="border-top-color: #2ec4b6;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #2ec4b6;">⚔️ Caminho</span>
+                        <span class="foco-tag">Sustentação & Utilidade</span>
+                    </div>
+                    <h3>Suporte</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+5 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+4 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>6,5m</strong></span>
+                        <span class="stat-pill">🎒 <strong>+2 Esp.</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Determinação, +1d4 Razão</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Persuasão, Medicina</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Mão Amiga (2 PI):</strong> Aumenta em +1 dado o efeito de uma Palavra, Frase ou Título seu ou de aliado.</p>
+                        <p><strong>Vol III - Tô Chegando:</strong> Ao curar/dar Vida Temp. com Arma Favorita, ganha 1 Ação Rápida.</p>
+                        <p><strong>Vol V - Golpe Baixo (5 PI):</strong> Reduz Resistência de uma criatura em 1d6 por 4 turnos.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="caminho" style="border-top-color: #f4a261;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #f4a261;">⚔️ Caminho</span>
+                        <span class="foco-tag">Furtividade & Emboscada</span>
+                    </div>
+                    <h3>Assassino</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+3 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>8m</strong></span>
+                        <span class="stat-pill">⚡ <strong>+2 Inic</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Dinamismo, +1d4 Determinação</div>
+                        <div><strong>Perícias:</strong> Acrobacia (1d6 fixa) • +1d6 em Furtividade ou Acrobacia</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Conhecimento Oculto (2 PI):</strong> Fique Oculto. Próximo Ataque Básico ao sair causa +2d4 contra desprevenidos.</p>
+                        <p><strong>Vol III - Gosto de Sangue:</strong> +2 Intuição. Ataques com Arma Favorita causam +1d6 (ou Sangramento 1d4 sem crítico).</p>
+                        <p><strong>Vol V - Caçador Implacável (4 PI):</strong> Ação Rápida; se Oculto, próximo ataque causa +2d12 e cura metade da Vida máx. no abate.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="caminho" style="border-top-color: #4cc9f0;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #4cc9f0;">⚔️ Caminho</span>
+                        <span class="foco-tag">Alcance & Precisão</span>
+                    </div>
+                    <h3>Atirador</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+6 PI</strong>/Vol (4+2)</span>
+                        <span class="stat-pill">👟 <strong>7m</strong></span>
+                        <span class="stat-pill">⚡ <strong>+1 Inic</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Dinamismo, +1d4 Determinação</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Pontaria, Intuição</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Bala no Alvo (2 PI):</strong> Próximo Ataque Básico à distância aplica também uma Palavra de Afirmação.</p>
+                        <p><strong>Vol III - Bem na Mosca (4 PI):</strong> Ignora cobertura/escuridão, vai para o topo da Iniciativa e causa +2d6.</p>
+                        <p><strong>Vol V - Disparo Cataclísmico (5 PI):</strong> Próximo Ataque Básico à distância causa +2d6 e acerta automaticamente.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <!-- ==================== VOCAÇÕES ==================== -->
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #ffbe0b;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #ffbe0b;">🔍 Vocação</span>
+                        <span class="foco-tag">Registros & Destino</span>
+                    </div>
+                    <h3>Cronista</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+5 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>6m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Razão, +1d4 Determinação</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Investigação, Conhecimento</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Reescrever (2 PI):</strong> 1x/cena, reexecute um teste falho de aliado ou seu.</p>
+                        <p><strong>Vol II - Registrar o Instante (2 PI):</strong> Anula próximo ataque de alvo (Teste Resistência) e dá +1d4 a aliado.</p>
+                        <p><strong>Vol III - Registro Imortal:</strong> Após 10 min estudando local/objeto, faça 1 pergunta verdadeira ao Guardião.</p>
+                        <p><strong>Vol V - Página em Branco (5 PI):</strong> Reescreva um detalhe ocorrido nos últimos 5 minutos.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #e0e0e0;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #e0e0e0;">🔍 Vocação</span>
+                        <span class="foco-tag">Contenção & Barreiras</span>
+                    </div>
+                    <h3>Selador</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+5 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+4 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>5,5m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Determinação, +1d4 Vigor</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Arcanismo</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Selar Fresta (2 PI):</strong> 1x/cena, impeça anomalia de se espalhar ou efeito de repetir.</p>
+                        <p><strong>Vol II - Marca de Contenção (2 PI):</strong> Área de 3m que imobiliza quem entrar (Teste Resistência).</p>
+                        <p><strong>Vol III - Barreira de Esquecimento (3 PI):</strong> Área de 6m onde Palavras e Frases não podem ser conjuradas por 2 turnos.</p>
+                        <p><strong>Vol V - Selo Definitivo (6 PI):</strong> Deixa criatura/objeto imóvel e inerte por 2 turnos; depois sofre Dano Real.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #2ec4b6;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #2ec4b6;">🔍 Vocação</span>
+                        <span class="foco-tag">Vínculos & Proteção</span>
+                    </div>
+                    <h3>Guardião de Memórias</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+5 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+4 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>6m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Determinação, +1d4 Razão</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Persuasão</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Passivo - Presença de Espírito:</strong> Aliados em alcance curto ganham +1d4 em cura e +1d4 Vida Temp. no início do turno.</p>
+                        <p><strong>Vol I - Âncora de Memória (2 PI):</strong> Aliado ignora Amedrontado, Atordoado ou Confuso por 2 turnos.</p>
+                        <p><strong>Vol II - Eco de Proteção (2 PI):</strong> Aliado ganha +1d4 Vida Temp./turno (pode gastar PI como Reação para +1d4).</p>
+                        <p><strong>Vol III - Recuperar Fragmento (3 PI):</strong> Recupere lembrança apagada de objeto/local.</p>
+                        <p><strong>Vol V - Memória Coletiva (5 PI):</strong> Aliados em 9m ganham +1 em testes ligados à memória compartilhada.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #9b5de5;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #9b5de5;">🔍 Vocação</span>
+                        <span class="foco-tag">Rastros & Infiltração</span>
+                    </div>
+                    <h3>Investigador das Sombras</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+4 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>8m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Dinamismo, +1d4 Determinação</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Intuição, Furtividade</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Ler Rastro (2 PI):</strong> Siga rastros de Ímpeto deixados nas últimas 24h.</p>
+                        <p><strong>Vol II - Golpe das Sombras (2 PI):</strong> +1d6 de dano; acerto automático se Oculto/desprevenido + move 3m.</p>
+                        <p><strong>Vol III - Passagem Oculta (3 PI):</strong> 1x/cena, encontre passagem secreta ou atalho.</p>
+                        <p><strong>Vol V - Sombra Reveladora (4 PI):</strong> Revela criatura oculta/invisível e aplica -2 na defesa dela por 3 turnos.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #4cc9f0;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #4cc9f0;">🔍 Vocação</span>
+                        <span class="foco-tag">Espaço & Distorções</span>
+                    </div>
+                    <h3>Cartógrafo de Realidades</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+5 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>7m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Razão, +1d4 Determinação</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Conhecimento</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Mapear Distorção (2 PI):</strong> Identifique anomalias espaciais/temporais em 30m.</p>
+                        <p><strong>Vol II - Desvio Espacial (2 PI):</strong> Mova criatura em 9m até 1,5m (Teste Resistência), podendo cancelar ataques.</p>
+                        <p><strong>Vol III - Atalho Narrativo (3 PI):</strong> 1x/cena, reduza pela metade tempo de deslocamento entre pontos conhecidos.</p>
+                        <p><strong>Vol V - Reescrever Mapa (6 PI):</strong> Altere o destino de uma porta ou passagem por até 10 minutos.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
+
+            <article class="caminho-card" data-categoria="vocacao" style="border-top-color: #e63946;">
+                <div>
+                    <div class="card-topo">
+                        <span class="tipo-badge" style="color: #e63946;">🔍 Vocação</span>
+                        <span class="foco-tag">Reflexos & Tempo</span>
+                    </div>
+                    <h3>Ecoísta</h3>
+                    <div class="status-pills">
+                        <span class="stat-pill">❤️ <strong>+4 PV</strong>/Vol</span>
+                        <span class="stat-pill">✨ <strong>+4 PI</strong>/Vol</span>
+                        <span class="stat-pill">👟 <strong>6,5m</strong></span>
+                    </div>
+                    <div class="tracos-box">
+                        <div><strong>Atributos:</strong> +1d4 Razão, +1d4 Dinamismo</div>
+                        <div><strong>Perícias (+1d6 se treinada):</strong> Arcanismo, Acrobacia</div>
+                    </div>
+                    <div class="habilidades-lista">
+                        <p><strong>Vol I - Eco Pessoal (3 PI):</strong> Crie cópia fantasmagórica que realiza uma ação simples por 1 turno.</p>
+                        <p><strong>Vol II - Eco de Ataque (2 PI):</strong> Repita rolagem de ataque já feita no combate ou cause 1d4 com cópia.</p>
+                        <p><strong>Vol III - Eco de Lugar (4 PI):</strong> Veja o que aconteceu em uma superfície nas últimas 24h.</p>
+                        <p><strong>Vol V - Eco de Si (6 PI):</strong> Invoque versão sólida do passado com metade da Vida por 2 turnos.</p>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher na Ficha</a>
+            </article>
         </div>
 
-        <!-- MAGO -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Mago</h2>
-                <span class="arma-favorita">Grimórios, Cajados ou Orbes (Catalisadores)</span>
+        <section class="hibrido-banner">
+            <div>
+                <h3>✦ Regra Opcional: Estilo Híbrido (Caminho + Vocação)</h3>
+                <p>Na criação da sua ficha, você pode ativar o modo <strong>Híbrido</strong> para combinar 1 Caminho e 1 Vocação — mantendo a progressão base de Vida/PI do Caminho escolhido enquanto soma os atributos, perícias e habilidades de ambos.</p>
             </div>
-            <p>O estudioso do Ímpeto. Trata cada Palavra de Afirmação como parte da linguagem que sustenta a realidade.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">Perícia Arcanismo</span>
-                <span class="tag destaque">+2 PI Máximo por Volume</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d6 Intuição ou Conhecimento</span>
-                <span class="tag">Deslocamento: 7m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Mestre da Conjuração</strong>
-                <p>Sempre que conjurar uma Palavra de Afirmação, o custo da próxima Palavra é reduzido em 1 PI. (Não cumulativo).</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Motor Arcano</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Até o fim do turno, a próxima Palavra de Afirmação causa +1d8 de dano. (Não cumulativo).</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Abracadabra</strong> <span class="custo">Custo: 5 PI</span>
-                <p>Após realizar uma rolagem, ignore o resultado, role novamente e escolha qual dos dois usar.</p>
-            </div>
-        </div>
+            <a href="ficha.html" class="btn-usar-ficha" style="background: #9b5de5; color: #fff; border-color: #9b5de5; padding: 10px 18px;">
+                📜 Montar Arquivista Híbrido
+            </a>
+        </section>
+    </main>
 
-        <!-- SUPORTE -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Suporte</h2>
-                <span class="arma-favorita">Componentes Ritualísticos, Grimórios ou Varinhas</span>
-            </div>
-            <p>O pilar do grupo. Fortalece, protege e cria oportunidades para que o grupo supere qualquer desafio.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1 Rolagem em Auxílio</span>
-                <span class="tag destaque">+2 Espaços de Inventário</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag">+1d6 Persuasão ou Medicina</span>
-                <span class="tag">Deslocamento: 6,5m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Mão Amiga</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Gaste 2 PI para aumentar em +1 dado o efeito de uma Palavra, Frase ou Título usado por você ou um aliado.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Tô Chegando</strong>
-                <p>Ao restaurar PV ou conceder Vida Temporária a um aliado com sua Arma Favorita, receba uma Ação Rápida (não pode ser usada para conjurar Palavra de Afirmação).</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Golpe Baixo</strong> <span class="custo">Custo: 5 PI</span>
-                <p>Role 1d6. Durante 4 turnos, reduza a Resistência da criatura em um valor igual ao resultado obtido.</p>
-            </div>
-        </div>
+    <script>
+        document.querySelectorAll('#filtros-caminhos .btn-filtro').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#filtros-caminhos .btn-filtro').forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                const tipo = btn.dataset.tipo;
 
-        <!-- ASSASSINO -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Assassino</h2>
-                <span class="arma-favorita">Adagas e Agulhas (Leve)</span>
-            </div>
-            <p>A precisão fatal. Vencem batalhas antes do primeiro golpe, aguardando o momento perfeito para atacar pelas sombras.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">Perícia Acrobacia</span>
-                <span class="tag destaque">+2 Iniciativa</span>
-                <span class="tag">+1d4 Dinamismo</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d6 Furtividade ou Acrobacia</span>
-                <span class="tag">Deslocamento: 8m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Conhecimento Oculto</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Torne-se Oculto. Ao deixar esse estado, seu próximo Ataque Básico causa +2d4 de dano se o alvo estiver desprevenido.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Gosto de Sangue</strong>
-                <p>Receba +2 em Intuição. Ataques com Arma Favorita causam +1d6 de dano. Se não for Acerto Crítico, o alvo recebe Sangramento (1d4 por turno).</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Caçador Implacável</strong> <span class="custo">Custo: 4 PI</span>
-                <p>Realize uma Ação Rápida. Se usada para ficar Oculto, ao sair do estado, o próximo Ataque Básico causa +2d12. Se derrotar o alvo, recupera metade da Vida máxima dele.</p>
-            </div>
-        </div>
-
-        <!-- ATIRADOR -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Atirador</h2>
-                <span class="arma-favorita">Arcos, Bestas e Armas de Fogo (Precisão)</span>
-            </div>
-            <p>O mestre da distância. Transforma paciência em vantagem e cada disparo em uma oportunidade decisiva.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+2 PI Máximo por Volume</span>
-                <span class="tag destaque">+1 Iniciativa</span>
-                <span class="tag">+1d4 Dinamismo</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d6 Pontaria ou Intuição</span>
-                <span class="tag">Deslocamento: 7m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Bala no Alvo</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Seu próximo Ataque Básico à distância também aplica os efeitos de uma Palavra de Afirmação conhecida.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Bem na Mosca</strong> <span class="custo">Custo: 4 PI</span>
-                <p>Uma vez por turno, realize um disparo que ignora penalidades por cobertura, escuridão ou terreno. Avance para o topo da Iniciativa e o ataque causa +2d6 de dano.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Disparo Cataclísmico</strong> <span class="custo">Custo: 5 PI</span>
-                <p>O próximo Ataque Básico à distância causa +2d6 de dano e ignora o teste defensivo do alvo (acerta automaticamente).</p>
-            </div>
-        </div>
-
-        <h2 style="font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 60px; margin-bottom: 20px;">Vocações (Investigação)</h2>
-        <p style="margin-bottom: 30px;">Focadas na investigação, memória e manipulação da realidade. Perfeitas para quem prefere resolver mistérios e ajudar o grupo fora do combate.</p>
-
-        <!-- CRONISTA -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Cronista</h2>
-                <span class="arma-favorita">Pena de Prata, Livro em Branco, Tinteiro de Eco</span>
-            </div>
-            <p>Altera a forma como o mundo é lembrado. Uma história bem escrita pode mudar o destino de quem a vive.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Investigação</span>
-                <span class="tag destaque">+1d6 Conhecimento</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">Deslocamento: 6m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Reescrever</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Uma vez por cena, reexecute um teste que um aliado ou você falhou, desde que possa "registrar" o momento.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Registrar o Instante</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Escolha uma criatura visível. Ela faz Teste de Resistência contra sua TA. Se falhar, a próxima rolagem de ataque dela é anulada. Um aliado em alcance curto recebe +1d4 no próximo teste.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Registro Imortal</strong>
-                <p>Após 10 minutos estudando um local/objeto, faça uma pergunta ao Guardião e ele deve responder com uma pista verdadeira.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Página em Branco</strong> <span class="custo">Custo: 5 PI</span>
-                <p>Reescreva um detalhe de um evento recente (últimos 5 min). O Guardião define os limites.</p>
-            </div>
-        </div>
-
-        <!-- SELADOR -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Selador</h2>
-                <span class="arma-favorita">Martelo de Selar, Correntes de Silêncio, Lacre de Memória</span>
-            </div>
-            <p>O carcereiro de anomalias. Dedica a vida a impedir que histórias perigosas escapem das páginas da Biblioteca.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Arcanismo</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d4 Vigor</span>
-                <span class="tag">Deslocamento: 5,5m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Selar Fresta</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Uma vez por cena, impeça que uma anomalia se espalhe ou que um efeito narrativo se repita. O Guardião define o que é "selável".</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Marca de Contenção</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Inscreva um selo em uma área de 3m. Criaturas que entrarem fazem Teste de Resistência ou ficam Imobilizadas. Dura 2 turnos.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Barreira de Esquecimento</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Crie uma área de 6m onde Palavras de Afirmação e Frases de Efeito não podem ser conjuradas por 2 turnos (incluindo você).</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Selo Definitivo</strong> <span class="custo">Custo: 6 PI</span>
-                <p>Escolha uma criatura, objeto ou fenômeno. Ele fica imóvel e inerte por 2 turnos. Após o efeito, sofre Dano Real.</p>
-            </div>
-        </div>
-
-        <!-- GUARDIÃO DE MEMÓRIAS -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Guardião de Memórias</h2>
-                <span class="arma-favorita">Fragmento de Memória, Lâmpada de Lembranças, Diário Compartilhado</span>
-            </div>
-            <p>Preserva o que nenhuma espada protege. Caminha entre páginas esquecidas restaurando identidades perdidas.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Persuasão</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag destaque">Aliados: +1d4 cura e +1d4 Vida Temp. (início do turno)</span>
-                <span class="tag">Deslocamento: 6m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Âncora de Memória</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Escolha um aliado. Ele ignora Amedrontado, Atordoado ou Confuso por 2 turnos.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Eco de Proteção</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Aliado recebe +1d4 Vida Temporária no início de cada turno (máx 2 turnos). Se sofrer dano, pode gastar PI como Reação para aumentar a Vida Temporária em +1d4.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Recuperar Fragmento</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Toque um objeto/local. Recupere uma lembrança relacionada a ele, mesmo que tenha sido apagada.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Memória Coletiva</strong> <span class="custo">Custo: 5 PI</span>
-                <p>Todos os aliados em 9m compartilham uma memória. Ganham +1 em todos os testes relacionados a ela durante a cena.</p>
-            </div>
-        </div>
-
-        <!-- INVESTIGADOR DAS SOMBRAS -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Investigador das Sombras</h2>
-                <span class="arma-favorita">Lupa de Verdades, Fio de Ariadne, Cinzel de Rastro</span>
-            </div>
-            <p>Enxerga o que foi escondido. Rastros de Ímpeto, portas secretas e mentiras são o verdadeiro mapa da Biblioteca.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Intuição</span>
-                <span class="tag destaque">+1d6 Furtividade</span>
-                <span class="tag">+1d4 Dinamismo</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">Deslocamento: 8m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Ler Rastro</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Siga o rastro de Ímpeto deixado por qualquer criatura ou objeto nas últimas 24 horas.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Golpe das Sombras</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Próximo Ataque Básico causa +1d6. Se o alvo estiver desprevenido ou você Oculto, acerta automaticamente. Se atingir, mova-se 3m sem gastar Movimento.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Passagem Oculta</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Uma vez por cena, encontre uma passagem secreta, atalho ou entrada alternativa em qualquer ambiente.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Sombra Reveladora</strong> <span class="custo">Custo: 4 PI</span>
-                <p>Revele uma criatura oculta/invisível. Ela sofre -2 na rolagem de defesa por 3 turnos.</p>
-            </div>
-        </div>
-
-        <!-- CARTÓGRAFO DE REALIDADES -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Cartógrafo de Realidades</h2>
-                <span class="arma-favorita">Bússola de Realidades, Mapa em Branco, Lápis de Viagem</span>
-            </div>
-            <p>O mapa não mostra o mundo, o mapa cria o mundo. Dobra o espaço e encontra caminhos onde só existem paredes.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Conhecimento</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag">+1d4 Determinação</span>
-                <span class="tag">Deslocamento: 7m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Mapear Distorção</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Identifique qualquer anomalia espacial ou temporal em um raio de 30m.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Desvio Espacial</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Escolha uma criatura em alcance médio (até 9m). Ela faz Teste de Resistência contra sua TA. Se falhar, você a move até 1,5m horizontalmente. Se ela sair do alcance de um ataque, o ataque é cancelado.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Atalho Narrativo</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Uma vez por cena, reduza pela metade o tempo de deslocamento entre dois pontos conhecidos.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Reescrever Mapa</strong> <span class="custo">Custo: 6 PI</span>
-                <p>Altere para onde uma porta, corredor ou passagem leva, por até 10 minutos.</p>
-            </div>
-        </div>
-
-        <!-- ECOÍSTA -->
-        <div class="caminho-bloco">
-            <div class="caminho-header">
-                <h2>Ecoísta</h2>
-                <span class="arma-favorita">Fragmento de Eco, Espelho de Possibilidades, Ampulheta de Areia</span>
-            </div>
-            <p>O passado nunca morre. Invoca ecos de ações e objetos que já existiram para alterar o presente.</p>
-            <div class="tags-lista">
-                <span class="tag destaque">+1d6 Arcanismo</span>
-                <span class="tag destaque">+1d6 Acrobacia</span>
-                <span class="tag">+1d4 Razão</span>
-                <span class="tag">+1d4 Dinamismo</span>
-                <span class="tag">Deslocamento: 6,5m</span>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume I - Eco Pessoal</strong> <span class="custo">Custo: 3 PI</span>
-                <p>Crie uma cópia fantasmagórica de si mesmo que realiza uma ação simples (abrir porta, pegar objeto). Dura 1 turno.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume II - Eco de Ataque</strong> <span class="custo">Custo: 2 PI</span>
-                <p>Repita a rolagem de ataque de um ataque que já realizou neste combate (mesmo resultado). Alternativamente, crie uma cópia que causa 1d4 de dano e desaparece.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume III - Eco de Lugar</strong> <span class="custo">Custo: 4 PI</span>
-                <p>Toque uma superfície para ver brevemente o que aconteceu ali nas últimas 24 horas.</p>
-            </div>
-            <div class="habilidade-volume">
-                <strong>Volume V - Eco de Si</strong> <span class="custo">Custo: 6 PI</span>
-                <p>Crie uma versão sólida de si mesmo do passado (ex: 5 min atrás). Tem metade da Vida, age no seu turno e pode realizar uma Ação. Dura 2 turnos.</p>
-            </div>
-        </div>
-    </div>
-
+                document.querySelectorAll('#grid-caminhos .caminho-card').forEach(card => {
+                    if (tipo === 'todos' || card.dataset.categoria === tipo) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/notificacoes.js"></script>
 </body>

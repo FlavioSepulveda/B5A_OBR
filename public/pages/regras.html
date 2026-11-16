@@ -2,186 +2,365 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Rápido - B5A</title>
-    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Regras Gerais - Biblioteca da 5ª Avenida</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        .guia-secao {
-            background: #1a1816;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
         }
-        .guia-secao h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--gold);
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-            text-align: left;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        .guia-secao h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            color: #fff;
-            font-size: 1.4rem;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-        .guia-secao p, .guia-secao li {
-            font-size: 1rem;
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-top: 82px;
             line-height: 1.6;
-            color: #ccc;
-            margin-bottom: 10px;
         }
-        .guia-secao ul {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        .guia-secao li {
-            margin-bottom: 5px;
-        }
-        .destaque-regra {
-            background: #111;
-            border-left: 4px solid var(--gold);
-            padding: 15px;
-            border-radius: 4px;
-            margin: 15px 0;
-        }
-        .destaque-regra strong {
-            color: var(--gold);
-        }
-        
-        .res-1 { color: #ff4d4d; font-weight: bold; }
-        .res-6 { color: #ff9800; font-weight: bold; }
-        .res-12 { color: #4caf50; font-weight: bold; }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #222;
-            color: var(--gold);
+
+        h1, h2, h3, .titulo-fonte {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
+            letter-spacing: 1.5px;
         }
-        td {
-            font-size: 0.95rem;
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-size: 1.4rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-item {
             color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.ativo {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+        }
+
+        /* CONTEÚDO */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--ouro);
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--texto-suave);
+            font-size: 0.92rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .busca-regras-wrap {
+            max-width: 520px;
+            margin: 16px auto 26px auto;
+        }
+
+        .busca-regras-wrap input {
+            width: 100%;
+            background: var(--bg-slot);
+            color: var(--texto);
+            border: 1px solid #444;
+            padding: 10px 14px;
+            border-radius: 25px;
+            font-family: 'Merriweather', serif;
+            font-size: 0.86rem;
+            outline: none;
+            text-align: center;
+        }
+
+        .busca-regras-wrap input:focus {
+            border-color: var(--ouro);
+        }
+
+        .regras-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .regra-card {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-top: 3px solid var(--ouro);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            transition: transform 0.15s, border-color 0.2s;
+        }
+
+        .regra-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
+
+        .regra-tag {
+            display: inline-block;
+            background: #221e29;
+            border: 1px solid #444;
+            color: var(--ouro);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.84rem;
+            letter-spacing: 0.9px;
+            padding: 2px 9px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-bottom: 6px;
+        }
+
+        .regra-card h3 {
+            font-size: 1.55rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .regra-card p {
+            font-size: 0.85rem;
+            color: #ccc;
+            line-height: 1.55;
+        }
+
+        .regra-lista {
+            list-style: none;
+            background: #110f13;
+            border: 1px solid #25212b;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            color: #bbb;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .regra-lista li strong {
+            color: var(--ouro);
+        }
+
+        @media (max-width: 850px) {
+            .regras-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding-top: 104px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="guia.html" class="nav-item">📖 Guia</a>
+            <a href="caminhos.html" class="nav-item">🛡️ Caminhos</a>
+            <a href="regras.html" class="nav-item ativo">⚖️ Regras</a>
+        </div>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
-        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">📖 Guia Rápido do Arquivista</h1>
-        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Um resumo das regras essenciais para jogar na Biblioteca da 5ª Avenida.</p>
+    <main class="container">
+        <header class="page-header">
+            <h1>⚖️ Regras Gerais do Sistema</h1>
+            <p>Consulta rápida das mecânicas centrais do B5A durante a mesa e o playtest.</p>
 
-        <div class="guia-secao">
-            <h2>1. A Rolagem Básica</h2>
-            <p>Quando o resultado de uma ação for incerto ou perigoso, o Guardião pedirá um teste. A fórmula base é:</p>
-            
-            <div class="destaque-regra">
-                <strong>1d12 + Dados de Atributo (d4) ou Perícia (d6) + Volume</strong>
+            <div class="busca-regras-wrap">
+                <input type="text" id="input-busca-regras" placeholder="🔍 Filtrar regra (ex: Clash, 12h, Desafiar, Metros, PV)...">
             </div>
-            
-            <p>O resultado é comparado à <strong>TA (Taxa de Acerto)</strong> definida pelo Guardião. Se for igual ou maior, você é bem-sucedido.</p>
-            <p><em>Exceção:</em> Se você tiver 0 dados em um Atributo ou não possuir a Perícia exigida, você <strong>Desafia o Destino</strong>: role 2d12, mantenha o maior e some o Volume. O dado descartado é ignorado.</p>
-        </div>
+        </header>
 
-        <div class="guia-secao">
-            <h2>2. Os Três Resultados Absolutos</h2>
-            <p>O d12 possui faces especiais que mudam a narrativa da cena, independentemente da TA:</p>
-            <ul>
-                <li><span class="res-1">1 — Catástrofe Definitiva:</span> Falha automática. O Guardião ganha 1 Dado de Descartes para a Pilha dele.</li>
-                <li><span class="res-6">6 — Falha Absoluta:</span> A ação falha, mesmo que o total supere a TA. O caminho foi fechado.</li>
-                <li><span class="res-12">12 — Momento Lendário:</span> O resultado soma normalmente. Se vencer, o sucesso é épico. Se falhar, algo positivo ainda surge da tentativa.</li>
-            </ul>
-        </div>
+        <div class="regras-grid" id="grid-regras">
+            <article class="regra-card" style="border-top-color: #d4af37;">
+                <div>
+                    <span class="regra-tag">Resolução Base</span>
+                    <h3>🎲 Rolagem de d12 & Dificuldade</h3>
+                    <p>Todos os testes ativos usam <strong>1d12 + Atributo/Bônus</strong>. O resultado deve igualar ou superar o valor alvo definido pelo Guardião.</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>Fácil / Rotineiro:</strong> Alvo 6 a 8</li>
+                    <li><strong>Desafiador:</strong> Alvo 9 a 11</li>
+                    <li><strong>Extremo / Anômalo:</strong> Alvo 12 ou superior</li>
+                </ul>
+            </article>
 
-        <div class="guia-secao">
-            <h2>3. Clash e Combate</h2>
-            <p>O combate é uma disputa direta (Clash). Não há defesa fixa. Ambos os lados rolam e quem tiver o maior resultado vence a disputa.</p>
-            
-            <ul>
-                <li><strong>Atacante:</strong> 1d12 + Atributo (Vigor para corpo a corpo, Dinamismo para distância, Razão para catalisadores) + Volume.</li>
-                <li><strong>Defensor:</strong> 1d12 + Dinamismo + Volume + bônus de itens (Vida Temporária).</li>
-            </ul>
-            <p>Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o ataque é bloqueado (exceto Dano Real).</p>
-            
-            <div class="destaque-regra">
-                <strong>Dano Real:</strong> É o único dano que ignora o Clash e acerta automaticamente. Ele é sempre fixo em <strong>1d6</strong>, não soma e não é absorvido por Vida Temporária.
-            </div>
-        </div>
+            <article class="regra-card" style="border-top-color: #ffbe0b;">
+                <div>
+                    <span class="regra-tag" style="color: #ffbe0b;">Dado Natural</span>
+                    <h3>⚡ Resultados Absolutos (1, 6 e 12)</h3>
+                    <p>Independentemente dos modificadores, determinados números naturais no <code>d12</code> ativam efeitos imediatos na narrativa:</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>1 Natural (Catástrofe):</strong> Falha crítica; abre brecha para o inimigo ou complica a cena.</li>
+                    <li><strong>6 Natural (Equilíbrio):</strong> Sucesso parcial ou empate tenso; você consegue, mas paga um preço.</li>
+                    <li><strong>12 Natural (Momento Lendário):</strong> Sucesso absoluto com impacto máximo ou efeito extra.</li>
+                </ul>
+            </article>
 
-        <div class="guia-secao">
-            <h2>4. Criação de Personagem</h2>
-            <p>Todos os Atributos começam com <strong>0d4</strong>. Você recebe <strong>4d4</strong> adicionais para distribuir, com um limite de <strong>2d4</strong> por Atributo no Volume I.</p>
-            <p>Você também escolhe <strong>4 Perícias</strong> iniciais, que começam com <strong>1d6</strong> cada.</p>
-            
-            <h3>Fórmulas de Derivados</h3>
-            <table>
-                <tr>
-                    <th>Status</th>
-                    <th>Fórmula</th>
-                </tr>
-                <tr>
-                    <td>Vida (PV)</td>
-                    <td>10 + (Fator de Vida × Volume) + Valor Máximo de Determinação</td>
-                </tr>
-                <tr>
-                    <td>Ímpeto (PI)</td>
-                    <td>5 + (Fator de Ímpeto × Volume) + Valor Máximo de Razão</td>
-                </tr>
-                <tr>
-                    <td>Iniciativa</td>
-                    <td>1d12 + Valor Máximo de Dinamismo + Volume</td>
-                </tr>
-                <tr>
-                    <td>Inventário</td>
-                    <td>5 + Valor Máximo de Vigor</td>
-                </tr>
-            </table>
-        </div>
+            <article class="regra-card" style="border-top-color: #e63946;">
+                <div>
+                    <span class="regra-tag" style="color: #e63946;">Combate & Confronto</span>
+                    <h3>⚔️ Mecânica de Clash</h3>
+                    <p>Quando dois combatentes se enfrentam diretamente, ambos rolam seus dados de ataque/defesa simultaneamente.</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>Vencedor do Clash:</strong> Aplica o dano da sua arma ou técnica no oponente.</li>
+                    <li><strong>Empate no Clash:</strong> As lâminas ou energias se chocam sem dano direto, mas geram faíscas ou recuo tático.</li>
+                    <li><strong>Arma Favorita:</strong> Concede seus bônus e propriedades especiais quando empunhada.</li>
+                </ul>
+            </article>
 
-        <div class="guia-secao">
-            <h2>5. Pilha de Descartes</h2>
-            <p>Quando você usar o Ímpeto para modificar uma rolagem (adicionando 1d12 extra) ou usar habilidades que exigem descarte, o dado descartado vai para a Pilha de Descartes.</p>
-            <p><strong>O Custo Narrativo:</strong> Cada dado na Pilha representa <strong>12 horas da vida do personagem</strong> que ele está abrindo mão (seja estudando, dormindo ou treinando). Você precisa declarar quais horas está descartando.</p>
-            <p><em>Exceção:</em> Memórias do Ímpeto (usos do Efeito Ativo para ganho próprio) <strong>não podem ser descartadas</strong>. Elas ficam no Diário para sempre.</p>
-        </div>
+            <article class="regra-card" style="border-top-color: #9b5de5;">
+                <div>
+                    <span class="regra-tag" style="color: #9b5de5;">Tempo & Risco</span>
+                    <h3>⏳ Pilha de Descartes (12h)</h3>
+                    <p>Cada Arquivista possui um relógio de <strong>12 horas</strong> na ficha. Você pode descartar horas para comprar vantagens críticas ou rerrolagens.</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>Sacrificar Horas:</strong> Permite alterar uma rolagem ruim ou ativar esforços extremos.</li>
+                    <li><strong>Limite de 12h:</strong> Ao preencher as 12 horas descartadas, o personagem sofre exaustão severa ou consequências narrativas até descansar.</li>
+                </ul>
+            </article>
 
-        <div class="guia-secao">
-            <h2>6. Subindo de Volume</h2>
-            <p>O grupo sobe de Volume ao concluir <strong>3 missões importantes</strong> (ou antes, por marcos narrativos definidos pelo Guardião).</p>
-            <p>Ao subir de Volume, você:</p>
-            <ul>
-                <li>Recalcula Vida, Ímpeto e Iniciativa.</li>
-                <li>Recebe <strong>3d4</strong> adicionais para distribuir nos Atributos (sem limite de 2d4).</li>
-                <li>Aprende 1 nova Palavra de Afirmação e 2 Frases de Efeito.</li>
-                <li>Melhora uma Perícia em +1d6 ou aprende uma nova.</li>
-                <li>Desbloqueia a próxima habilidade do Caminho ou Vocação.</li>
-            </ul>
-        </div>
-    </div>
+            <article class="regra-card" style="border-top-color: #4cc9f0;">
+                <div>
+                    <span class="regra-tag" style="color: #4cc9f0;">Superação</span>
+                    <h3>🔥 Desafiar o Destino</h3>
+                    <p>Em momentos decisivos, o jogador pode declarar que vai <strong>Desafiar o Destino</strong> antes ou logo após uma rolagem para reescrever o rumo da cena.</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>Custo:</strong> Consome recursos da ficha (PI ou horas na Pilha de Descartes).</li>
+                    <li><strong>Efeito:</strong> Permite rolar novamente ou somar um bônus decisivo no teste atual.</li>
+                </ul>
+            </article>
 
+            <article class="regra-card" style="border-top-color: #2ec4b6;">
+                <div>
+                    <span class="regra-tag" style="color: #2ec4b6;">Movimentação & Grid</span>
+                    <h3>🗺️ Escala Tática & Turnos</h3>
+                    <p>Na <strong>Mesa Tática</strong>, o espaço é medido em quadrados padronizados para facilitar alcances de armas, magias e deslocamento.</p>
+                </div>
+                <ul class="regra-lista">
+                    <li><strong>Escala do Grid:</strong> Cada quadrado equivale a <strong>1,5 metro</strong> (1,5m).</li>
+                    <li><strong>Iniciativa:</strong> Determina a ordem de ação na rodada; acompanhe o marcador de turno na Mesa.</li>
+                </ul>
+            </article>
+        </div>
+    </main>
+
+    <script>
+        const inputBusca = document.getElementById('input-busca-regras');
+        inputBusca.addEventListener('input', () => {
+            const termo = inputBusca.value.toLowerCase().trim();
+            document.querySelectorAll('#grid-regras .regra-card').forEach(card => {
+                const texto = card.innerText.toLowerCase();
+                card.style.display = texto.includes(termo) ? 'flex' : 'none';
+            });
+        });
+    </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/notificacoes.js"></script>
 </body>

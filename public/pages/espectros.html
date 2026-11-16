@@ -2,244 +2,554 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espectros do Ímpeto - B5A</title>
-    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Espectros do Ímpeto - Biblioteca da 5ª Avenida</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        .espectro-bloco {
-            background: #1a1816;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
         }
-        .espectro-bloco::before {
-            content: '';
-            position: absolute;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-top: 82px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-        }
-        .esp-igneo::before { background: #ff4d4d; }
-        .esp-celeste::before { background: #8eb1d9; }
-        .esp-viridiano::before { background: #4caf50; }
-        .esp-solar::before { background: #fbc02d; }
-        .esp-indigo::before { background: #b285c9; }
-        .esp-alabastro::before { background: #e0e0e0; }
-
-        .espectro-header {
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
         }
-        .espectro-header h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
-            margin: 0;
-            border: none;
-            padding: 0;
-            text-align: left;
-        }
-        .esp-igneo .espectro-header h2 { color: #ff4d4d; }
-        .esp-celeste .espectro-header h2 { color: #8eb1d9; }
-        .esp-viridiano .espectro-header h2 { color: #4caf50; }
-        .esp-solar .espectro-header h2 { color: #fbc02d; }
-        .esp-indigo .espectro-header h2 { color: #b285c9; }
-        .esp-alabastro .espectro-header h2 { color: #e0e0e0; }
 
-        .espectro-header .juramento {
-            font-family: 'Merriweather', serif;
-            font-size: 1rem;
-            font-style: italic;
-            color: #aaa;
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
         }
-        .efeito-box {
-            background: #111;
-            border: 1px solid #333;
+
+        .nav-brand {
+            font-size: 1.4rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-item {
+            color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.ativo {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
             border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 15px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
         }
-        .efeito-box strong {
+
+        /* CONTEÚDO */
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--ouro);
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--texto-suave);
+            font-size: 0.92rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .intro-box {
+            background: var(--bg-painel);
+            border: 1px solid #383240;
+            border-left: 4px solid var(--ouro);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+        }
+
+        .intro-box h2 {
+            color: var(--ouro);
+            font-size: 1.55rem;
+            margin-bottom: 6px;
+        }
+
+        .intro-box p {
+            font-size: 0.86rem;
+            color: #d6cfc2;
+            margin-bottom: 6px;
+        }
+
+        .intro-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* FILTROS DE COR */
+        .filtros-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .btn-filtro {
+            background: var(--bg-slot);
+            color: #ccc;
+            border: 1px solid #383240;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.98rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-filtro:hover {
+            border-color: var(--ouro);
+            color: #fff;
+        }
+
+        .btn-filtro.ativo {
+            background: var(--ouro);
+            color: #000;
+            border-color: var(--ouro);
+            font-weight: bold;
+        }
+
+        /* GRID DOS ESPECTROS */
+        .espectros-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .espectro-card {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-top: 4px solid var(--cor-esp, var(--ouro));
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            transition: transform 0.15s, border-color 0.2s;
+        }
+
+        .espectro-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
+
+        .espectro-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid #2b2633;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .espectro-topo h2 {
+            font-size: 1.85rem;
+            color: var(--cor-esp, var(--ouro));
+            line-height: 1.1;
+        }
+
+        .juramento {
+            font-style: italic;
+            font-size: 0.84rem;
+            color: #b5ada0;
+        }
+
+        .espectro-lore {
+            font-size: 0.84rem;
+            color: #ccc;
+            margin-bottom: 12px;
+        }
+
+        .efeito-box {
+            background: #110f13;
+            border: 1px solid #25212b;
+            border-left: 3px solid var(--cor-esp, var(--ouro));
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+            color: #d8d0c3;
+        }
+
+        .efeito-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .efeito-titulo {
             display: block;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.3rem;
-            color: var(--gold);
-            margin-bottom: 5px;
+            font-size: 1.15rem;
+            letter-spacing: 0.8px;
+            color: var(--cor-esp, var(--ouro));
+            margin-bottom: 4px;
         }
-        .efeito-box p {
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
+
+        .exemplo-txt {
+            margin-top: 8px;
+            color: #b5ada0;
+            font-style: italic;
+            font-size: 0.79rem;
         }
-        .efeito-box .gatilho {
+
+        .meta-regra {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #2e2936;
+            font-size: 0.78rem;
             color: #aaa;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            border-top: 1px dashed #444;
-            padding-top: 10px;
         }
-        .efeito-box .registro {
-            color: #ff9999;
-            font-size: 0.85rem;
+
+        .meta-registro {
             margin-top: 5px;
+            font-size: 0.77rem;
+            color: #ff9999;
+        }
+
+        .btn-usar-ficha {
+            display: block;
+            text-align: center;
+            background: var(--bg-slot);
+            border: 1px solid #444;
+            color: var(--texto);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
+            transition: all 0.15s;
+        }
+
+        .btn-usar-ficha:hover {
+            background: var(--cor-esp, var(--ouro));
+            color: #000;
+            border-color: var(--cor-esp, var(--ouro));
+        }
+
+        @media (max-width: 880px) {
+            .espectros-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding-top: 104px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="guia.html" class="nav-item">📖 Guia</a>
+            <a href="espectros.html" class="nav-item ativo">✦ Espectros</a>
+            <a href="caminhos.html" class="nav-item">🛡️ Caminhos</a>
+            <a href="regras.html" class="nav-item">⚖️ Regras</a>
+        </div>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
-        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">🔥 Os Espectros do Ímpeto</h1>
-        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">A motivação que move seu Arquivista e transforma sua vontade em poder.</p>
+    <main class="container">
+        <header class="page-header">
+            <h1>✦ Os Espectros do Ímpeto</h1>
+            <p>A motivação que move seu Arquivista, tinge seu token na Mesa Tática e transforma sua vontade em poder.</p>
+        </header>
 
-        <div class="caminho-bloco" style="margin-bottom: 40px; border-color: var(--gold);">
-            <div class="caminho-header" style="border-bottom: none; margin-bottom: 10px;">
-                <h2 style="color: var(--gold); font-size: 1.8rem;">Como o Ímpeto se Manifesta</h2>
-            </div>
+        <section class="intro-box">
+            <h2>Como o Ímpeto se Manifesta</h2>
             <p>Cada Espectro se manifesta de duas formas: um <strong>Efeito Passivo</strong>, sempre ativo, que reflete a filosofia do Arquivista; e um <strong>Efeito Ativo</strong>, que ele escolhe canalizar em cena ou em combate.</p>
-            <p>O Efeito Ativo é acionado por um gatilho narrativo — o jogador descreve o que faz, e o Guardião aprova se é coerente com o Espectro. <strong>Toda vez que o Arquivista usa o Efeito Ativo para ganho próprio, ele registra no Diário.</strong></p>
+            <p>O Efeito Ativo é acionado por um gatilho narrativo — o jogador descreve o que faz, e o Guardião aprova se é coerente com o Espectro. <strong>Toda vez que o Arquivista usa o Efeito Ativo para ganho próprio, ele registra nas Memórias Eternas do Diário.</strong></p>
+        </section>
+
+        <div class="filtros-bar" id="filtros-espectros">
+            <button class="btn-filtro ativo" data-esp="todos">Todos os Espectros</button>
+            <button class="btn-filtro" data-esp="igneo" style="border-color: #e63946;">🔴 Ígneo</button>
+            <button class="btn-filtro" data-esp="celeste" style="border-color: #4cc9f0;">🔵 Celeste</button>
+            <button class="btn-filtro" data-esp="viridiano" style="border-color: #2ec4b6;">🟢 Viridiano</button>
+            <button class="btn-filtro" data-esp="solar" style="border-color: #ffbe0b;">🟡 Solar</button>
+            <button class="btn-filtro" data-esp="indigo" style="border-color: #9b5de5;">🟣 Índigo</button>
+            <button class="btn-filtro" data-esp="alabastro" style="border-color: #f8f9fa;">⚪ Alabastro</button>
         </div>
 
-        <!-- ÍGNEO -->
-        <div class="espectro-bloco esp-igneo">
-            <div class="espectro-header">
-                <h2>Ígneo (Vermelho)</h2>
-                <span class="juramento">"Toda conquista exige um sacrifício."</span>
-            </div>
-            <p><strong>Ofensiva, sacrifício e ambição.</strong> O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece. Ele consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Aumente um atributo em +1d4 e reduza outro atributo em -1d4.</p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Troca Equivalente</strong>
-                <p>O Arquivista sacrifica algo (um item, uma informação, uma memória, um aliado) e recebe algo em troca. O Guardião define o que é equivalente.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "Sacrifico minha aliança de casamento para que a porta se abra."</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> O jogador declara o que está disposto a sacrificar. O Guardião aprova se o sacrifício tem peso real.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista sacrifica algo para ganho próprio, ele anota.</div>
-            </div>
-        </div>
+        <div class="espectros-grid" id="grid-espectros">
+            <!-- ÍGNEO -->
+            <article class="espectro-card" data-espectro="igneo" style="--cor-esp: #e63946;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Ígneo (Vermelho)</h2>
+                        <span class="juramento">"Toda conquista exige um sacrifício."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Ofensiva, sacrifício e ambição.</strong> O Ímpeto Ígneo é a chama da Determinação, da Ambição e da Vontade. Ele não aquece — consome. Alimenta-se de cada dúvida superada, de cada dor suportada e de cada sacrifício aceito em nome de um único objetivo.</p>
 
-        <!-- CELESTE -->
-        <div class="espectro-bloco esp-celeste">
-            <div class="espectro-header">
-                <h2>Celeste (Azul)</h2>
-                <span class="juramento">"Conhecimento supera força."</span>
-            </div>
-            <p><strong>Controle, ordem e precisão.</strong> O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Para eles, uma mente disciplinada sempre supera uma espada desembainhada.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Receba 1 Perícia adicional (1d6). Uma vez por cena, ao realizar um teste usando essa Perícia, adicione +1d6 à rolagem.</p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Controle</strong>
-                <p>O Arquivista exerce controle sobre alguém — obriga um aliado a fazer o que não quer, força um guarda a atacar o chefe, impede que um inimigo morra para torturá-lo por mais tempo.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "Obrigo o guarda a atacar o próprio chefe."</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> O jogador descreve como exerce controle. O Guardião aprova se o alvo pode ser controlado.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista controla alguém para ganho próprio, ele anota.</div>
-            </div>
-        </div>
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Aumente um atributo em <strong>+1d4</strong> e reduza outro atributo em <strong>-1d4</strong>.</p>
+                    </div>
 
-        <!-- VIRIDIANO -->
-        <div class="espectro-bloco esp-viridiano">
-            <div class="espectro-header">
-                <h2>Viridiano (Verde)</h2>
-                <span class="juramento">"Enquanto houver vida, há esperança."</span>
-            </div>
-            <p><strong>Vida, perseverança e crescimento.</strong> O Ímpeto Verde é a essência da Vida. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Na primeira vez em cada cena que seus Pontos de Vida chegarem a 0, você permanece consciente até o fim do turno.</p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Cura ou Resistência</strong>
-                <p>O Arquivista cura ferimentos que não deveriam ser curados, ou resiste a algo que deveria matá-lo.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "Toco o ferido e as feridas se fecham." (Cura: Xd6, onde X = Volume)</em></p>
-                <p><em>Exemplo: "Resisto ao veneno que deveria me matar." (Resistência: +2d4 em testes defensivos)</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> 1x/cena, o jogador descreve como cura ou resiste. O Guardião aprova se é coerente.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para curar ou resistir em benefício próprio, ele anota. Curar outros não é registrado.</div>
-            </div>
-        </div>
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Troca Equivalente</span>
+                        <p>O Arquivista sacrifica algo (um item, uma informação, uma memória, um aliado) e recebe algo em troca. O Guardião define o que é equivalente.</p>
+                        <p class="exemplo-txt">Exemplo: "Sacrifico minha aliança de casamento para que a porta se abra."</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> O jogador declara o que está disposto a sacrificar. O Guardião aprova se o sacrifício tem peso real.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista sacrifica algo para ganho próprio, ele anota.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Ígneo na Ficha</a>
+            </article>
 
-        <!-- SOLAR -->
-        <div class="espectro-bloco esp-solar">
-            <div class="espectro-header">
-                <h2>Solar (Amarelo)</h2>
-                <span class="juramento">"Nenhum caminho é definitivo."</span>
-            </div>
-            <p><strong>Liberdade, mobilidade e adaptação.</strong> O Ímpeto Solar é a manifestação da Liberdade. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Uma vez por rodada, após realizar uma rolagem, você pode substituir o dado escolhido por um de seus Ecos (dados descartados). No Volume I você começa com 1 Eco (ganha +1 Eco por Volume).</p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Livre-arbítrio sem limites</strong>
-                <p>O Arquivista concede a alguém — ou a si mesmo — a capacidade de agir sem restrições. Nenhuma corrente o prende. Nenhuma regra o limita.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "Concedo ao prisioneiro a liberdade de escapar."</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> O jogador descreve como quebra uma restrição. O Guardião aprova se é coerente.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para se libertar para ganho próprio, ele anota.</div>
-            </div>
-        </div>
+            <!-- CELESTE -->
+            <article class="espectro-card" data-espectro="celeste" style="--cor-esp: #4cc9f0;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Celeste (Azul)</h2>
+                        <span class="juramento">"Conhecimento supera força."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Controle, ordem e precisão.</strong> O Ímpeto Azul é a corrente da Razão, do Controle e do Planejamento. Onde outros enxergam caos, seus portadores enxergam padrões. Para eles, uma mente disciplinada sempre supera uma espada desembainhada.</p>
 
-        <!-- ÍNDIGO -->
-        <div class="espectro-bloco esp-indigo">
-            <div class="espectro-header">
-                <h2>Índigo (Roxo)</h2>
-                <span class="juramento">"Toda resposta gera uma nova pergunta."</span>
-            </div>
-            <p><strong>Criatividade, conhecimento e imaginação.</strong> O Ímpeto Violeta é a manifestação do Conhecimento. Pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem o impossível.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Sempre que descartar um resultado 9, 10, 11 ou 12, escolha um dos efeitos:</p>
-                <p><strong>Informação:</strong> o Guardião responde uma pergunta verdadeira.</p>
-                <p><strong>Improviso:</strong> você pode usar uma Palavra de Afirmação que não conhece, uma vez.</p>
-                <p><em>O dado é descartado normalmente.</em></p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Dobrar a realidade</strong>
-                <p>O Arquivista reescreve um detalhe da realidade, inventa uma possibilidade, cria o que não existia.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "A porta que estava trancada, na verdade, estava destrancada o tempo todo."</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> O jogador descreve o que reescreve. O Guardião aprova se é coerente com a cena.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista reescreve a realidade para ganho próprio, ele anota.</div>
-            </div>
-        </div>
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Receba <strong>1 Perícia adicional (1d6)</strong>. Uma vez por cena, ao realizar um teste usando essa Perícia, adicione <strong>+1d6</strong> à rolagem.</p>
+                    </div>
 
-        <!-- ALABASTRO -->
-        <div class="espectro-bloco esp-alabastro">
-            <div class="espectro-header">
-                <h2>Alabastro (Branco)</h2>
-                <span class="juramento">"Ninguém deve prevalecer."</span>
-            </div>
-            <p><strong>Equilíbrio, proteção e união.</strong> O Ímpeto Alabastro é a manifestação da Ordem e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição.</p>
-            <div class="efeito-box">
-                <strong>Efeito Passivo</strong>
-                <p>Seus testes defensivos têm -1d4, mas seus testes ofensivos ganham +1d4.</p>
-            </div>
-            <div class="efeito-box">
-                <strong>Efeito Ativo: Balancear, julgar, proteger</strong>
-                <p>O Arquivista restaura o equilíbrio — impede que um lado domine o outro, protege os indefesos, julga com imparcialidade.</p>
-                <p style="margin-top: 10px;"><em>Exemplo: "Divido o dano entre mim e o aliado — ninguém sofre sozinho."</em></p>
-                <p><em>Exemplo: "Troco de lugar com um aliado em um teste defensivo. Se ele aceitar, ele rola no meu lugar — mas fica devendo o mesmo gesto em um teste futuro."</em></p>
-                <div class="gatilho"><strong>Gatilho:</strong> O jogador descreve como restaura o equilíbrio. O Guardião aprova se é coerente.</div>
-                <div class="registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para julgar ou proteger em benefício próprio, ele anota.</div>
-            </div>
-        </div>
-    </div>
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Controle</span>
+                        <p>O Arquivista exerce controle sobre alguém — obriga um aliado a fazer o que não quer, força um guarda a atacar o chefe, impede que um inimigo morra para interrogá-lo por mais tempo.</p>
+                        <p class="exemplo-txt">Exemplo: "Obrigo o guarda a atacar o próprio chefe."</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> O jogador descreve como exerce controle. O Guardião aprova se o alvo pode ser controlado.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista controla alguém para ganho próprio, ele anota.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Celeste na Ficha</a>
+            </article>
 
+            <!-- VIRIDIANO -->
+            <article class="espectro-card" data-espectro="viridiano" style="--cor-esp: #2ec4b6;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Viridiano (Verde)</h2>
+                        <span class="juramento">"Enquanto houver vida, há esperança."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Vida, perseverança e crescimento.</strong> O Ímpeto Verde é a essência da Vida. Como uma floresta que renasce após um incêndio, seus portadores compreendem que toda queda pode ser o início de um novo ciclo.</p>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Na primeira vez em cada cena que seus Pontos de Vida chegarem a <strong>0</strong>, você permanece consciente até o fim do turno.</p>
+                    </div>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Cura ou Resistência</span>
+                        <p>O Arquivista cura ferimentos que não deveriam ser curados, ou resiste a algo que deveria matá-lo.</p>
+                        <p class="exemplo-txt">Exemplo: "Toco o ferido e as feridas se fecham." (Cura: Xd6, onde X = Volume)<br>Exemplo: "Resisto ao veneno que deveria me matar." (Resistência: +2d4 em testes defensivos)</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> 1x/cena, o jogador descreve como cura ou resiste. O Guardião aprova se é coerente.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para curar ou resistir em benefício próprio, ele anota. Curar outros não é registrado.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Viridiano na Ficha</a>
+            </article>
+
+            <!-- SOLAR -->
+            <article class="espectro-card" data-espectro="solar" style="--cor-esp: #ffbe0b;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Solar (Amarelo)</h2>
+                        <span class="juramento">"Nenhum caminho é definitivo."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Liberdade, mobilidade e adaptação.</strong> O Ímpeto Solar é a manifestação da Liberdade. Como a luz do sol que atravessa qualquer fresta, seus portadores recusam-se a permanecer onde seus sonhos não podem alcançar.</p>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Uma vez por rodada, após realizar uma rolagem, você pode substituir o dado escolhido por um de seus <strong>Ecos</strong> (dados descartados). No Volume I você começa com <strong>1 Eco</strong> (+1 Eco por Volume).</p>
+                    </div>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Livre-arbítrio sem limites</span>
+                        <p>O Arquivista concede a alguém — ou a si mesmo — a capacidade de agir sem restrições. Nenhuma corrente o prende. Nenhuma regra o limita.</p>
+                        <p class="exemplo-txt">Exemplo: "Concedo ao prisioneiro a liberdade de escapar."</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> O jogador descreve como quebra uma restrição. O Guardião aprova se é coerente.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para se libertar para ganho próprio, ele anota.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Solar na Ficha</a>
+            </article>
+
+            <!-- ÍNDIGO -->
+            <article class="espectro-card" data-espectro="indigo" style="--cor-esp: #9b5de5;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Índigo (Roxo)</h2>
+                        <span class="juramento">"Toda resposta gera uma nova pergunta."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Criatividade, conhecimento e imaginação.</strong> O Ímpeto Violeta é a manifestação do Conhecimento. Pertence àqueles cuja imaginação se recusa a aceitar os limites do mundo, capazes de enxergar possibilidades onde os demais veem o impossível.</p>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Sempre que descartar um resultado <strong>9, 10, 11 ou 12</strong>, escolha um dos efeitos:<br>
+                        • <strong>Informação:</strong> o Guardião responde uma pergunta verdadeira.<br>
+                        • <strong>Improviso:</strong> você pode usar uma Palavra de Afirmação que não conhece, uma vez.<br>
+                        <em>(O dado é descartado normalmente.)</em></p>
+                    </div>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Dobrar a realidade</span>
+                        <p>O Arquivista reescreve um detalhe da realidade, inventa uma possibilidade, cria o que não existia.</p>
+                        <p class="exemplo-txt">Exemplo: "A porta que estava trancada, na verdade, estava destrancada o tempo todo."</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> O jogador descreve o que reescreve. O Guardião aprova se é coerente com a cena.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista reescreve a realidade para ganho próprio, ele anota.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Índigo na Ficha</a>
+            </article>
+
+            <!-- ALABASTRO -->
+            <article class="espectro-card" data-espectro="alabastro" style="--cor-esp: #f8f9fa;">
+                <div>
+                    <div class="espectro-topo">
+                        <h2>Alabastro (Branco)</h2>
+                        <span class="juramento">"Ninguém deve prevalecer."</span>
+                    </div>
+                    <p class="espectro-lore"><strong>Equilíbrio, proteção e união.</strong> O Ímpeto Alabastro é a manifestação da Ordem e da Justiça. Seus portadores compreendem que toda força, quando deixada sem limites, inevitavelmente se torna destruição.</p>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Passivo</span>
+                        <p>Seus testes defensivos têm <strong>-1d4</strong>, mas seus testes ofensivos ganham <strong>+1d4</strong>.</p>
+                    </div>
+
+                    <div class="efeito-box">
+                        <span class="efeito-titulo">Efeito Ativo: Balancear, julgar, proteger</span>
+                        <p>O Arquivista restaura o equilíbrio — impede que um lado domine o outro, protege os indefesos, julga com imparcialidade.</p>
+                        <p class="exemplo-txt">Exemplo: "Divido o dano entre mim e o aliado — ninguém sofre sozinho."<br>Exemplo: "Troco de lugar com um aliado em um teste defensivo. Se ele aceitar, ele rola no meu lugar — mas fica devendo o mesmo gesto em um teste futuro."</p>
+                        <div class="meta-regra"><strong>Gatilho:</strong> O jogador descreve como restaura o equilíbrio. O Guardião aprova se é coerente.</div>
+                        <div class="meta-registro"><strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para julgar ou proteger em benefício próprio, ele anota.</div>
+                    </div>
+                </div>
+                <a href="ficha.html" class="btn-usar-ficha">📜 Escolher Alabastro na Ficha</a>
+            </article>
+        </div>
+    </main>
+
+    <script>
+        document.querySelectorAll('#filtros-espectros .btn-filtro').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#filtros-espectros .btn-filtro').forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                const esp = btn.dataset.esp;
+
+                document.querySelectorAll('#grid-espectros .espectro-card').forEach(card => {
+                    if (esp === 'todos' || card.dataset.espectro === esp) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/notificacoes.js"></script>
 </body>

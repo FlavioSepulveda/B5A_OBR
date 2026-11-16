@@ -2,202 +2,418 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia do Arquivista - B5A</title>
-    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Guia do Sistema - Biblioteca da 5ª Avenida</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        .guia-secao {
-            background: #1a1816;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
         }
-        .guia-secao h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            color: var(--gold);
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-            text-align: left;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        .guia-secao h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            color: #fff;
-            font-size: 1.4rem;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-        .guia-secao p, .guia-secao li {
-            font-size: 1rem;
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-top: 82px;
             line-height: 1.6;
-            color: #ccc;
-            margin-bottom: 10px;
         }
-        .guia-secao ul { padding-left: 20px; margin-bottom: 15px; }
-        .guia-secao li { margin-bottom: 5px; }
-        
-        .destaque-regra {
-            background: #111;
-            border-left: 4px solid var(--gold);
-            padding: 15px;
-            border-radius: 4px;
-            margin: 15px 0;
-        }
-        .destaque-regra strong { color: var(--gold); }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background: #111;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #222;
-            color: var(--gold);
+
+        h1, h2, h3, .titulo-fonte {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.2rem;
+            letter-spacing: 1.5px;
         }
-        td {
-            font-size: 0.95rem;
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-size: 1.4rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-item {
             color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.ativo {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+        }
+
+        /* HEADER DA PÁGINA */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--ouro);
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--texto-suave);
+            font-size: 0.92rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .sub-nav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .pill-link {
+            background: var(--bg-slot);
+            border: 1px solid #383240;
+            color: #ccc;
+            text-decoration: none;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.98rem;
+            letter-spacing: 0.8px;
+            transition: all 0.15s;
+        }
+
+        .pill-link:hover, .pill-link.ativo {
+            border-color: var(--ouro);
+            color: var(--ouro);
+        }
+
+        /* GRID DE PASSOS (CARDS) */
+        .cards-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .cards-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .b5a-card {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-top: 3px solid var(--ouro);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            transition: transform 0.15s, border-color 0.2s;
+        }
+
+        .b5a-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
+
+        .card-badge {
+            display: inline-block;
+            background: #221e29;
+            border: 1px solid #444;
+            color: var(--ouro);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            padding: 2px 10px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-bottom: 6px;
+        }
+
+        .b5a-card h2, .b5a-card h3 {
+            font-size: 1.55rem;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 6px;
+        }
+
+        .b5a-card p {
+            font-size: 0.85rem;
+            color: #ccc;
+            line-height: 1.55;
+        }
+
+        .destaque-box {
+            background: #110f13;
+            border: 1px solid #2a2533;
+            border-left: 3px solid var(--ouro);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            color: #b5ada0;
+            margin-top: 6px;
+        }
+
+        .destaque-box strong {
+            color: var(--ouro);
+        }
+
+        .card-footer-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.8px;
+        }
+
+        .card-footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .secao-divisor {
+            font-size: 1.8rem;
+            color: var(--ouro);
+            border-bottom: 1px solid #333;
+            padding-bottom: 6px;
+            margin: 30px 0 16px 0;
+        }
+
+        @media (max-width: 880px) {
+            .cards-grid-2, .cards-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding-top: 104px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="guia.html" class="nav-item ativo">📖 Guia</a>
+            <a href="caminhos.html" class="nav-item">🛡️ Caminhos</a>
+            <a href="regras.html" class="nav-item">⚖️ Regras</a>
+        </div>
         <div class="nav-user">
-            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="conteudo-texto" style="margin-top: 80px; background: transparent; border: none; padding: 0;">
-        <h1 style="border-bottom: none; text-align: center; margin-bottom: 10px;">📖 Guia do Arquivista</h1>
-        <p style="text-align: center; color: #aaa; margin-bottom: 40px;">Uma pequena wiki sobre o funcionamento da Biblioteca e do Ímpeto.</p>
-
-        <div class="guia-secao">
-            <h2>1. A Ordem dos Arquivistas</h2>
-            <p>Ser um Arquivista é aceitar que o mundo ainda guarda histórias que jamais deveriam ter sido escritas. A serviço do Bestiário das Almas, você investigará anomalias, explorará lugares esquecidos, recuperará registros perdidos e enfrentará criaturas surgidas dos vazamentos da Biblioteca.</p>
-            <p>Todo Arquivista vive segundo três princípios:</p>
-            <ul>
-                <li>Registrar, conter ou estudar tudo aquilo que encontrar;</li>
-                <li>Jamais abandonar um companheiro;</li>
-                <li>Preservar a continuidade da história do mundo.</li>
-            </ul>
-        </div>
-
-        <div class="guia-secao">
-            <h2>2. O Coração do Sistema (d12)</h2>
-            <p>O destino na Biblioteca não está escrito de antemão. Ele nasce do encontro entre o que seu personagem é capaz de fazer e o que os dados decidem. Toda ação incerta gera uma rolagem.</p>
-            
-            <div class="destaque-regra">
-                <strong>Fórmula do Teste:</strong> 1d12 + Dados de Atributo (d4) ou Perícia (d6) + Volume<br>
-                <strong>Desafiar o Destino:</strong> Se você tiver 0 dados, role 2d12, mantenha o maior e some o Volume.
+    <main class="container">
+        <header class="page-header">
+            <h1>📖 Guia do Arquivista</h1>
+            <p>O passo a passo essencial para criar seu personagem, entender o ritmo de uma sessão e sobreviver às páginas da Biblioteca da 5ª Avenida.</p>
+            <div class="sub-nav-pills">
+                <a href="guia.html" class="pill-link ativo">📖 Guia Passo a Passo</a>
+                <a href="espectros.html" class="pill-link">✦ Espectros</a>
+                <a href="caminhos.html" class="pill-link">🛡️ Caminhos</a>
+                <a href="habilidades.html" class="pill-link">✨ Habilidades</a>
+                <a href="regras.html" class="pill-link">⚖️ Regras Gerais</a>
             </div>
-            
-            <h3>Os Três Resultados Absolutos</h3>
-            <p>O d12 possui faces especiais que mudam a narrativa, independente do cálculo normal de sucesso ou falha:</p>
-            <ul>
-                <li><strong style="color:#ff4d4d">1 (Catástrofe):</strong> Falha automática. O Guardião ganha 1 Dado de Descartes.</li>
-                <li><strong style="color:#ff9800">6 (Falha Absoluta):</strong> A ação falha, mesmo superando a TA.</li>
-                <li><strong style="color:#4caf50">12 (Momento Lendário):</strong> O sucesso é épico. Se falhar, algo positivo surge.</li>
-            </ul>
+        </header>
+
+        <h2 class="secao-divisor">✍️ Criação de Ficha em 6 Passos</h2>
+
+        <div class="cards-grid-2">
+            <article class="b5a-card">
+                <div>
+                    <span class="card-badge">Passo 01 • Identidade</span>
+                    <h3>📚 Conceito & Volume Inicial</h3>
+                    <p>Todo personagem é um <strong>Arquivista</strong> cuja história é medida em <strong>Volumes (I a VIII)</strong>. No início do playtest, você começa no <strong>Volume I</strong>, definindo seu nome, aparência e motivação na 5ª Avenida.</p>
+                    <div class="destaque-box">
+                        <strong>Dica de Mesa:</strong> Pense no que levou seu personagem a abrir um livro proibido ou despertar seu Ímpeto pela primeira vez.
+                    </div>
+                </div>
+                <a href="estante.html" class="card-footer-link">→ Criar Livro na Estante</a>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #4cc9f0;">
+                <div>
+                    <span class="card-badge" style="color: #4cc9f0;">Passo 02 • Afinidade</span>
+                    <h3>✦ Escolha seu Espectro</h3>
+                    <p>O <strong>Espectro</strong> define a natureza elemental ou conceitual do seu Ímpeto: <strong>Ígneo, Celeste, Viridiano, Solar, Índigo ou Alabastro</strong>. Ele molda suas manifestações sobrenaturais e a cor do seu token na mesa.</p>
+                    <div class="destaque-box" style="border-left-color: #4cc9f0;">
+                        <strong>Sinergia:</strong> Seu Espectro desbloqueia técnicas exclusivas e altera como você interage com anomalias.
+                    </div>
+                </div>
+                <a href="espectros.html" class="card-footer-link" style="color: #4cc9f0;">→ Ver Todos os Espectros</a>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #ffbe0b;">
+                <div>
+                    <span class="card-badge" style="color: #ffbe0b;">Passo 03 • Especialização</span>
+                    <h3>🛡️ Caminho, Vocação ou Híbrido</h3>
+                    <p>Escolha como você atua em cena: foque em um <strong>Caminho</strong> (combate e ação direta), uma <strong>Vocação</strong> (investigação, suporte e conhecimento) ou combine ambos no estilo <strong>Híbrido</strong>.</p>
+                    <div class="destaque-box" style="border-left-color: #ffbe0b;">
+                        <strong>Flexibilidade:</strong> Caminhos e Vocações determinam seus bônus iniciais e habilidades de assinatura.
+                    </div>
+                </div>
+                <a href="caminhos.html" class="card-footer-link" style="color: #ffbe0b;">→ Explorar Caminhos</a>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #e63946;">
+                <div>
+                    <span class="card-badge" style="color: #e63946;">Passo 04 • Pilares</span>
+                    <h3>📊 Atributos & Recursos</h3>
+                    <p>Distribua seus pontos entre os atributos principais. A ficha calcula automaticamente seus <strong>Pontos de Vida (PV)</strong>, <strong>Pontos de Ímpeto (PI)</strong> e capacidade de carga.</p>
+                    <div class="destaque-box" style="border-left-color: #e63946;">
+                        <strong>Gestão de PI:</strong> O Ímpeto é seu combustível para técnicas especiais — administre-o bem durante os encontros.
+                    </div>
+                </div>
+                <a href="ficha.html" class="card-footer-link" style="color: #e63946;">→ Abrir Tabuleiro da Ficha</a>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #2ec4b6;">
+                <div>
+                    <span class="card-badge" style="color: #2ec4b6;">Passo 05 • Arsenal</span>
+                    <h3>⚔️ Arma Favorita & Inventário</h3>
+                    <p>Defina sua <strong>Arma Favorita</strong> (ou crie uma personalizada na Forja) e organize seus itens utilitários nos slots de inventário da ficha.</p>
+                    <div class="destaque-box" style="border-left-color: #2ec4b6;">
+                        <strong>Forja Aberta:</strong> Você pode criar armas customizadas e compartilhá-las diretamente no feed da comunidade.
+                    </div>
+                </div>
+                <a href="armas.html" class="card-footer-link" style="color: #2ec4b6;">→ Ir para Forja de Armas</a>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #9b5de5;">
+                <div>
+                    <span class="card-badge" style="color: #9b5de5;">Passo 06 • Em Jogo</span>
+                    <h3>🗺️ Conectando à Mesa Tática</h3>
+                    <p>Com a ficha salva, entre na <strong>Mesa Tática</strong> pelo link do Guardião. Todas as suas rolagens de <code>d12</code> na ficha aparecem ao vivo no histórico da sala.</p>
+                    <div class="destaque-box" style="border-left-color: #9b5de5;">
+                        <strong>Tempo Real:</strong> Mova seu token no grid (1 quadrado = 1,5m) e acompanhe os turnos com o grupo.
+                    </div>
+                </div>
+                <a href="mesa.html" class="card-footer-link" style="color: #9b5de5;">→ Entrar na Mesa Tática</a>
+            </article>
         </div>
 
-        <div class="guia-secao">
-            <h2>3. Criando seu Arquivista</h2>
-            <p>Antes de escolher armas e habilidades, o jogador define sua identidade:</p>
-            <ul>
-                <li><strong>Espectro do Ímpeto:</strong> Define a motivação profunda do personagem (Ígneo, Celeste, Viridiano, etc). Concede Efeitos Passivos e Ativos.</li>
-                <li><strong>Caminho ou Vocação:</strong> Define o estilo de combate ou investigação. Concede Arma Favorita e habilidades exclusivas por Volume.</li>
-            </ul>
+        <h2 class="secao-divisor">🎲 Como Funciona uma Cena no B5A</h2>
 
-            <h3>Atributos e Perícias</h3>
-            <p>Os Atributos (Vigor, Dinamismo, Razão, Determinação) começam com <strong>0d4</strong>. Você recebe <strong>4d4</strong> adicionais para distribuir (limite de 2d4 em cada no Volume I). As Perícias começam com <strong>1d6</strong> e você escolhe 4 iniciais.</p>
+        <div class="cards-grid-3">
+            <article class="b5a-card">
+                <div>
+                    <span class="card-badge">O Dado Principal</span>
+                    <h3>🎯 Testes com d12</h3>
+                    <p>Sempre que tentar algo arriscado, role <strong>1d12 + Atributo/Bônus</strong> contra a dificuldade estipulada pelo Guardião ou contra a rolagem do oponente.</p>
+                </div>
+            </article>
 
-            <h3>Fórmulas de Valores Derivados</h3>
-            <table>
-                <tr>
-                    <th>Status</th>
-                    <th>Fórmula</th>
-                </tr>
-                <tr>
-                    <td>Vida (PV)</td>
-                    <td>10 + (Fator de Vida × Volume) + Valor Máximo de Determinação</td>
-                </tr>
-                <tr>
-                    <td>Ímpeto (PI)</td>
-                    <td>5 + (Fator de Ímpeto × Volume) + Valor Máximo de Razão</td>
-                </tr>
-                <tr>
-                    <td>Iniciativa</td>
-                    <td>1d12 + Valor Máximo de Dinamismo + Volume</td>
-                </tr>
-                <tr>
-                    <td>Inventário</td>
-                    <td>5 + Valor Máximo de Vigor</td>
-                </tr>
-            </table>
+            <article class="b5a-card" style="border-top-color: #ffbe0b;">
+                <div>
+                    <span class="card-badge" style="color: #ffbe0b;">Números Críticos</span>
+                    <h3>⚡ Resultados Absolutos</h3>
+                    <p>No dado natural, <strong>1</strong> traz uma reviravolta grave, <strong>6</strong> marca um equilíbrio tenso com custo ou complicação, e <strong>12</strong> desencadeia um triunfo absoluto.</p>
+                </div>
+            </article>
+
+            <article class="b5a-card" style="border-top-color: #e63946;">
+                <div>
+                    <span class="card-badge" style="color: #e63946;">Risco & Sacrifício</span>
+                    <h3>⏳ Pilha de Descartes</h3>
+                    <p>Quando precisar virar o jogo a qualquer custo, você pode sacrificar horas na sua <strong>Pilha de Descartes (12h)</strong> para forçar o destino ao seu favor.</p>
+                </div>
+            </article>
         </div>
-
-        <div class="guia-secao">
-            <h2>4. Habilidades de Ímpeto</h2>
-            <p>Todo Arquivista manipula a realidade de três formas. É a interpretação do jogador (junto ao Guardião) que dá poder a essas habilidades.</p>
-            
-            <h3>Palavras de Afirmação</h3>
-            <p>São a forma mais simples e pura de manifestar o Ímpeto. O jogador escolhe 2 no Volume I e ganha mais 1 por Volume.</p>
-            <p><em>Exemplo:</em> A palavra <strong>Registrar (1 PI)</strong> pode ser usada para anotar um golpe (+1d4 no próximo ataque), revelar um detalhe cena ou impedir que uma memória seja apagada.</p>
-            
-            <h3>Frases de Efeito</h3>
-            <p>São manifestações mais poderosas, com golpes e técnicas de efeito fixo. Você aprende 2 Frases a partir do Volume II e ganha mais 2 por Volume.</p>
-            <p><em>Exemplo:</em> <strong>"Lâmina Definitiva" (3 PI)</strong> — Causa +3d6 no próximo ataque. Pode usar o Descarte para adicionar +1d6 por dado descartado.</p>
-            
-            <h3>Títulos</h3>
-            <p>São o reconhecimento da Biblioteca sobre seus feitos. Apenas um Título fica ativo por vez. São conquistados a partir do Volume V ao realizar feitos narrativos importantes, como sobreviver a uma batalha ferido gravemente ou proteger um grupo inteiro.</p>
-        </div>
-
-        <div class="guia-secao">
-            <h2>5. O Diário e a Pilha de Descartes</h2>
-            <p>O Diário é o equipamento padrão de todo Arquivista. Ele registra todos os usos do Ímpeto para ganho próprio (seja para o bem ou para o mal).</p>
-            
-            <div class="destaque-regra">
-                <strong>Pilha de Descartes:</strong> Cada dado descartado no jogo representa 12 horas da vida do seu personagem sendo jogadas fora (sono, estudo, treino). Você deve narrar quais horas está perdendo para usar o Descarte.
-            </div>
-            <p>As memórias registradas no Diário (como obrigar um aliado a fazer algo contra a vontade) <strong>nunca podem ser descartadas</strong>. Elas ficam no livro para sempre.</p>
-        </div>
-
-        <div class="guia-secao">
-            <h2>6. O Clash (Combate)</h2>
-            <p>O combate não é uma rolagem contra um número fixo, mas sim uma <strong>disputa</strong> (Clash). Atacante e defensor rolam e o maior vence.</p>
-            <ul>
-                <li><strong>Atacante:</strong> 1d12 + Atributo + Volume.</li>
-                <li><strong>Defensor:</strong> 1d12 + Dinamismo + Volume + Bônus de Equipamento (Vida Temporária).</li>
-            </ul>
-            <p>Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o ataque é bloqueado. A única exceção é o <strong>Dano Real</strong>, que acerta automaticamente e causa sempre 1d6, ignorando o Clash e a Vida Temporária.</p>
-        </div>
-
-        <div class="guia-secao">
-            <h2>7. Subindo de Volume</h2>
-            <p>O grupo sobe de Volume ao concluir <strong>3 missões importantes</strong> (ou marcos narrativos definidos pelo Guardião). Ao subir de Volume, o Arquivista:</p>
-            <ul>
-                <li>Recalcula seus valores derivados (Vida, Ímpeto, Iniciativa).</li>
-                <li>Recebe <strong>3d4</strong> adicionais para distribuir nos Atributos (sem o limite de 2d4).</li>
-                <li>Aprende 1 nova Palavra e 2 novas Frases de Efeito.</li>
-                <li>Melhora uma Perícia em +1d6 ou aprende uma nova.</li>
-                <li>Desbloqueia a próxima habilidade do seu Caminho ou Vocação.</li>
-            </ul>
-        </div>
-    </div>
+    </main>
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/notificacoes.js"></script>
