@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Contate-nos & Playtest - B5A</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1d1724 0%, var(--bg-mesa) 100%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-top: 84px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 60px;
+            background-color: #111;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            font-size: 1.35rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            white-space: nowrap;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .contato-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--ouro);
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--texto-suave);
+            font-size: 0.92rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .contato-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        .contato-card {
+            background: var(--bg-painel);
+            border: 1px solid #333;
+            border-top: 3px solid var(--ouro);
+            border-radius: 10px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+        }
+
+        .contato-card h2 {
+            font-size: 1.65rem;
+            color: var(--ouro);
+            margin-bottom: 10px;
+        }
+
+        .contato-card p {
+            font-size: 0.88rem;
+            color: #ccc;
+            margin-bottom: 14px;
+        }
+
+        .badge-em-breve {
+            display: inline-block;
+            background: #2c2633;
+            border: 1px solid #555;
+            color: var(--ouro);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.88rem;
+            letter-spacing: 1px;
+            padding: 3px 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .lista-beneficios {
+            list-style: none;
+            margin-bottom: 18px;
+            font-size: 0.82rem;
+            color: #aaa;
+        }
+
+        .lista-beneficios li {
+            padding: 4px 0;
+            border-bottom: 1px solid #242029;
+        }
+
+        .btn-licenca-disabled {
+            width: 100%;
+            padding: 12px;
+            background: #221f26;
+            color: #777;
+            border: 1px dashed #555;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+        }
+
+        /* FORMULÁRIO */
+        .form-playtest {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-playtest label {
+            font-size: 0.76rem;
+            color: var(--ouro);
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-playtest input,
+        .form-playtest select,
+        .form-playtest textarea {
+            width: 100%;
+            background: var(--bg-slot);
+            color: var(--texto);
+            border: 1px solid #444;
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-family: 'Merriweather', serif;
+            font-size: 0.86rem;
+            outline: none;
+        }
+
+        .form-playtest input:focus,
+        .form-playtest select:focus,
+        .form-playtest textarea:focus {
+            border-color: var(--ouro);
+        }
+
+        .btn-enviar-feedback {
+            background: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 4px;
+        }
+
+        .btn-enviar-feedback:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 850px) {
+            .contato-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding-top: 102px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            .form-row-2 {
+                grid-template-columns: 1fr;
+            }
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📚 Estante</a>
+            <a href="ficha.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📜 Ficha</a>
+            <a href="mesa.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">🗺️ Mesa</a>
+        </div>
+        <div class="nav-user">
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
+
+    <main class="contato-wrapper">
+        <header class="page-header">
+            <h1>📬 Contate-nos & Playtest</h1>
+            <p>Envie suas impressões das sessões de teste diretamente para a equipe DiceForge ou acompanhe a abertura da Licença de Comunidade.</p>
+        </header>
+
+        <div class="contato-grid">
+            <!-- CARD 1: LICENÇA DE COMUNIDADE (INATIVA POR ENQUANTO) -->
+            <section class="contato-card" style="border-top-color: #6c757d;">
+                <div>
+                    <span class="badge-em-breve">🔒 Indisponível no Playtest</span>
+                    <h2>📜 Licença de Comunidade B5A</h2>
+                    <p>
+                        A Licença de Comunidade permitirá que criadores independentes publiquem suplementos, aventuras prontas, bestiários e novos Espectros compatíveis com a <strong>Biblioteca dos Cinco Acordes</strong>.
+                    </p>
+                    <ul class="lista-beneficios">
+                        <li>✦ Uso do selo oficial "Compatível com B5A"</li>
+                        <li>✦ Diretrizes de diagramação e balanceamento</li>
+                        <li>✦ Publicação gratuita ou comercial de módulos</li>
+                    </ul>
+                    <p style="font-size: 0.8rem; color: var(--texto-suave);">
+                        Esta função será liberada automaticamente após a conclusão da fase atual de playtest.
+                    </p>
+                </div>
+
+                <div>
+                    <button type="button" class="btn-licenca-disabled" disabled>
+                        ⏳ Solicitar Licença de Comunidade (Em Breve)
+                    </button>
+                </div>
+            </section>
+
+            <!-- CARD 2: FORMULÁRIO DE FEEDBACK DO PLAYTEST -->
+            <section class="contato-card">
+                <div>
+                    <h2>🎲 Relatório de Playtest</h2>
+                    <p>Preencha o formulário abaixo após sua sessão ou leitura. Seu relatório será enviado diretamente para <strong>diceforgecontato@gmail.com</strong>.</p>
+
+                    <form id="form-feedback-playtest" class="form-playtest">
+                        <div class="form-row-2">
+                            <div>
+                                <label for="fb-nome">Seu Nome / Personagem</label>
+                                <input type="text" id="fb-nome" placeholder="Ex: Lucas (Selador Celeste)" required>
+                            </div>
+                            <div>
+                                <label for="fb-email">Seu E-mail (Opcional, para resposta)</label>
+                                <input type="email" id="fb-email" placeholder="seuemail@exemplo.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div>
+                                <label for="fb-papel">Papel na Sessão</label>
+                                <select id="fb-papel">
+                                    <option value="Jogador (Arquivista)">Jogador (Arquivista)</option>
+                                    <option value="Guardião (Mestre)">Guardião (Mestre)</option>
+                                    <option value="Leitura / Análise de Regras">Leitura / Análise de Regras</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="fb-categoria">Área Avaliada</label>
+                                <select id="fb-categoria">
+                                    <option value="Combate, Clash e Dano">Combate, Clash e Dano</option>
+                                    <option value="Criação de Ficha e Volumes">Criação de Ficha e Volumes</option>
+                                    <option value="Espectros, Caminhos e Vocações">Espectros, Caminhos e Vocações</option>
+                                    <option value="Pilha de Descartes (12h)">Pilha de Descartes (12h)</option>
+                                    <option value="Site, Ficha Online ou Mesa Tática">Site, Ficha Online ou Mesa Tática</option>
+                                    <option value="Sugestão Geral / Outro">Sugestão Geral / Outro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="fb-nota">Avaliação Geral</label>
+                            <select id="fb-nota">
+                                <option value="5/5 - Momento Lendário (12)">⭐⭐⭐⭐⭐ (5/5 - Excelente)</option>
+                                <option value="4/5 - Muito Bom">⭐⭐⭐⭐ (4/5 - Muito Bom)</option>
+                                <option value="3/5 - Equilibrado, mas precisa ajustes">⭐⭐⭐ (3/5 - Bom, precisa ajustes)</option>
+                                <option value="2/5 - Confuso ou travado">⭐⭐ (2/5 - Confuso ou travado)</option>
+                                <option value="1/5 - Catástrofe (1)">⭐ (1/5 - Problema grave)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="fb-mensagem">Seu Relato, Sugestões ou Bugs</label>
+                            <textarea id="fb-mensagem" rows="5" placeholder="Descreva o que achou divertido, o que gerou dúvida na mesa ou qualquer bug encontrado no site..." required></textarea>
+                        </div>
+
+                        <button type="submit" id="btn-enviar-fb" class="btn-enviar-feedback">
+                            ✉️ Enviar Feedback do Playtest
+                        </button>
+                        <div id="fb-status" style="font-size: 0.85rem; text-align: center; min-height: 20px;"></div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script type="module">
+        import { db, idJogadorAtual } from '../js/firebase.js';
+        import { ref, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const formFb = document.getElementById('form-feedback-playtest');
+        formFb.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-enviar-fb');
+            const status = document.getElementById('fb-status');
+
+            const nome = document.getElementById('fb-nome').value.trim();
+            const emailJogador = document.getElementById('fb-email').value.trim();
+            const papel = document.getElementById('fb-papel').value;
+            const categoria = document.getElementById('fb-categoria').value;
+            const nota = document.getElementById('fb-nota').value;
+            const mensagem = document.getElementById('fb-mensagem').value.trim();
+            const dataEnvio = new Date().toLocaleString('pt-BR');
+
+            btn.disabled = true;
+            btn.innerText = "Enviando...";
+            status.style.color = "#d4af37";
+            status.innerText = "Enviando relatório para diceforgecontato@gmail.com...";
+
+            try {
+                // 1. Envia diretamente para diceforgecontato@gmail.com via FormSubmit AJAX
+                const payloadEmail = {
+                    _subject: `[Playtest B5A] ${categoria} - ${nome} (${nota})`,
+                    _template: "table",
+                    _captcha: "false",
+                    Nome_ou_Arquivista: nome,
+                    Email_para_Resposta: emailJogador || "Não informado",
+                    Papel_na_Mesa: papel,
+                    Area_Avaliada: categoria,
+                    Avaliacao: nota,
+                    Relato_Completo: mensagem,
+                    Data_Envio: dataEnvio
+                };
+
+                if (emailJogador) {
+                    payloadEmail._replyto = emailJogador;
+                }
+
+                const res = await fetch("https://formsubmit.co/ajax/diceforgecontato@gmail.com", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(payloadEmail)
+                });
+
+                if (!res.ok) {
+                    throw new Error("Falha no envio do e-mail");
+                }
+
+                // 2. Salva backup no Firebase Realtime Database
+                try {
+                    await push(ref(db, 'feedbacks_playtest'), {
+                        nome,
+                        email: emailJogador || "Não informado",
+                        papel,
+                        categoria,
+                        nota,
+                        mensagem,
+                        uid: idJogadorAtual || "anonimo",
+                        data: dataEnvio
+                    });
+                } catch (fbErr) {
+                    console.warn("Backup Firebase ignorado:", fbErr);
+                }
+
+                status.style.color = "#2ec4b6";
+                status.innerText = "✅ Relatório enviado para a DiceForge! Obrigado por contribuir com o B5A.";
+                formFb.reset();
+            } catch (err) {
+                console.error("Erro ao enviar feedback:", err);
+                status.style.color = "#e63946";
+                status.innerText = "❌ Não foi possível enviar agora. Tente novamente em instantes.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "✉️ Enviar Feedback do Playtest";
+            }
+        });
+    </script>
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
+</body>
+</html>

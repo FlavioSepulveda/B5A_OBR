@@ -2,66 +2,1124 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca da 5ª Avenida</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Biblioteca da 5ª Avenida - B5A</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding-top: 62px;
+            line-height: 1.55;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-size: 1.45rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .nav-item {
+            color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        /* HERO COM LOGO GRANDE E SUBTÍTULO BEM PRÓXIMO */
+        .hero-logo-area {
+            max-width: 1100px;
+            margin: 22px auto 26px auto;
+            padding: 6px 16px;
+            text-align: center;
+        }
+
+        .logo-svg-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0;
+            line-height: 0;
+        }
+
+        .logo-svg-container img {
+            display: block;
+            width: 460px;
+            max-width: 92vw;
+            height: auto;
+            filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.85));
+        }
+
+        /* Fallback tipográfico grande fiel à logo */
+        .logo-tipografia-fallback {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Bebas Neue', sans-serif;
+            color: #ffffff;
+            line-height: 0.84;
+            text-shadow: 0 6px 20px rgba(0, 0, 0, 0.85);
+            user-select: none;
+            margin: 0;
+        }
+
+        .logo-linha-1 {
+            font-size: 5rem;
+            letter-spacing: 2px;
+        }
+
+        .logo-linha-2 {
+            font-size: 3.8rem;
+            letter-spacing: 1.5px;
+        }
+
+        .logo-linha-2 sup {
+            font-size: 1.9rem;
+            text-decoration: underline;
+            margin-right: 2px;
+        }
+
+        .hero-citacao {
+            font-style: italic;
+            color: #d6cfc2;
+            font-size: 1.04rem;
+            margin-top: 6px;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-botoes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 11px 22px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.15s, opacity 0.2s;
+            text-align: center;
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .btn-primario {
+            background: var(--ouro);
+            color: #000;
+        }
+
+        .btn-secundario {
+            background: var(--bg-slot);
+            color: var(--texto);
+            border: 1px solid #444;
+        }
+
+        /* FEED DA COMUNIDADE: MOVIMENTO RECENTE NA BIBLIOTECA */
+        .feed-section {
+            max-width: 1100px;
+            margin: 24px auto 44px auto;
+            padding: 0 16px;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .feed-header h2 {
+            font-size: 1.75rem;
+            color: var(--texto);
+            letter-spacing: 1.5px;
+        }
+
+        .feed-filtros {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-filtro-feed {
+            background: var(--bg-slot);
+            color: #bbb;
+            border: 1px solid #383240;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-filtro-feed:hover {
+            border-color: var(--ouro);
+            color: #fff;
+        }
+
+        .btn-filtro-feed.ativo {
+            background: var(--ouro);
+            color: #000;
+            border-color: var(--ouro);
+            font-weight: bold;
+        }
+
+        .feed-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .feed-card {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-left: 4px solid var(--ouro);
+            border-radius: 8px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+            transition: transform 0.15s, border-color 0.2s;
+            min-width: 0;
+        }
+
+        .feed-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
+
+        .feed-card-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .feed-tipo-badge {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.8px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #221e29;
+            border: 1px solid #444;
+            color: var(--ouro);
+            white-space: nowrap;
+        }
+
+        .feed-tempo {
+            font-size: 0.72rem;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .feed-titulo-item {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.38rem;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1.15;
+            word-break: break-word;
+            margin-bottom: 3px;
+        }
+
+        .feed-subinfo {
+            font-size: 0.8rem;
+            color: var(--texto-suave);
+        }
+
+        .feed-descricao {
+            font-size: 0.79rem;
+            color: #bbb;
+            background: #110f13;
+            padding: 7px 9px;
+            border-radius: 4px;
+            border: 1px solid #25212b;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.45;
+        }
+
+        .feed-rodape {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #242029;
+            padding-top: 7px;
+            font-size: 0.75rem;
+            color: #9c9283;
+        }
+
+        .feed-autor {
+            color: #ece6d8;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .feed-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-style: italic;
+            color: #6b7280;
+            padding: 24px 0;
+            font-size: 0.92rem;
+        }
+
+        /* SEÇÃO CONTATE-NOS & PLAYTEST */
+        .contato-section {
+            max-width: 1100px;
+            margin: 40px auto 40px auto;
+            padding: 0 16px;
+        }
+
+        .secao-titulo {
+            font-size: 1.95rem;
+            color: var(--ouro);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .secao-sub {
+            text-align: center;
+            color: var(--texto-suave);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .contato-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .contato-card {
+            background: #161318;
+            border: 1px solid #333;
+            border-top: 3px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            min-width: 0;
+        }
+
+        .contato-card h3 {
+            font-size: 1.45rem;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .contato-card p {
+            font-size: 0.84rem;
+            color: #ccc;
+            line-height: 1.55;
+            margin-bottom: 14px;
+        }
+
+        .badge-em-breve {
+            display: inline-block;
+            background: #2c2633;
+            border: 1px solid #555;
+            color: #d4af37;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.84rem;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .btn-licenca-disabled {
+            width: 100%;
+            padding: 11px;
+            background: #221f26;
+            color: #777;
+            border: 1px dashed #555;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+        }
+
+        /* FORMULÁRIO DE FEEDBACK */
+        .form-playtest {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-playtest label {
+            font-size: 0.74rem;
+            color: #d4af37;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .form-playtest input,
+        .form-playtest select,
+        .form-playtest textarea {
+            width: 100%;
+            background: #1f1b24;
+            color: #ece6d8;
+            border: 1px solid #444;
+            padding: 9px 10px;
+            border-radius: 5px;
+            font-family: 'Merriweather', serif;
+            font-size: 0.84rem;
+            outline: none;
+        }
+
+        .form-playtest input:focus,
+        .form-playtest select:focus,
+        .form-playtest textarea:focus {
+            border-color: #d4af37;
+        }
+
+        .btn-enviar-feedback {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 4px;
+        }
+
+        .btn-enviar-feedback:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 16px;
+            border-top: 1px solid #222;
+            color: #777;
+            font-size: 0.8rem;
+            margin-top: 32px;
+        }
+
+        /* RESPONSIVIDADE TABLETS E CELULARES */
+        @media (max-width: 900px) {
+            .feed-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .contato-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding-top: 96px;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .nav-links {
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .nav-brand {
+                font-size: 1.25rem;
+            }
+            .nav-item {
+                font-size: 0.98rem;
+            }
+            .nav-user {
+                justify-content: space-between;
+                border-top: 1px solid #222;
+                padding-top: 6px;
+            }
+            .hero-logo-area {
+                margin: 14px auto 18px auto;
+                padding: 4px 12px;
+            }
+            .logo-svg-container img {
+                width: 320px;
+                max-width: 88vw;
+            }
+            .logo-linha-1 {
+                font-size: 3.6rem;
+            }
+            .logo-linha-2 {
+                font-size: 2.75rem;
+            }
+            .hero-citacao {
+                font-size: 0.92rem;
+                margin-top: 4px;
+                margin-bottom: 16px;
+            }
+            .hero-botoes {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .btn-hero {
+                padding: 10px 8px;
+                font-size: 1rem;
+            }
+            .feed-grid, .form-row-2 {
+                grid-template-columns: 1fr;
+            }
+            .contato-card {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            body {
+                padding-top: 106px;
+            }
+            .hero-botoes {
+                grid-template-columns: 1fr;
+            }
+            .logo-linha-1 {
+                font-size: 3rem;
+            }
+            .logo-linha-2 {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <nav class="top-nav">
-        <a href="index.html" class="nav-brand">🏛️ B5A</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-brand">B5A RPG</a>
+            <a href="pages/estante.html" class="nav-item">📚 Estante</a>
+            <a href="pages/ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="pages/mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="pages/regras.html" class="nav-item">⚖️ Regras</a>
+            <a href="pages/contato.html" class="nav-item">📬 Contate-nos</a>
+        </div>
         <div class="nav-user">
-            <a href="pages/perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
+            <a href="pages/perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="home-layout">
-        <div class="feed-container">
-            <div class="logo-topo">
-                <img src="logo.svg" alt="Biblioteca da 5ª Avenida" class="logo-principal">
-                <p class="home-subtitulo">"A única pergunta que resta é: Qual história você veio escrever?"</p>
-            </div>
+    <!-- HERO COM LOGO GRANDE E SUBTÍTULO PRÓXIMO -->
+    <header class="hero-logo-area">
+        <div class="logo-svg-container" id="logo-wrapper">
+            <img id="logo-b5a" src="./assets/logo.svg" alt="Biblioteca da 5ª Avenida">
+        </div>
 
-            <h2 class="titulo-feed">🌟 Movimento Recente na Biblioteca</h2>
-            
-            <div id="feed-home" class="feed-posts">
-                <p style="text-align:center; color:#888; font-style:italic;">Carregando as últimas histórias...</p>
+        <p class="hero-citacao">"A única pergunta que resta é: Qual história você veio escrever?"</p>
+
+        <div class="hero-botoes">
+            <a href="pages/estante.html" class="btn-hero btn-primario">📚 Minha Estante</a>
+            <a href="pages/ficha.html" class="btn-hero btn-secundario">📜 Criar Ficha</a>
+            <a href="pages/mesa.html" class="btn-hero btn-secundario">🗺️ Entrar na Mesa</a>
+            <a href="#contate-nos" class="btn-hero btn-secundario">🎲 Feedback Playtest</a>
+        </div>
+    </header>
+
+    <!-- FEED DA COMUNIDADE: MOVIMENTO RECENTE NA BIBLIOTECA -->
+    <section class="feed-section">
+        <div class="feed-header">
+            <h2>MOVIMENTO RECENTE NA BIBLIOTECA</h2>
+            <div class="feed-filtros" id="feed-filtros">
+                <button class="btn-filtro-feed ativo" data-filtro="todos">Tudo</button>
+                <button class="btn-filtro-feed" data-filtro="arquivista">📜 Arquivistas</button>
+                <button class="btn-filtro-feed" data-filtro="cronica">📖 Crônicas</button>
+                <button class="btn-filtro-feed" data-filtro="item">🗡️ Itens</button>
+                <button class="btn-filtro-feed" data-filtro="criatura">👁️ Criaturas</button>
             </div>
         </div>
 
-        <div class="sidebar-menu">
-            <div class="menu-card">
-                <h3>Navegação</h3>
-                <a href="pages/ficha.html" class="menu-item"><span class="icone">📜</span> Mesa de Jogo</a>
-                <a href="pages/estante.html" class="menu-item destaque"><span class="icone">📚</span> Minha Estante</a>
+        <div id="feed-comunidade-grid" class="feed-grid">
+            <div class="feed-loading">Carregando as últimas histórias...</div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO CONTATE-NOS -->
+    <section id="contate-nos" class="contato-section">
+        <h2 class="secao-titulo">📬 Contate-nos</h2>
+        <p class="secao-sub">Envie seu feedback do playtest para a DiceForge ou acompanhe a Licença de Comunidade.</p>
+
+        <div class="contato-grid">
+            <!-- CARD 1: LICENÇA DE COMUNIDADE (EM BREVE) -->
+            <div class="contato-card" style="border-top-color: #6c757d;">
+                <div>
+                    <span class="badge-em-breve">🔒 Em Desenvolvimento</span>
+                    <h3>📜 Licença de Comunidade B5A</h3>
+                    <p>
+                        Quer publicar suas próprias aventuras, Espectros, Caminhos, Vocações ou suplementos compatíveis com a <strong>Biblioteca da 5ª Avenida</strong>?
+                    </p>
+                    <p style="color: #9c9283; font-size: 0.82rem;">
+                        Nossa Licença Aberta da Comunidade está sendo finalizada junto com a versão estável do livro básico. Assim que o playtest encerrar, você poderá solicitar seu selo oficial por aqui.
+                    </p>
+                </div>
+
+                <div>
+                    <button type="button" class="btn-licenca-disabled" disabled title="Disponível após o período de playtest">
+                        ⏳ Solicitar Licença de Comunidade (Em Breve)
+                    </button>
+                </div>
             </div>
-            <div class="menu-card">
-                <h3>Comunidade</h3>
-                <a href="pages/comunidade.html" class="menu-item"><span class="icone">🌍</span> Crônicas</a>
-                <a href="pages/monstros.html" class="menu-item"><span class="icone">👹</span> Bestiário</a>
-                <a href="pages/armas.html" class="menu-item"><span class="icone">🛡️</span> Arsenal</a>
-                <a href="pages/habilidades.html" class="menu-item"><span class="icone">✨</span> Grimório</a>
-            </div>
-            <div class="menu-card">
-                <h3>Consultas</h3>
-                <a href="pages/guia.html" class="menu-item"><span class="icone">📖</span> Guia Rápido</a>
-                <a href="pages/regras.html" class="menu-item"><span class="icone">🎲</span> Regras</a>
-                <a href="pages/espectros.html" class="menu-item"><span class="icone">🔥</span> Espectros</a>
-                <a href="pages/caminhos.html" class="menu-item"><span class="icone">⚔️</span> Caminhos</a>
+
+            <!-- CARD 2: FORMULÁRIO DE FEEDBACK DO PLAYTEST -->
+            <div class="contato-card">
+                <div>
+                    <h3>🎲 Feedback do Playtest</h3>
+                    <p>Jogou uma sessão ou testou a criação de ficha? Conte como foi a experiência, reporte bugs ou sugira ajustes de balanceamento.</p>
+
+                    <form id="form-feedback-playtest" class="form-playtest">
+                        <div class="form-row-2">
+                            <div>
+                                <label for="fb-nome">Seu Nome / Arquivista</label>
+                                <input type="text" id="fb-nome" placeholder="Ex: Arthur (Mago Ígneo)" required>
+                            </div>
+                            <div>
+                                <label for="fb-email">Seu E-mail (Opcional, para resposta)</label>
+                                <input type="email" id="fb-email" placeholder="seuemail@exemplo.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div>
+                                <label for="fb-papel">Seu Papel na Mesa</label>
+                                <select id="fb-papel">
+                                    <option value="Jogador (Arquivista)">Jogador (Arquivista)</option>
+                                    <option value="Guardião (Mestre)">Guardião (Mestre)</option>
+                                    <option value="Leitura / Análise de Regras">Leitura / Análise de Regras</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="fb-categoria">O que você está avaliando?</label>
+                                <select id="fb-categoria">
+                                    <option value="Combate, Clash e Dano">Combate, Clash e Dano</option>
+                                    <option value="Criação de Ficha e Volumes">Criação de Ficha e Volumes</option>
+                                    <option value="Espectros, Caminhos e Vocações">Espectros, Caminhos e Vocações</option>
+                                    <option value="Pilha de Descartes (12h)">Pilha de Descartes (12h)</option>
+                                    <option value="Site, Ficha Online ou Grid Tático">Site, Ficha Online ou Grid Tático</option>
+                                    <option value="Sugestão Geral / Outro">Sugestão Geral / Outro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="fb-nota">Nota Geral da Experiência</label>
+                            <select id="fb-nota">
+                                <option value="5/5 - Momento Lendário (12)">⭐⭐⭐⭐⭐ (5/5 - Excelente)</option>
+                                <option value="4/5 - Muito Bom">⭐⭐⭐⭐ (4/5 - Muito Bom)</option>
+                                <option value="3/5 - Equilibrado, mas precisa ajustes">⭐⭐⭐ (3/5 - Bom, precisa ajustes)</option>
+                                <option value="2/5 - Confuso ou travado">⭐⭐ (2/5 - Confuso ou travado)</option>
+                                <option value="1/5 - Catástrofe (1)">⭐ (1/5 - Problema grave)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="fb-mensagem">Relato, Sugestões ou Bugs Encontrados</label>
+                            <textarea id="fb-mensagem" rows="4" placeholder="O que funcionou muito bem? O que ficou confuso ou forte/fraco demais?" required></textarea>
+                        </div>
+
+                        <button type="submit" id="btn-enviar-fb" class="btn-enviar-feedback">
+                            ✉️ Enviar Relatório de Playtest
+                        </button>
+                        <div id="fb-status" style="font-size: 0.82rem; text-align: center; min-height: 18px;"></div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- O SEGREDO ESTÁ AQUI: window.onload garante que tudo carregue na ordem certa -->
-    <script type="module">
-        import './js/firebase.js';
-        import './js/home.js';
+    <footer>
+        Biblioteca da 5ª Avenida (B5A) • DiceForge
+    </footer>
+
+    <!-- RESOLUÇÃO AUTOMÁTICA DO CAMINHO DO SVG DA LOGO -->
+    <script>
+        (function resolverLogoSvg() {
+            const img = document.getElementById('logo-b5a');
+            const caminhosPossiveis = ['./assets/logo.svg', './img/logo.svg', './logo.svg', './images/logo.svg'];
+            let idx = 0;
+
+            img.onerror = function() {
+                idx++;
+                if (idx < caminhosPossiveis.length) {
+                    img.src = caminhosPossiveis[idx];
+                } else {
+                    document.getElementById('logo-wrapper').innerHTML = `
+                        <div class="logo-tipografia-fallback" aria-label="Biblioteca da 5ª Avenida">
+                            <span class="logo-linha-1">BIBLIOTECA</span>
+                            <span class="logo-linha-2">DA 5<sup>ª</sup> AVENIDA</span>
+                        </div>
+                    `;
+                }
+            };
+        })();
     </script>
 
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
+    <!-- FEED COMPLETO DA COMUNIDADE E ENVIO DE FEEDBACK -->
+    <script type="module">
+        import { db, idJogadorAtual } from './js/firebase.js';
+        import { ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+        const CORES_ESPECTRO = {
+            padrao: "#d4af37",
+            igneo: "#e63946",
+            celeste: "#4cc9f0",
+            viridiano: "#2ec4b6",
+            solar: "#ffbe0b",
+            indigo: "#9b5de5",
+            alabastro: "#f8f9fa"
+        };
+
+        const NOMES_ESPECTRO = {
+            padrao: "Sem Espectro",
+            igneo: "Ígneo",
+            celeste: "Celeste",
+            viridiano: "Viridiano",
+            solar: "Solar",
+            indigo: "Índigo",
+            alabastro: "Alabastro"
+        };
+
+        const ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+        let mapaUsuarios = {};
+        let dadosJogadores = {};
+        let dadosCronicas = {};
+        let dadosItens = {};
+        let dadosCriaturas = {};
+        let filtroAtivo = "todos";
+
+        function escaparHtml(texto) {
+            return String(texto || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function formatarTempoRelativo(valorTempo) {
+            if (!valorTempo) return "Recentemente";
+            let ms = 0;
+            if (typeof valorTempo === 'number') {
+                ms = valorTempo;
+            } else {
+                const parsed = Date.parse(valorTempo);
+                if (!isNaN(parsed)) {
+                    ms = parsed;
+                } else {
+                    return String(valorTempo);
+                }
+            }
+
+            const diffSeg = Math.floor((Date.now() - ms) / 1000);
+            if (diffSeg < 0) return "Agora mesmo";
+            if (diffSeg < 60) return "Agora mesmo";
+            const diffMin = Math.floor(diffSeg / 60);
+            if (diffMin < 60) return `há ${diffMin} min`;
+            const diffHoras = Math.floor(diffMin / 60);
+            if (diffHoras < 24) return `há ${diffHoras}h`;
+            const diffDias = Math.floor(diffHoras / 24);
+            if (diffDias === 1) return "há 1 dia";
+            if (diffDias < 30) return `há ${diffDias} dias`;
+            const diffMeses = Math.floor(diffDias / 30);
+            return diffMeses === 1 ? "há 1 mês" : `há ${diffMeses} meses`;
+        }
+
+        function resolverNomeUsuario(obj, fallbackId) {
+            if (obj.autor) return obj.autor;
+            if (obj.criador) return obj.criador;
+            if (obj.nomeUsuario) return obj.nomeUsuario;
+            const uid = obj.donoId || obj.uid || fallbackId;
+            if (uid && mapaUsuarios[uid]) {
+                return mapaUsuarios[uid].nome || mapaUsuarios[uid].displayName || mapaUsuarios[uid].apelido || "Arquivista";
+            }
+            return "Membro da Biblioteca";
+        }
+
+        function formatarClasse(char) {
+            const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ') : "";
+            if (char.tipoClasse === 'vocacao') return `Vocação: ${cap(char.vocacao)}`;
+            if (char.tipoClasse === 'hibrido') return `${cap(char.caminho)} / ${cap(char.vocacao)}`;
+            return `Caminho: ${cap(char.caminho || 'guerreiro')}`;
+        }
+
+        function renderizarFeedComunidade() {
+            const gridFeed = document.getElementById('feed-comunidade-grid');
+            const feedUnificado = [];
+
+            // 1. Arquivistas (Fichas)
+            Object.entries(dadosJogadores || {}).forEach(([id, char], idx) => {
+                if (!char || !char.nome) return;
+                const espKey = char.espectro || 'padrao';
+                const cor = CORES_ESPECTRO[espKey] || "#d4af37";
+                const espNome = NOMES_ESPECTRO[espKey] || "Sem Espectro";
+                const volRomano = ROMANOS[(char.volume || 1) - 1] || "I";
+                const ts = char.atualizadoEm || char.criadoEm || char.timestamp || (idx + 1);
+
+                feedUnificado.push({
+                    tipo: "arquivista",
+                    badge: `📜 Arquivista • Vol. ${volRomano}`,
+                    cor: cor,
+                    titulo: char.nome,
+                    subinfo: `✦ ${espNome} • ${formatarClasse(char)}`,
+                    descricao: char.diarioNotas || (char.arma?.nome ? `Equipado com ${char.arma.nome}.` : "Pronto para escrever sua história na 5ª Avenida."),
+                    autor: resolverNomeUsuario(char, id),
+                    tempoRaw: ts,
+                    tempoTexto: formatarTempoRelativo(char.atualizadoEm || char.criadoEm || char.timestamp)
+                });
+
+                // Itens customizados criados dentro do inventário do jogador (caso sejam objetos ricos)
+                if (Array.isArray(char.inventario)) {
+                    char.inventario.forEach((item, iIdx) => {
+                        if (item && typeof item === 'object' && item.nome) {
+                            feedUnificado.push({
+                                tipo: "item",
+                                badge: `🗡️ Item / Relíquia`,
+                                cor: "#ffbe0b",
+                                titulo: item.nome,
+                                subinfo: item.categoria || item.dano || "Artefato da Biblioteca",
+                                descricao: item.efeito || item.descricao || `Registrado no inventário de ${char.nome}.`,
+                                autor: resolverNomeUsuario(char, id),
+                                tempoRaw: (typeof ts === 'number' ? ts + iIdx : idx),
+                                tempoTexto: formatarTempoRelativo(item.criadoEm || char.atualizadoEm || char.criadoEm)
+                            });
+                        }
+                    });
+                }
+            });
+
+            // 2. Crônicas da Comunidade
+            Object.entries(dadosCronicas || {}).forEach(([id, cr], idx) => {
+                if (!cr) return;
+                const titulo = cr.titulo || cr.nome || "Crônica sem Título";
+                feedUnificado.push({
+                    tipo: "cronica",
+                    badge: "📖 Crônica",
+                    cor: "#4cc9f0",
+                    titulo: titulo,
+                    subinfo: cr.genero || cr.sistema || "Relato & Aventura",
+                    descricao: cr.resumo || cr.sinopse || cr.texto || cr.conteudo || "Nova crônica registrada nos arquivos.",
+                    autor: resolverNomeUsuario(cr, cr.uid),
+                    tempoRaw: cr.criadoEm || cr.timestamp || (1000 + idx),
+                    tempoTexto: formatarTempoRelativo(cr.criadoEm || cr.timestamp || cr.data)
+                });
+            });
+
+            // 3. Itens / Artefatos da Comunidade
+            Object.entries(dadosItens || {}).forEach(([id, it], idx) => {
+                if (!it) return;
+                const titulo = it.nome || it.titulo || "Artefato Desconhecido";
+                feedUnificado.push({
+                    tipo: "item",
+                    badge: "🗡️ Item",
+                    cor: "#ffbe0b",
+                    titulo: titulo,
+                    subinfo: [it.categoria, it.dano, it.raridade].filter(Boolean).join(" • ") || "Equipamento da Comunidade",
+                    descricao: it.descricao || it.efeito || "Item forjado para as mesas de B5A.",
+                    autor: resolverNomeUsuario(it, it.uid),
+                    tempoRaw: it.criadoEm || it.timestamp || (2000 + idx),
+                    tempoTexto: formatarTempoRelativo(it.criadoEm || it.timestamp || it.data)
+                });
+            });
+
+            // 4. Criaturas / Bestiário da Comunidade
+            Object.entries(dadosCriaturas || {}).forEach(([id, mob], idx) => {
+                if (!mob) return;
+                const titulo = mob.nome || mob.titulo || "Entidade Sem Nome";
+                feedUnificado.push({
+                    tipo: "criatura",
+                    badge: "👁️ Criatura",
+                    cor: "#e63946",
+                    titulo: titulo,
+                    subinfo: [mob.tipo, mob.nivel ? `Nível ${mob.nivel}` : "", mob.pv ? `${mob.pv} PV` : ""].filter(Boolean).join(" • ") || "Ameaça do Bestiário",
+                    descricao: mob.descricao || mob.habilidades || mob.comportamento || "Criatura catalogada nos arquivos sombrios.",
+                    autor: resolverNomeUsuario(mob, mob.uid),
+                    tempoRaw: mob.criadoEm || mob.timestamp || (3000 + idx),
+                    tempoTexto: formatarTempoRelativo(mob.criadoEm || mob.timestamp || mob.data)
+                });
+            });
+
+            // Ordena pelos mais recentes primeiro
+            feedUnificado.sort((a, b) => {
+                const ta = typeof a.tempoRaw === 'number' ? a.tempoRaw : Date.parse(a.tempoRaw) || 0;
+                const tb = typeof b.tempoRaw === 'number' ? b.tempoRaw : Date.parse(b.tempoRaw) || 0;
+                return tb - ta;
+            });
+
+            const filtrados = filtroAtivo === "todos"
+                ? feedUnificado
+                : feedUnificado.filter(item => item.tipo === filtroAtivo);
+
+            if (filtrados.length === 0) {
+                gridFeed.innerHTML = `<div class="feed-loading">Nenhuma criação encontrada nesta categoria ainda.</div>`;
+                return;
+            }
+
+            gridFeed.innerHTML = filtrados.slice(0, 12).map(item => `
+                <article class="feed-card" style="border-left-color: ${item.cor};">
+                    <div>
+                        <div class="feed-card-topo">
+                            <span class="feed-tipo-badge" style="color: ${item.cor}; border-color: ${item.cor}44;">${escaparHtml(item.badge)}</span>
+                            <span class="feed-tempo">🕒 ${escaparHtml(item.tempoTexto)}</span>
+                        </div>
+                        <div class="feed-titulo-item">${escaparHtml(item.titulo)}</div>
+                        <div class="feed-subinfo">${escaparHtml(item.subinfo)}</div>
+                        <div class="feed-descricao" style="margin-top: 8px;">${escaparHtml(item.descricao)}</div>
+                    </div>
+                    <div class="feed-rodape">
+                        <span class="feed-autor">✍️ ${escaparHtml(item.autor)}</span>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        // Filtros do Feed
+        document.querySelectorAll('.btn-filtro-feed').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-filtro-feed').forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                filtroAtivo = btn.dataset.filtro;
+                renderizarFeedComunidade();
+            });
+        });
+
+        // Listeners em tempo real no Firebase para todas as coleções da comunidade
+        onValue(ref(db, 'usuarios'), (snap) => {
+            mapaUsuarios = snap.val() || {};
+            renderizarFeedComunidade();
+        });
+
+        onValue(ref(db, 'salas/sala-padrao/jogadores'), (snap) => {
+            dadosJogadores = snap.val() || {};
+            renderizarFeedComunidade();
+        });
+
+        onValue(ref(db, 'cronicas'), (snap) => {
+            dadosCronicas = snap.val() || {};
+            renderizarFeedComunidade();
+        });
+
+        onValue(ref(db, 'itens'), (snap) => {
+            dadosItens = snap.val() || {};
+            renderizarFeedComunidade();
+        });
+
+        onValue(ref(db, 'criaturas'), (snap) => {
+            dadosCriaturas = snap.val() || {};
+            renderizarFeedComunidade();
+        });
+
+        // Formulário de Feedback do Playtest -> diceforgecontato@gmail.com
+        const formFb = document.getElementById('form-feedback-playtest');
+        if (formFb) {
+            formFb.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btn-enviar-fb');
+                const status = document.getElementById('fb-status');
+
+                const nome = document.getElementById('fb-nome').value.trim();
+                const emailJogador = document.getElementById('fb-email').value.trim();
+                const papel = document.getElementById('fb-papel').value;
+                const categoria = document.getElementById('fb-categoria').value;
+                const nota = document.getElementById('fb-nota').value;
+                const mensagem = document.getElementById('fb-mensagem').value.trim();
+                const dataEnvio = new Date().toLocaleString('pt-BR');
+
+                btn.disabled = true;
+                btn.innerText = "Enviando...";
+                status.style.color = "#d4af37";
+                status.innerText = "Enviando relatório para diceforgecontato@gmail.com...";
+
+                try {
+                    const payloadEmail = {
+                        _subject: `[Playtest B5A] ${categoria} - ${nome} (${nota})`,
+                        _template: "table",
+                        _captcha: "false",
+                        Nome_ou_Arquivista: nome,
+                        Email_para_Resposta: emailJogador || "Não informado",
+                        Papel_na_Mesa: papel,
+                        Area_Avaliada: categoria,
+                        Avaliacao: nota,
+                        Relato_Completo: mensagem,
+                        Data_Envio: dataEnvio
+                    };
+
+                    if (emailJogador) {
+                        payloadEmail._replyto = emailJogador;
+                    }
+
+                    const res = await fetch("https://formsubmit.co/ajax/diceforgecontato@gmail.com", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify(payloadEmail)
+                    });
+
+                    if (!res.ok) {
+                        throw new Error("Falha no envio do e-mail");
+                    }
+
+                    try {
+                        await push(ref(db, 'feedbacks_playtest'), {
+                            nome,
+                            email: emailJogador || "Não informado",
+                            papel,
+                            categoria,
+                            nota,
+                            mensagem,
+                            uid: idJogadorAtual || "anonimo",
+                            data: dataEnvio
+                        });
+                    } catch (fbErr) {
+                        console.warn("Backup Firebase ignorado:", fbErr);
+                    }
+
+                    status.style.color = "#2ec4b6";
+                    status.innerText = "✅ Relatório enviado para diceforgecontato@gmail.com! Obrigado por ajudar no playtest.";
+                    formFb.reset();
+                } catch (err) {
+                    console.error("Erro ao enviar feedback:", err);
+                    status.style.color = "#e63946";
+                    status.innerText = "❌ Não foi possível enviar agora. Tente novamente em instantes.";
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = "✉️ Enviar Relatório de Playtest";
+                }
+            });
+        }
+    </script>
+    <script type="module" src="./js/firebase.js"></script>
+    <script type="module" src="./js/notificacoes.js"></script>
 </body>
 </html>
