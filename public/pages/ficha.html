@@ -49,6 +49,7 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 8px 20px; z-index: 1000; gap: 10px;
         }
+        .top-nav-header-mobile { display: flex; align-items: center; gap: 14px; }
         .nav-brand { font-size: 1.4rem; color: var(--ouro); text-decoration: none; font-family: 'Bebas Neue'; white-space: nowrap; }
         .nav-user { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
         .btn-login-nav { background-color: var(--ouro); color: #000; border: none; padding: 8px 14px; border-radius: 4px; font-size: 0.95rem; cursor: pointer; font-family: 'Bebas Neue'; white-space: nowrap; }
@@ -204,21 +205,15 @@
             width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto;
         }
 
-        /* =========================================================
-           RESPONSIVIDADE (TABLETS E CELULARES)
-           ========================================================= */
-        
-        /* Tablets e Telas Médias */
+        /* RESPONSIVIDADE */
         @media (max-width: 1150px) { 
             .tabuleiro-grid { grid-template-columns: 1fr 1fr; } 
             .zona:nth-child(3) { grid-column: span 2; } 
             .pericias-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Celulares e Telas Pequenas */
         @media (max-width: 768px) {
             body { padding: 10px; padding-top: 105px; }
-            
             .top-nav { 
                 flex-direction: column; 
                 align-items: stretch; 
@@ -242,7 +237,6 @@
                 padding: 7px 10px;
                 font-size: 0.9rem;
             }
-
             .topbar-tabuleiro { 
                 flex-direction: column; 
                 align-items: stretch; 
@@ -267,28 +261,19 @@
             .topbar-acoes .btn-rolar {
                 width: 100% !important;
             }
-
             .tabuleiro-grid { grid-template-columns: 1fr; gap: 14px; }
             .zona { padding: 12px; }
             .zona:nth-child(3) { grid-column: span 1; }
-
             .status-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .chamas-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .pericias-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-
-            /* Ajuste para caixa Ígneo empilhar no celular */
             .igneo-selects { flex-direction: column; }
-
-            /* Ajuste para categoria + checkbox Arma Favorita */
             .arma-cat-row { flex-direction: column; align-items: stretch !important; }
             .arma-botoes-row { display: grid !important; grid-template-columns: 1fr 1fr 1fr; }
-
-            /* Aumenta levemente botões de toque no mobile */
             .btn-mini { min-width: 30px; height: 30px; }
             .pericia-item .btn-mini { min-width: 26px; height: 26px; }
         }
 
-        /* Celulares Ultra Compactos (< 400px) */
         @media (max-width: 400px) {
             body { padding-top: 115px; }
             .pericias-grid { grid-template-columns: 1fr; }
@@ -303,8 +288,9 @@
 
     <nav class="top-nav">
         <div class="top-nav-header-mobile">
-            <a href="../index.html" class="nav-brand">← Voltar</a>
-            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Faça login</a>
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a href="estante.html" class="nav-brand" style="font-size: 1.15rem; color: #ccc;">📚 Estante</a>
+            <a href="perfil.html" id="status-login" class="status-login-nav" style="margin-left: auto;">🔴 Faça login</a>
         </div>
         <div class="nav-user">
             <span id="status-salvamento" style="font-size: 0.78rem; color: #aaa;"></span>
@@ -578,7 +564,7 @@
             viridiano: { cor: "#2ec4b6", juramento: "“Enquanto houver vida, há esperança.”", passivo: "1x/cena, ao chegar a 0 PV, permanece consciente até o fim do turno.", ativo: "Cura (Xd6, X=Vol) ou Resistência (+2d4 em testes defensivos) 1x/cena." },
             solar: { cor: "#ffbe0b", juramento: "“Nenhum caminho é definitivo.”", passivo: "1x/rodada, substitua um dado rolado por um de seus Ecos (1 Eco + 1/Vol).", ativo: "Livre-arbítrio: quebre restrições físicas ou narrativas." },
             indigo: { cor: "#9b5de5", juramento: "“Toda resposta gera uma nova pergunta.”", passivo: "Ao descartar 9, 10, 11 ou 12: faça 1 pergunta verdadeira ou improvise 1 Palavra.", ativo: "Dobrar a realidade: reescreva um detalhe coerente da cena." },
-            alabastro: { cor: "#f8f9fa", juramento: "“Ninguém deve prevalecer.”", passivo: "Testes defensivos têm -1d4, mas testes ofensivos ganham +1d4.", ativo: "Balancear, julgar, proteger (ex: dividir dano ou trocar defesa com aliado)." }
+            alabastro: { cor: "#f8f9fa", juramento: "“Ninguém deve prevalecer.”", passivo: "Testes defensivos têm -1d4, mas seus testes ofensivos ganham +1d4.", ativo: "Balancear, julgar, proteger (ex: dividir dano ou trocar defesa com aliado)." }
         };
 
         const CAMINHOS = {
@@ -753,15 +739,37 @@
             return 4 + (vol - 1);
         }
 
+        function formatarItemInventario(item) {
+            if (!item) return "";
+            if (typeof item === 'object') {
+                const nome = item.nome || "Item";
+                const extra = [item.dano, item.efeito].filter(Boolean).join(" • ");
+                return extra ? `${nome} (${extra})` : nome;
+            }
+            return String(item);
+        }
+
         // --- CARREGAR E SALVAR NO FIREBASE ---
         async function carregarFicha() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isNovo = urlParams.get('novo') === 'true';
+
             if (!idJogadorAtual) {
                 document.getElementById('status-salvamento').innerText = "Modo Offline";
                 iniciarTabuleiro();
                 return;
             }
+
+            if (isNovo) {
+                fichaId = `${idJogadorAtual}_${Date.now()}`;
+                document.getElementById('nome-char').value = "Novo Arquivista";
+                document.getElementById('status-salvamento').innerText = "✨ Nova Ficha";
+                alternarTipoClasse();
+                iniciarTabuleiro();
+                conectarSala();
+                return;
+            }
             
-            const urlParams = new URLSearchParams(window.location.search);
             fichaId = urlParams.get('id') || idJogadorAtual; 
             
             try {
@@ -801,7 +809,7 @@
                     estado.pi = dados.piAtual !== undefined ? dados.piAtual : 5;
                     estado.pvTemp = dados.pvTemp || 0;
                     estado.pilha = dados.pilha || [];
-                    estado.inventario = dados.inventario || [];
+                    estado.inventario = (dados.inventario || []).map(formatarItemInventario);
                     estado.palavras = dados.palavras || [];
                     estado.frases = dados.frases || [];
                     estado.tituloAtivo = dados.tituloAtivo || null;
@@ -824,6 +832,7 @@
             estado.inventario = Array.from(inputsInv).map(inp => inp.value);
 
             const payload = {
+                donoId: idJogadorAtual,
                 nome: document.getElementById('nome-char').value || "Arquivista",
                 espectro: document.getElementById('sel-espectro').value,
                 igneoPlus: document.getElementById('igneo-plus').value,
@@ -855,7 +864,12 @@
             lbl.innerText = "Salvando...";
             try {
                 await set(ref(db, `salas/${sala}/jogadores/${targetId}`), payload);
-                lbl.innerText = "✅ Salvo!";
+                
+                if (window.location.search.includes('novo=true')) {
+                    window.history.replaceState({}, '', `ficha.html?id=${targetId}`);
+                }
+
+                lbl.innerText = "✅ Salvo na Estante!";
                 setTimeout(() => lbl.innerText = "", 3000);
             } catch (err) {
                 lbl.innerText = "❌ Erro";
@@ -1012,7 +1026,7 @@
 
             let htmlInv = `<div class="slot-item slot-diario">📕 <strong>Diário do Arquivista</strong> (Equipamento Padrão • 0 Esp)</div>`;
             for (let i = 0; i < invCap; i++) {
-                const val = estado.inventario[i] || "";
+                const val = formatarItemInventario(estado.inventario[i]).replace(/"/g, '&quot;');
                 htmlInv += `<div class="slot-item"><input type="text" class="input-inv-item" value="${val}" placeholder="Espaço ${i+1}..." style="background:transparent; border:none; margin:0; padding:2px 0; font-size:0.82rem; color:#ccc;"></div>`;
             }
             document.getElementById("inventario-container").innerHTML = htmlInv;
@@ -1443,9 +1457,6 @@
         }, 800);
     </script>
     <script type="module" src="../js/firebase.js"></script>
-
-    <script type="module" src="js/notificacoes.js"></script>
-
-    <script type="module" src="js/home.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
 </body>
 </html>
