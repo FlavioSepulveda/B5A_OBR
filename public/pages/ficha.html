@@ -225,6 +225,7 @@
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
+                gap: 10px;
             }
             .nav-user { 
                 justify-content: space-between; 
@@ -290,6 +291,7 @@
         <div class="top-nav-header-mobile">
             <a href="../index.html" class="nav-brand">← Home</a>
             <a href="estante.html" class="nav-brand" style="font-size: 1.15rem; color: #ccc;">📚 Estante</a>
+            <a id="link-mesa-nav" href="mesa.html" class="nav-brand" style="font-size: 1.15rem; color: #ccc;">🗺️ Mesa</a>
             <a href="perfil.html" id="status-login" class="status-login-nav" style="margin-left: auto;">🔴 Faça login</a>
         </div>
         <div class="nav-user">
@@ -749,14 +751,32 @@
             return String(item);
         }
 
+        async function publicarRolagemSala(tituloRolagem, d12Val, totalVal) {
+            if (!idJogadorAtual) return;
+            const sala = document.getElementById('sala-id').value.trim() || "sala-padrao";
+            const nome = document.getElementById('nome-char').value || "Arquivista";
+            await push(ref(db, `salas/${sala}/rolagens`), {
+                nome: `${nome} (${tituloRolagem})`,
+                d12: d12Val,
+                vol: estado.volume,
+                total: totalVal
+            });
+        }
+
         // --- CARREGAR E SALVAR NO FIREBASE ---
         async function carregarFicha() {
             const urlParams = new URLSearchParams(window.location.search);
             const isNovo = urlParams.get('novo') === 'true';
+            const salaUrl = urlParams.get('sala');
+
+            if (salaUrl) {
+                document.getElementById('sala-id').value = salaUrl;
+            }
 
             if (!idJogadorAtual) {
                 document.getElementById('status-salvamento').innerText = "Modo Offline";
                 iniciarTabuleiro();
+                conectarSala();
                 return;
             }
 
@@ -825,7 +845,6 @@
 
         window.salvarFicha = async () => {
             if (!idJogadorAtual) return alert("Faça login com o Google para salvar sua ficha na nuvem!");
-            const sala = document.getElementById('sala-id').value.trim() || "sala-padrao";
             const targetId = fichaId || idJogadorAtual;
 
             const inputsInv = document.querySelectorAll('.input-inv-item');
@@ -863,10 +882,14 @@
             const lbl = document.getElementById('status-salvamento');
             lbl.innerText = "Salvando...";
             try {
-                await set(ref(db, `salas/${sala}/jogadores/${targetId}`), payload);
+                // Salva sempre no repositório global da Estante para não perder o personagem ao trocar de mesa
+                await set(ref(db, `salas/sala-padrao/jogadores/${targetId}`), payload);
                 
-                if (window.location.search.includes('novo=true')) {
-                    window.history.replaceState({}, '', `ficha.html?id=${targetId}`);
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('novo') === 'true') {
+                    urlParams.delete('novo');
+                    urlParams.set('id', targetId);
+                    window.history.replaceState({}, '', `ficha.html?${urlParams.toString()}`);
                 }
 
                 lbl.innerText = "✅ Salvo na Estante!";
@@ -1242,7 +1265,7 @@
             executarRolagem(`Clash Atq: ${nome} (${attrLabel})`, estado.atributos[attrKey], 4);
         };
 
-        window.rolarDanoArma = (isCritico) => {
+        window.rolarDanoArma = async (isCritico) => {
             const nome = document.getElementById("arma-nome").value || "Arma";
             const cat = document.getElementById("arma-categoria").value;
             const fav = document.getElementById("arma-favorita").checked;
@@ -1278,6 +1301,8 @@
                 <div style="font-size:0.85rem; color:#ccc;">Rolagem (${qtdDados}d${faces}): [${rolagens.join(", ")}]</div>
                 ${efeito ? `<div style="font-size:0.8rem; color:#ff9800; margin-top:4px;">Efeito: ${efeito}</div>` : ''}
             `;
+
+            await publicarRolagemSala(`${isCritico ? 'Crítico' : 'Dano'}: ${nome}`, `${qtdDados}d${faces}`, totalDano);
         };
 
         // --- TÍTULOS ---
@@ -1359,13 +1384,7 @@
                 <button class="btn-mini" style="width:auto; padding:6px 14px; height:auto; margin-top:8px; font-size:0.82rem;" onclick="enviarParaDescarte(${d12Principal})">⏳ Descartar d12 (${d12Principal})</button>
             `;
 
-            if (idJogadorAtual) {
-                const sala = document.getElementById('sala-id').value.trim() || "sala-padrao";
-                const nome = document.getElementById('nome-char').value || "Arquivista";
-                await push(ref(db, `salas/${sala}/rolagens`), { 
-                    nome: `${nome} (${titulo})`, d12: d12Principal, vol: estado.volume, total: total 
-                });
-            }
+            await publicarRolagemSala(titulo, d12Principal, total);
         }
 
         // --- PILHA DE DESCARTES E RECURSOS ---
@@ -1403,7 +1422,7 @@
             document.getElementById(map[tipo]).innerText = estado[tipo];
         };
 
-        window.rolarIniciativa = () => {
+        window.rolarIniciativa = async () => {
             const d12 = Math.floor(Math.random() * 12) + 1;
             const maxDin = estado.atributos.dinamismo * 4;
             const tipo = document.getElementById('sel-tipo-classe').value;
@@ -1415,9 +1434,11 @@
                 <div class="titulo-fonte" style="color:var(--ouro); font-size:1.2rem;">⚡ Iniciativa</div>
                 <div>1d12 (${d12}) + Dinamismo Máx (${maxDin}) + Vol (${estado.volume})${extraInic ? ` + Classe (${extraInic})` : ''} = <strong style="font-size:1.9rem; font-family:'Bebas Neue'; color:var(--espectro-cor);">${total}</strong></div>
             `;
+
+            await publicarRolagemSala("Iniciativa", d12, total);
         };
 
-        window.rolarClashDefesa = () => {
+        window.rolarClashDefesa = async () => {
             const d12 = Math.floor(Math.random() * 12) + 1;
             const maxDin = estado.atributos.dinamismo * 4;
             const total = d12 + maxDin + estado.volume;
@@ -1426,6 +1447,8 @@
                 <div>1d12 (${d12}) + Dinamismo Máx (${maxDin}) + Vol (${estado.volume}) = <strong style="font-size:1.9rem; font-family:'Bebas Neue'; color:#4cc9f0;">${total}</strong></div>
                 <div style="font-size:0.78rem; color:#aaa; margin-top:4px;">(Some manualmente bônus de itens defensivos ou cobertura)</div>
             `;
+
+            await publicarRolagemSala("Clash Defensivo", d12, total);
         };
 
         // --- HISTÓRICO GLOBAL DA SALA ---
@@ -1433,6 +1456,11 @@
             const sala = document.getElementById('sala-id').value.trim() || "sala-padrao";
             const container = document.getElementById('historico-container');
             
+            const linkMesa = document.getElementById('link-mesa-nav');
+            if (linkMesa) {
+                linkMesa.href = `mesa.html?sala=${encodeURIComponent(sala)}`;
+            }
+
             onValue(ref(db, `salas/${sala}/rolagens`), (snapshot) => {
                 container.innerHTML = '';
                 const dados = snapshot.val();
@@ -1444,7 +1472,7 @@
                 Object.values(dados).reverse().slice(0, 12).forEach(r => {
                     const div = document.createElement('div');
                     div.className = 'historico-item';
-                    div.innerHTML = `<span>${r.nome} <small style="color:#777;">(d12: ${r.d12})</small></span> <strong style="color:var(--espectro-cor);">${r.total}</strong>`;
+                    div.innerHTML = `<span>${r.nome} <small style="color:#777;">(${r.d12})</small></span> <strong style="color:var(--espectro-cor);">${r.total}</strong>`;
                     container.appendChild(div);
                 });
             });

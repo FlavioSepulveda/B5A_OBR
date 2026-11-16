@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Tabuleiro Tático - B5A</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
+            --cell-size: 46px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-mesa);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding: 14px;
+            padding-top: 74px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+            color: var(--ouro);
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: #111;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            font-size: 1.35rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            white-space: nowrap;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .mesa-layout {
+            display: grid;
+            grid-template-columns: 310px 1fr;
+            gap: 16px;
+            max-width: 1600px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .painel-controle {
+            background: var(--bg-painel);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        .bloco-ctrl {
+            background: #111;
+            border: 1px solid #2c2830;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bloco-ctrl label {
+            font-size: 0.75rem;
+            color: var(--ouro);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="url"], input[type="number"], select {
+            width: 100%;
+            background: var(--bg-slot);
+            color: var(--texto);
+            border: 1px solid #444;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Merriweather', serif;
+            font-size: 0.84rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--ouro);
+        }
+
+        .row-2 {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-acao {
+            background: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 4px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        .btn-acao:hover {
+            opacity: 0.9;
+        }
+
+        .btn-convite {
+            background: #2ec4b6;
+            color: #000;
+        }
+
+        .btn-sec {
+            background: #25202b;
+            color: var(--texto);
+            border: 1px solid #444;
+        }
+
+        .btn-danger {
+            background: #4a1c24;
+            color: #ffccd5;
+            border: 1px solid #e63946;
+        }
+
+        /* ÁREA DO TABULEIRO */
+        .area-grid-wrapper {
+            background: var(--bg-painel);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .barra-status-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #111;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            font-size: 0.85rem;
+        }
+
+        .medidor-badge {
+            background: #1f1b24;
+            border: 1px solid var(--ouro);
+            color: var(--ouro);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .viewport-mapa {
+            width: 100%;
+            max-height: 75vh;
+            overflow: auto;
+            border: 2px solid #2e2a33;
+            border-radius: 6px;
+            background: #09080a;
+            position: relative;
+        }
+
+        .grid-mapa {
+            position: relative;
+            background-color: #121014;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: grid;
+            user-select: none;
+        }
+
+        .celula {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.12s;
+        }
+
+        .celula:hover {
+            background-color: rgba(212, 175, 55, 0.15);
+        }
+
+        /* TOKENS */
+        .token {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            color: #fff;
+            text-shadow: 0 1px 3px #000, 0 0 6px #000;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
+            cursor: pointer;
+            z-index: 10;
+            transition: left 0.18s ease, top 0.18s ease, transform 0.15s;
+            padding: 2px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .token.selecionado {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px var(--ouro), 0 6px 16px rgba(0,0,0,0.95);
+            z-index: 20;
+        }
+
+        .token-sigla {
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+        }
+
+        .token-nome-flutuante {
+            position: absolute;
+            bottom: -18px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ece6d8;
+            font-family: 'Merriweather', serif;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            pointer-events: none;
+            border: 1px solid #333;
+        }
+
+        /* FEED DE ROLAGENS */
+        .feed-rolagens-mini {
+            max-height: 170px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.78rem;
+        }
+
+        .rolagem-linha {
+            background: #1a171e;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border-left: 2px solid var(--ouro);
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .mesa-layout {
+                grid-template-columns: 1fr;
+            }
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 12px;
+            }
+            .nav-links, .nav-user {
+                justify-content: space-between;
+            }
+            body {
+                padding-top: 98px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="../index.html" class="nav-brand">← Home</a>
+            <a id="link-ficha-nav" href="ficha.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📜 Ficha</a>
+            <a href="estante.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📚 Estante</a>
+        </div>
+        <div class="nav-user">
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
+
+    <div class="mesa-layout">
+        <!-- PAINEL LATERAL DE CONTROLE -->
+        <aside class="painel-controle">
+            <h2 style="font-size: 1.6rem; border-bottom: 1px solid #333; padding-bottom: 6px;">🗺️ Mesa Tática</h2>
+
+            <!-- CONVITE E SALA (ESTILO OWLBEAR) -->
+            <div class="bloco-ctrl" style="border-color: #2ec4b6;">
+                <label style="color: #2ec4b6;">Sessão & Convite (Estilo Owlbear)</label>
+                <div style="font-size: 0.78rem; color: #ccc;">
+                    Sala ativa: <strong id="lbl-sala-ativa" style="color: var(--ouro);">-</strong>
+                </div>
+                <button class="btn-acao btn-convite" id="btn-copiar-convite" onclick="copiarLinkConvite()">
+                    🔗 Copiar Link de Convite
+                </button>
+                <button class="btn-acao btn-sec" style="font-size: 0.9rem; padding: 6px;" onclick="criarNovaMesa()">
+                    ✨ Criar Nova Sala Privada
+                </button>
+            </div>
+
+            <!-- INVOCAR PERSONAGEM DA ESTANTE -->
+            <div class="bloco-ctrl">
+                <label>Invocar Meu Arquivista</label>
+                <select id="sel-meu-personagem">
+                    <option value="">Carregando Estante...</option>
+                </select>
+                <button class="btn-acao" onclick="invocarMeuArquivista()">✦ Colocar no Mapa</button>
+            </div>
+
+            <!-- ADICIONAR TOKEN MANUAL / MONSTRO -->
+            <div class="bloco-ctrl">
+                <label>Adicionar Token (Criatura / NPC)</label>
+                <input type="text" id="novo-token-nome" placeholder="Ex: Sombra Errante">
+                <div class="row-2">
+                    <select id="novo-token-cor">
+                        <option value="#e63946">Ígneo / Inimigo (Vermelho)</option>
+                        <option value="#4cc9f0">Celeste (Azul)</option>
+                        <option value="#2ec4b6">Viridiano (Verde)</option>
+                        <option value="#ffbe0b">Solar (Amarelo)</option>
+                        <option value="#9b5de5">Índigo (Roxo)</option>
+                        <option value="#f8f9fa">Alabastro (Branco)</option>
+                        <option value="#6c757d">Neutro / Objeto (Cinza)</option>
+                    </select>
+                    <select id="novo-token-tamanho" title="Tamanho no Grid">
+                        <option value="1">1x1 (Médio)</option>
+                        <option value="2">2x2 (Grande)</option>
+                        <option value="3">3x3 (Colossal)</option>
+                    </select>
+                </div>
+                <button class="btn-acao btn-sec" onclick="adicionarTokenManual()">+ Adicionar Token</button>
+            </div>
+
+            <!-- TOKEN SELECIONADO -->
+            <div class="bloco-ctrl" id="box-token-selecionado" style="display: none; border-color: var(--ouro);">
+                <label>Token Selecionado: <span id="lbl-token-sel" style="color: #fff;">-</span></label>
+                <p style="font-size: 0.75rem; color: #aaa;">Toque ou clique em qualquer quadrado do grid para mover este token.</p>
+                <button class="btn-acao btn-danger" onclick="removerTokenSelecionado()">🗑️ Remover do Mapa</button>
+            </div>
+
+            <!-- CONFIGURAÇÕES DO MAPA (GUARDIÃO) -->
+            <div class="bloco-ctrl">
+                <label>Cenário & Grade</label>
+                <input type="url" id="mapa-bg-url" placeholder="Cole o link de uma imagem de mapa...">
+                <div class="row-2">
+                    <input type="number" id="mapa-cols" value="20" min="8" max="40" title="Colunas">
+                    <input type="number" id="mapa-rows" value="15" min="8" max="40" title="Linhas">
+                </div>
+                <div class="row-2">
+                    <button class="btn-acao btn-sec" onclick="atualizarConfigMapa()">Aplicar Mapa</button>
+                    <button class="btn-acao btn-danger" onclick="limparTokensMapa()">Limpar Tokens</button>
+                </div>
+            </div>
+
+            <!-- CRÔNICA DA MESA (ROLAGENS) -->
+            <div class="bloco-ctrl">
+                <label>📜 Rolagens da Sala</label>
+                <div id="feed-rolagens-mesa" class="feed-rolagens-mini">
+                    <span style="color: #666;">Aguardando rolagens...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ÁREA DO GRID -->
+        <main class="area-grid-wrapper">
+            <div class="barra-status-grid">
+                <div>
+                    <strong style="color: var(--ouro);">1 Quadrado = 1,5m</strong>
+                    <span id="dica-movimento" style="color: #aaa; margin-left: 8px;">Selecione um token para medir o deslocamento.</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="medidor-distancia" class="medidor-badge">Distância: 0m</span>
+                    <button class="btn-acao btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.9rem;" onclick="ajustarZoom(-6)">-</button>
+                    <button class="btn-acao btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.9rem;" onclick="ajustarZoom(6)">+</button>
+                </div>
+            </div>
+
+            <div class="viewport-mapa">
+                <div id="grid-mapa" class="grid-mapa"></div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { db, idJogadorAtual } from '../js/firebase.js';
+        import { ref, get, set, push, remove, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const CORES_ESPECTRO = {
+            padrao: "#d4af37",
+            igneo: "#e63946",
+            celeste: "#4cc9f0",
+            viridiano: "#2ec4b6",
+            solar: "#ffbe0b",
+            indigo: "#9b5de5",
+            alabastro: "#f8f9fa"
+        };
+
+        let salaAtual = "";
+        let cellSize = 46;
+        let cols = 20;
+        let rows = 15;
+        let bgUrl = "";
+        let tokens = {};
+        let tokenSelecionadoId = null;
+        let meusArquivistas = {};
+
+        let refTokensAtiva = null;
+        let refConfigAtiva = null;
+        let refRolagensAtiva = null;
+
+        function gerarCodigoSala() {
+            const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+            let codigo = 'mesa-';
+            for (let i = 0; i < 6; i++) {
+                codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return codigo;
+        }
+
+        function obterOuCriarSalaDaURL() {
+            const params = new URLSearchParams(window.location.search);
+            let sala = params.get('sala');
+            if (!sala) {
+                sala = gerarCodigoSala();
+                const novaUrl = `${window.location.pathname}?sala=${sala}`;
+                window.history.replaceState({}, '', novaUrl);
+            }
+            return sala;
+        }
+
+        window.criarNovaMesa = () => {
+            const novaSala = gerarCodigoSala();
+            window.location.href = `${window.location.pathname}?sala=${novaSala}`;
+        };
+
+        window.copiarLinkConvite = async () => {
+            const urlConvite = window.location.href;
+            const btn = document.getElementById('btn-copiar-convite');
+            try {
+                await navigator.clipboard.writeText(urlConvite);
+                btn.innerText = "✅ Link Copiado! Mande no Discord/WhatsApp";
+                setTimeout(() => {
+                    btn.innerText = "🔗 Copiar Link de Convite";
+                }, 3000);
+            } catch (err) {
+                prompt("Copie o link abaixo e envie para os jogadores:", urlConvite);
+            }
+        };
+
+        // --- CARREGAR PERSONAGENS DO USUÁRIO ---
+        async function carregarMeusPersonagens() {
+            const sel = document.getElementById('sel-meu-personagem');
+            if (!idJogadorAtual) {
+                sel.innerHTML = `<option value="">Faça login para ver seus Arquivistas</option>`;
+                return;
+            }
+            try {
+                const snap = await get(ref(db, 'salas/sala-padrao/jogadores'));
+                const todos = snap.val() || {};
+                meusArquivistas = {};
+                let options = "";
+
+                Object.entries(todos).forEach(([id, char]) => {
+                    if (id === idJogadorAtual || char.donoId === idJogadorAtual) {
+                        meusArquivistas[id] = char;
+                        options += `<option value="${id}">${char.nome || 'Arquivista'} (Vol ${char.volume || 1})</option>`;
+                    }
+                });
+
+                sel.innerHTML = options || `<option value="">Nenhum Arquivista na Estante</option>`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- CONECTAR À SALA DO FIREBASE ---
+        function conectarMesa(salaId) {
+            salaAtual = salaId;
+            document.getElementById('lbl-sala-ativa').innerText = salaAtual;
+
+            // Atualiza o link da Ficha na navbar para abrir já na mesma sala
+            const linkFicha = document.getElementById('link-ficha-nav');
+            if (linkFicha) {
+                linkFicha.href = `ficha.html?sala=${encodeURIComponent(salaAtual)}`;
+            }
+
+            if (refTokensAtiva) off(refTokensAtiva);
+            if (refConfigAtiva) off(refConfigAtiva);
+            if (refRolagensAtiva) off(refRolagensAtiva);
+
+            refConfigAtiva = ref(db, `salas/${salaAtual}/mapaConfig`);
+            onValue(refConfigAtiva, (snap) => {
+                const cfg = snap.val() || {};
+                cols = parseInt(cfg.cols) || 20;
+                rows = parseInt(cfg.rows) || 15;
+                bgUrl = cfg.bgUrl || "";
+
+                document.getElementById('mapa-cols').value = cols;
+                document.getElementById('mapa-rows').value = rows;
+                document.getElementById('mapa-bg-url').value = bgUrl;
+
+                renderizarGrid();
+                renderizarTokens();
+            });
+
+            refTokensAtiva = ref(db, `salas/${salaAtual}/tokens`);
+            onValue(refTokensAtiva, (snap) => {
+                tokens = snap.val() || {};
+                if (tokenSelecionadoId && !tokens[tokenSelecionadoId]) {
+                    tokenSelecionadoId = null;
+                    atualizarPainelSelecao();
+                }
+                renderizarTokens();
+            });
+
+            refRolagensAtiva = ref(db, `salas/${salaAtual}/rolagens`);
+            onValue(refRolagensAtiva, (snap) => {
+                const feed = document.getElementById('feed-rolagens-mesa');
+                const dados = snap.val();
+                if (!dados) {
+                    feed.innerHTML = `<span style="color: #666;">Sem rolagens nesta sala.</span>`;
+                    return;
+                }
+                feed.innerHTML = Object.values(dados).reverse().slice(0, 10).map(r => `
+                    <div class="rolagem-linha">
+                        <span>${r.nome} <small style="color:#888;">(${r.d12})</small></span>
+                        <strong style="color: var(--ouro);">${r.total}</strong>
+                    </div>
+                `).join("");
+            });
+        }
+
+        // --- RENDERIZAÇÃO DO GRID E TOKENS ---
+        function renderizarGrid() {
+            const grid = document.getElementById('grid-mapa');
+            grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+            grid.style.width = `${cols * cellSize}px`;
+            grid.style.height = `${rows * cellSize}px`;
+            grid.style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
+
+            let html = "";
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    html += `<div class="celula" data-x="${x}" data-y="${y}" onmouseenter="calcularDistanciaHover(${x}, ${y})" onclick="clicarCelula(${x}, ${y})"></div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        function renderizarTokens() {
+            const grid = document.getElementById('grid-mapa');
+            grid.querySelectorAll('.token').forEach(el => el.remove());
+
+            Object.entries(tokens).forEach(([id, t]) => {
+                const tam = parseInt(t.tamanho) || 1;
+                const pxSize = (cellSize * tam) - 6;
+                const sigla = (t.nome || "?").substring(0, 3).toUpperCase();
+                const isSel = id === tokenSelecionadoId;
+
+                const div = document.createElement('div');
+                div.className = `token ${isSel ? 'selecionado' : ''}`;
+                div.style.width = `${pxSize}px`;
+                div.style.height = `${pxSize}px`;
+                div.style.left = `${(t.x * cellSize) + 3}px`;
+                div.style.top = `${(t.y * cellSize) + 3}px`;
+                div.style.backgroundColor = t.cor || "#d4af37";
+                div.style.borderColor = isSel ? "#d4af37" : "#fff";
+
+                div.innerHTML = `
+                    <span class="token-sigla">${sigla}</span>
+                    <span class="token-nome-flutuante">${t.nome}</span>
+                `;
+
+                div.onclick = (e) => {
+                    e.stopPropagation();
+                    tokenSelecionadoId = (tokenSelecionadoId === id) ? null : id;
+                    atualizarPainelSelecao();
+                    renderizarTokens();
+                };
+
+                grid.appendChild(div);
+            });
+        }
+
+        function atualizarPainelSelecao() {
+            const box = document.getElementById('box-token-selecionado');
+            const lbl = document.getElementById('lbl-token-sel');
+            const dica = document.getElementById('dica-movimento');
+
+            if (tokenSelecionadoId && tokens[tokenSelecionadoId]) {
+                const t = tokens[tokenSelecionadoId];
+                box.style.display = 'flex';
+                lbl.innerText = t.nome;
+                dica.innerText = `Movendo "${t.nome}" — toque no destino no grid.`;
+            } else {
+                box.style.display = 'none';
+                dica.innerText = "Selecione um token para medir o deslocamento.";
+                document.getElementById('medidor-distancia').innerText = "Distância: 0m";
+            }
+        }
+
+        // --- MEDIÇÃO E MOVIMENTO (1 QUADRADO = 1,5m) ---
+        window.calcularDistanciaHover = (x, y) => {
+            if (!tokenSelecionadoId || !tokens[tokenSelecionadoId]) return;
+            const t = tokens[tokenSelecionadoId];
+            const quadrados = Math.max(Math.abs(x - t.x), Math.abs(y - t.y));
+            const metros = (quadrados * 1.5).toString().replace('.', ',');
+            document.getElementById('medidor-distancia').innerText = `Distância: ${metros}m (${quadrados} qd)`;
+        };
+
+        window.clicarCelula = async (x, y) => {
+            if (!tokenSelecionadoId || !tokens[tokenSelecionadoId]) return;
+            const t = tokens[tokenSelecionadoId];
+            const quadrados = Math.max(Math.abs(x - t.x), Math.abs(y - t.y));
+            const metros = (quadrados * 1.5).toString().replace('.', ',');
+            document.getElementById('medidor-distancia').innerText = `Moveu: ${metros}m`;
+
+            await set(ref(db, `salas/${salaAtual}/tokens/${tokenSelecionadoId}`), {
+                ...t,
+                x: x,
+                y: y
+            });
+        };
+
+        // --- AÇÕES DE TOKENS E MAPA ---
+        window.invocarMeuArquivista = async () => {
+            const charId = document.getElementById('sel-meu-personagem').value;
+            const char = meusArquivistas[charId];
+            if (!char) return alert("Selecione um Arquivista válido da sua Estante!");
+
+            const cor = CORES_ESPECTRO[char.espectro] || "#d4af37";
+            await push(ref(db, `salas/${salaAtual}/tokens`), {
+                nome: char.nome || "Arquivista",
+                cor: cor,
+                tamanho: 1,
+                x: 1,
+                y: 1,
+                donoId: idJogadorAtual || ""
+            });
+        };
+
+        window.adicionarTokenManual = async () => {
+            const nome = document.getElementById('novo-token-nome').value.trim();
+            if (!nome) return alert("Digite um nome para o token!");
+            const cor = document.getElementById('novo-token-cor').value;
+            const tamanho = parseInt(document.getElementById('novo-token-tamanho').value) || 1;
+
+            await push(ref(db, `salas/${salaAtual}/tokens`), {
+                nome,
+                cor,
+                tamanho,
+                x: 2,
+                y: 2
+            });
+            document.getElementById('novo-token-nome').value = "";
+        };
+
+        window.removerTokenSelecionado = async () => {
+            if (!tokenSelecionadoId) return;
+            await remove(ref(db, `salas/${salaAtual}/tokens/${tokenSelecionadoId}`));
+            tokenSelecionadoId = null;
+            atualizarPainelSelecao();
+        };
+
+        window.atualizarConfigMapa = async () => {
+            const newUrl = document.getElementById('mapa-bg-url').value.trim();
+            const newCols = Math.min(40, Math.max(8, parseInt(document.getElementById('mapa-cols').value) || 20));
+            const newRows = Math.min(40, Math.max(8, parseInt(document.getElementById('mapa-rows').value) || 15));
+
+            await set(ref(db, `salas/${salaAtual}/mapaConfig`), {
+                bgUrl: newUrl,
+                cols: newCols,
+                rows: newRows
+            });
+        };
+
+        window.limparTokensMapa = async () => {
+            if (!confirm("Remover TODOS os tokens deste mapa?")) return;
+            await remove(ref(db, `salas/${salaAtual}/tokens`));
+            tokenSelecionadoId = null;
+            atualizarPainelSelecao();
+        };
+
+        window.ajustarZoom = (delta) => {
+            cellSize = Math.min(80, Math.max(28, cellSize + delta));
+            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+            renderizarGrid();
+            renderizarTokens();
+        };
+
+        // --- INICIALIZAÇÃO ---
+        const salaInicial = obterOuCriarSalaDaURL();
+        conectarMesa(salaInicial);
+
+        window.addEventListener('usuarioLogado', carregarMeusPersonagens);
+        setTimeout(carregarMeusPersonagens, 700);
+    </script>
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
+</body>
+</html>
