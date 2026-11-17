@@ -1,8 +1,7 @@
 import { auth, db, storage } from './firebase.js';
-import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { ref as dbRef, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { registrarNotificacao } from './interacoes.js';
 
 const params = new URLSearchParams(window.location.search);
 let perfilUid = params.get('uid');
@@ -11,7 +10,6 @@ let ehProprioPerfil = false;
 let filtroNaturezaAtual = 'todas';
 let listaAnomaliasCache = [];
 
-// DADOS CANÔNICOS DO LIVRO DE REGRAS B5A
 const ESPECTROS_INFO = {
     padrao:    { nome: "Sem Espectro", cor: "#d4af37", juramento: '"Qual história você veio escrever?"' },
     igneo:     { nome: "Ígneo",        cor: "#e63946", juramento: '"Toda conquista exige um sacrifício."' },
@@ -59,38 +57,47 @@ function aplicarTemaEspectro(espectroKey) {
     if (juramento) juramento.textContent = info.juramento;
 }
 
-// CONTROLE DE ABAS E MODAIS
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-conteudo').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        const alvo = document.getElementById(btn.dataset.tab);
-        if (alvo) alvo.classList.add('active');
-    });
-});
-
-document.querySelectorAll('.close-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const modal = document.getElementById(btn.dataset.close);
-        if (modal) modal.style.display = 'none';
-    });
+// Botão de Login na Navbar
+document.getElementById('btn-login')?.addEventListener('click', async () => {
+    try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+    } catch (e) {
+        console.error("Erro no login:", e);
+    }
 });
 
 // INICIALIZAÇÃO VIA AUTH
 onAuthStateChanged(auth, async (user) => {
     usuarioLogado = user;
+
+    const statusNav = document.getElementById('status-login');
+    const btnLoginNav = document.getElementById('btn-login');
+    if (user) {
+        if (statusNav) statusNav.textContent = `🟢 ${user.displayName || 'Online'}`;
+        if (btnLoginNav) btnLoginNav.style.display = 'none';
+    } else {
+        if (statusNav) statusNav.textContent = '🔴 Offline';
+        if (btnLoginNav) btnLoginNav.style.display = 'inline-block';
+    }
+
     if (!perfilUid && user) {
         perfilUid = user.uid;
     }
 
     if (!perfilUid) {
         document.getElementById('perfil-nome').textContent = "Pesquisador não identificado";
-        document.getElementById('perfil-bio').textContent = "Faça login com Google para acessar seu Dossiê do Bestiário das Almas.";
+        document.getElementById('perfil-bio').textContent = "Clique em 'Entrar com Google' no topo ou acesse com ?uid=ID_DO_USUARIO.";
         return;
     }
 
-    await inicializarPerfil(perfilUid);
+    try {
+        await inicializarPerfil(perfilUid);
+    } catch (erro) {
+        console.error("Erro ao carregar perfil:", erro);
+        document.getElementById('perfil-nome').textContent = "Erro ao ler arquivo";
+        document.getElementById('perfil-bio').textContent = erro.message;
+    }
 });
 
 async function inicializarPerfil(uid) {
@@ -110,15 +117,16 @@ async function inicializarPerfil(uid) {
         await set(userRef, dadosPerfil);
     }
 
-    if (dadosPerfil) {
-        document.getElementById('perfil-nome').textContent = dadosPerfil.nome || "Arquivista";
-        document.getElementById('perfil-titulo').textContent = dadosPerfil.titulo || "Pesquisador";
-        document.getElementById('perfil-bio').textContent = `"${dadosPerfil.bio || 'Sem anotação pessoal.'}"`;
-        aplicarTemaEspectro(dadosPerfil.espectro || 'padrao');
+    const nomeExibir = dadosPerfil?.nome || dadosPerfil?.displayName || (ehProprioPerfil ? usuarioLogado?.displayName : null) || "Arquivista";
+    const tituloExibir = dadosPerfil?.titulo || "Pesquisador";
+    const bioExibir = dadosPerfil?.bio || "Sem anotação pessoal.";
+    const fotoExibir = dadosPerfil?.fotoUrl || dadosPerfil?.photoURL || dadosPerfil?.avatar || (ehProprioPerfil ? usuarioLogado?.photoURL : null) || `https://ui-avatars.com/api/?name=${encodeURIComponent(nomeExibir)}&background=1f1b24&color=d4af37`;
 
-        const avatarEl = document.getElementById('perfil-avatar');
-        avatarEl.src = dadosPerfil.fotoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dadosPerfil.nome || 'A')}&background=1f1b24&color=d4af37`;
-    }
+    document.getElementById('perfil-nome').textContent = nomeExibir;
+    document.getElementById('perfil-titulo').textContent = tituloExibir;
+    document.getElementById('perfil-bio').textContent = `"${bioExibir}"`;
+    document.getElementById('perfil-avatar').src = fotoExibir;
+    aplicarTemaEspectro(dadosPerfil?.espectro || 'padrao');
 
     // Permissões de Dono vs Visitante
     const btnEditar = document.getElementById('btn-editar-perfil');
@@ -132,9 +140,9 @@ async function inicializarPerfil(uid) {
         document.getElementById('btn-abrir-modal-titulo').style.display = 'inline-block';
 
         btnEditar.onclick = () => {
-            document.getElementById('edit-nome').value = dadosPerfil?.nome || "";
+            document.getElementById('edit-nome').value = nomeExibir;
             document.getElementById('edit-espectro').value = dadosPerfil?.espectro || "padrao";
-            document.getElementById('edit-titulo').value = dadosPerfil?.titulo || "";
+            document.getElementById('edit-titulo').value = tituloExibir;
             document.getElementById('edit-bio').value = dadosPerfil?.bio || "";
             document.getElementById('modal-editar-perfil').style.display = 'flex';
         };
@@ -143,7 +151,6 @@ async function inicializarPerfil(uid) {
         configurarBotaoSeguir(uid);
     }
 
-    // Compartilhar link direto do Dossiê
     document.getElementById('btn-copiar-link').onclick = () => {
         const url = `${window.location.origin}${window.location.pathname}?uid=${uid}`;
         navigator.clipboard.writeText(url);
@@ -159,6 +166,13 @@ async function inicializarPerfil(uid) {
     carregarCronicasDoUsuario(uid);
     escutarTitulos(uid);
     carregarForjaPessoal(uid);
+
+    const nfcParam = params.get('nfc');
+    if (nfcParam && ehProprioPerfil) {
+        document.querySelector('[data-tab="tab-anomalias"]')?.click();
+        document.getElementById('anomalia-codigo').value = nfcParam;
+        document.getElementById('modal-anomalia').style.display = 'flex';
+    }
 }
 
 // SALVAR CREDENCIAL DO PESQUISADOR
@@ -237,30 +251,47 @@ function configurarBotaoSeguir(alvoUid) {
         } else {
             await set(segRef, true);
             await set(seguindoRef, true);
-            await registrarNotificacao(
-                alvoUid,
-                `<strong>${usuarioLogado.displayName || 'Um Arquivista'}</strong> começou a acompanhar seu dossiê.`,
-                `pages/perfil.html?uid=${usuarioLogado.uid}`
-            );
+            try {
+                const mod = await import('./interacoes.js');
+                if (mod.registrarNotificacao) {
+                    await mod.registrarNotificacao(
+                        alvoUid,
+                        `<strong>${usuarioLogado.displayName || 'Um Arquivista'}</strong> começou a acompanhar seu dossiê.`,
+                        `pages/perfil.html?uid=${usuarioLogado.uid}`
+                    );
+                }
+            } catch (_) {}
         }
     };
 }
 
-// 1. ESTANTE DE PERSONAGENS & DIÁRIOS
+// 1. ESTANTE DE PERSONAGENS & DIÁRIOS (Lê estante/{uid}, usuarios/{uid}/estante e salas)
 async function carregarEstantePersonagens(uid) {
     const elEstante = document.getElementById('lista-estante-publica');
     const personagens = [];
     const ids = new Set();
 
-    const estanteSnap = await get(dbRef(db, `estante/${uid}`));
-    if (estanteSnap.exists()) {
-        estanteSnap.forEach(child => {
-            ids.add(child.key);
-            personagens.push({ id: child.key, ...child.val() });
+    const adicionarLista = (snap) => {
+        if (!snap.exists()) return;
+        snap.forEach(child => {
+            const val = child.val();
+            const f = val?.ficha || val;
+            if (f && typeof f === 'object' && !ids.has(child.key)) {
+                ids.add(child.key);
+                personagens.push({ id: child.key, ...f });
+            }
         });
-    }
+    };
 
-    const salaSnap = await get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`));
+    const [estanteSnap1, estanteSnap2, salaSnap] = await Promise.all([
+        get(dbRef(db, `estante/${uid}`)),
+        get(dbRef(db, `usuarios/${uid}/estante`)),
+        get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`))
+    ]);
+
+    adicionarLista(estanteSnap1);
+    adicionarLista(estanteSnap2);
+
     if (salaSnap.exists()) {
         const val = salaSnap.val();
         const f = val.ficha || (val.nome ? val : null);
@@ -278,7 +309,7 @@ async function carregarEstantePersonagens(uid) {
 
     elEstante.innerHTML = personagens.map(f => {
         const esp = ESPECTROS_INFO[f.espectro] || ESPECTROS_INFO.padrao;
-        const vol = ROMANOS[(f.volume || 1) - 1] || "I";
+        const vol = ROMANOS[(Number(f.volume) || 1) - 1] || "I";
         const classe = f.vocacao && f.tipoClasse === 'vocacao'
             ? `Vocação: ${f.vocacao}`
             : `Caminho: ${f.caminho || 'Guerreiro'}`;
@@ -308,7 +339,7 @@ async function carregarEstantePersonagens(uid) {
     }).join('');
 }
 
-// 2. SISTEMA DE ANOMALIAS DESCOBERTAS & TAGS NFC
+// 2. ANOMALIAS DESCOBERTAS & TAGS NFC
 function escutarAnomalias(uid) {
     onValue(dbRef(db, `usuarios/${uid}/anomalias`), snap => {
         listaAnomaliasCache = [];
@@ -364,7 +395,6 @@ function renderizarAnomalias() {
     }
 }
 
-// Filtros por Natureza do Bestiário
 document.querySelectorAll('#filtros-natureza .pill-filtro').forEach(pill => {
     pill.addEventListener('click', () => {
         document.querySelectorAll('#filtros-natureza .pill-filtro').forEach(p => p.classList.remove('active'));
@@ -374,7 +404,6 @@ document.querySelectorAll('#filtros-natureza .pill-filtro').forEach(pill => {
     });
 });
 
-// Abrir Modal de Registro Manual
 document.getElementById('btn-abrir-modal-anomalia')?.addEventListener('click', () => {
     document.getElementById('anomalia-codigo').value = '';
     document.getElementById('anomalia-nome').value = '';
@@ -382,7 +411,6 @@ document.getElementById('btn-abrir-modal-anomalia')?.addEventListener('click', (
     document.getElementById('modal-anomalia').style.display = 'flex';
 });
 
-// Leitura Real via Web NFC API (Chrome Android / Dispositivos NFC)
 document.getElementById('btn-escanear-nfc')?.addEventListener('click', async () => {
     const banner = document.getElementById('banner-status-nfc');
     banner.style.display = 'block';
@@ -415,7 +443,6 @@ document.getElementById('btn-escanear-nfc')?.addEventListener('click', async () 
     }
 });
 
-// Salvar Anomalia no Firebase
 document.getElementById('btn-salvar-anomalia')?.addEventListener('click', async () => {
     if (!ehProprioPerfil) return;
     const nome = document.getElementById('anomalia-nome').value.trim();
@@ -506,7 +533,7 @@ function carregarCronicasDoUsuario(uid) {
         if (snap.exists()) {
             snap.forEach(child => {
                 const val = child.val();
-                if (val.autorId === uid || val.uid === uid) {
+                if (val && (val.autorId === uid || val.uid === uid || val.userId === uid)) {
                     posts.push({ id: child.key, ...val });
                 }
             });
@@ -588,7 +615,6 @@ function escutarTitulos(uid) {
     });
 }
 
-// Popular select de Títulos do Livro Básico
 const selectTitulo = document.getElementById('titulo-preset');
 const previewTitulo = document.getElementById('preview-titulo-info');
 if (selectTitulo && previewTitulo) {
@@ -626,14 +652,14 @@ async function carregarForjaPessoal(uid) {
         if (!snap.exists()) return;
         snap.forEach(c => {
             const v = c.val();
-            if (v && (v.uid === uid || v.autorId === uid || v.donoId === uid)) {
+            if (v && (v.uid === uid || v.autorId === uid || v.donoId === uid || v.criadorId === uid)) {
                 criacoes.push({
                     tipo: tipoLabel,
                     cor,
                     link,
                     nome: v.nome || v.titulo || 'Sem Nome',
-                    sub: v.categoria || v.tipo || '',
-                    desc: v.descricao || v.efeito || ''
+                    sub: v.categoria || v.tipo || v.natureza || '',
+                    desc: v.descricao || v.efeito || v.passiva || ''
                 });
             }
         });

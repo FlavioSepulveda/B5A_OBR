@@ -332,7 +332,8 @@
         Biblioteca da 5ª Avenida (B5A) • Bestiário das Almas
     </footer>
 
-    <script>
+<script>
+        // Menu Mobile
         const btnMenuMobile = document.getElementById('btn-menu-mobile');
         const navLinksMenu = document.getElementById('nav-links-menu');
         if (btnMenuMobile && navLinksMenu) {
@@ -350,6 +351,25 @@
                 }
             });
         }
+
+        // Alternância das Abas (funciona independente do Firebase)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-conteudo').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const alvo = document.getElementById(btn.dataset.tab);
+                if (alvo) alvo.classList.add('active');
+            });
+        });
+
+        // Fechar Modais
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = document.getElementById(btn.dataset.close);
+                if (modal) modal.style.display = 'none';
+            });
+        });
     </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/perfil.js"></script>
