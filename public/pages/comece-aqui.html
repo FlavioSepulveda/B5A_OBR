@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Comece Aqui — Biblioteca da 5ª Avenida (B5A)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-mesa: #0d0b0e;
+            --bg-painel: #161318;
+            --bg-slot: #1f1b24;
+            --ouro: #d4af37;
+            --texto: #ece6d8;
+            --texto-suave: #9c9283;
+            --igneo: #e63946;
+            --celeste: #4cc9f0;
+            --viridiano: #2ec4b6;
+            --solar: #ffbe0b;
+            --indigo: #9b5de5;
+            --alabastro: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #181c28 0%, #0d0b0e 75%);
+            color: var(--texto);
+            font-family: 'Merriweather', serif;
+            min-height: 100vh;
+            padding-top: 66px;
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .titulo-fonte {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 58px;
+            background-color: rgba(17, 17, 17, 0.96);
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            z-index: 1000;
+            gap: 10px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            font-size: 1.45rem;
+            color: var(--ouro);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .nav-item {
+            color: #ccc;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.06rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover, .nav-item.ativo-nav {
+            color: var(--ouro);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-login-nav {
+            font-size: 0.8rem;
+            color: #888;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-login-nav {
+            background-color: var(--ouro);
+            color: #000;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .btn-menu-mobile {
+            display: none;
+            background: #1f1b24;
+            color: var(--ouro);
+            border: 1px solid #444;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .page-wrapper {
+            max-width: 1180px;
+            margin: 24px auto 60px auto;
+            padding: 0 18px;
+        }
+
+        /* CABEÇALHO DA PÁGINA */
+        .hero-guia {
+            background: linear-gradient(180deg, rgba(22, 19, 24, 0.96) 0%, rgba(15, 13, 18, 0.98) 100%);
+            border: 1px solid #35303d;
+            border-top: 4px solid var(--ouro);
+            border-radius: 10px;
+            padding: 32px 26px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+            margin-bottom: 26px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.14);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            color: var(--ouro);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1.6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .hero-guia h1 {
+            font-size: 2.9rem;
+            color: #fff;
+            line-height: 1.05;
+            margin-bottom: 10px;
+        }
+
+        .hero-guia p.subtitulo {
+            max-width: 820px;
+            margin: 0 auto 22px auto;
+            color: #d6cfc2;
+            font-size: 0.96rem;
+        }
+
+        .pergunta-seletor {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.7rem;
+            color: var(--ouro);
+            letter-spacing: 1.4px;
+            margin-bottom: 14px;
+        }
+
+        /* SELETOR DE PAPEL (JOGADOR VS MESTRE) */
+        .papel-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-papel {
+            background: var(--bg-slot);
+            color: #ccc;
+            border: 2px solid #444;
+            padding: 15px 32px;
+            border-radius: 8px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.38rem;
+            letter-spacing: 1.4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 270px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .btn-papel span.desc-btn {
+            font-family: 'Merriweather', serif;
+            font-size: 0.74rem;
+            letter-spacing: 0;
+            opacity: 0.85;
+            font-weight: normal;
+        }
+
+        .btn-papel:hover {
+            border-color: var(--ouro);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-papel.ativo[data-papel="jogador"] {
+            background: var(--ouro);
+            color: #000;
+            border-color: var(--ouro);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+        }
+
+        .btn-papel.ativo[data-papel="mestre"] {
+            background: var(--celeste);
+            color: #000;
+            border-color: var(--celeste);
+            box-shadow: 0 6px 20px rgba(76, 201, 240, 0.35);
+        }
+
+        /* PAINÉIS DE CONTEÚDO */
+        .painel-papel {
+            display: none;
+            animation: fadeInPanel 0.25s ease;
+        }
+
+        .painel-papel.ativo {
+            display: block;
+        }
+
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ÍNDICE RÁPIDO INTERNO */
+        .indice-rapido {
+            background: var(--bg-painel);
+            border: 1px solid #2e2a35;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .indice-rapido strong {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            color: var(--ouro);
+            letter-spacing: 1px;
+            margin-right: 6px;
+        }
+
+        .painel-mestre .indice-rapido strong {
+            color: var(--celeste);
+        }
+
+        .indice-link {
+            background: var(--bg-slot);
+            border: 1px solid #3a3444;
+            color: #ddd;
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.96rem;
+            letter-spacing: 0.8px;
+            transition: all 0.15s;
+        }
+
+        .indice-link:hover {
+            border-color: var(--ouro);
+            color: var(--ouro);
+        }
+
+        .painel-mestre .indice-link:hover {
+            border-color: var(--celeste);
+            color: var(--celeste);
+        }
+
+        /* BLOCOS DE REGRA & SEÇÕES */
+        .bloco-regra {
+            background: var(--bg-painel);
+            border: 1px solid #2f2a37;
+            border-left: 4px solid var(--ouro);
+            border-radius: 8px;
+            padding: 24px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+        }
+
+        .painel-mestre .bloco-regra {
+            border-left-color: var(--celeste);
+        }
+
+        .bloco-regra h2 {
+            font-size: 1.95rem;
+            color: var(--ouro);
+            margin-bottom: 6px;
+            line-height: 1.1;
+        }
+
+        .painel-mestre .bloco-regra h2 {
+            color: var(--celeste);
+        }
+
+        .bloco-regra .lead {
+            color: #d6cfc2;
+            font-size: 0.92rem;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #2b2633;
+            padding-bottom: 12px;
+        }
+
+        .bloco-regra h3 {
+            font-size: 1.45rem;
+            color: #fff;
+            margin: 22px 0 8px 0;
+        }
+
+        .bloco-regra p {
+            font-size: 0.88rem;
+            color: #d0c9bc;
+            margin-bottom: 12px;
+        }
+
+        .bloco-regra ul, .bloco-regra ol {
+            margin: 10px 0 16px 22px;
+            font-size: 0.88rem;
+            color: #d0c9bc;
+        }
+
+        .bloco-regra li {
+            margin-bottom: 8px;
+        }
+
+        /* CAIXAS DE EXEMPLO NA PRÁTICA */
+        .cena-exemplo {
+            background: #121015;
+            border: 1px solid #383142;
+            border-left: 3px solid var(--ouro);
+            border-radius: 6px;
+            padding: 15px 16px;
+            margin: 14px 0;
+            font-size: 0.85rem;
+        }
+
+        .painel-mestre .cena-exemplo {
+            border-left-color: var(--celeste);
+        }
+
+        .cena-titulo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: var(--ouro);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .painel-mestre .cena-titulo {
+            color: var(--celeste);
+        }
+
+        .fala-personagem {
+            color: #fff;
+            font-style: italic;
+            background: #1b1721;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 6px 0;
+            display: block;
+            border: 1px dashed #443c4f;
+        }
+
+        /* GRID DE CARDS INTERNOS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 14px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 14px 0;
+        }
+
+        .subcard {
+            background: #110f14;
+            border: 1px solid #2c2734;
+            border-radius: 7px;
+            padding: 16px;
+        }
+
+        .subcard h4 {
+            font-size: 1.25rem;
+            color: var(--ouro);
+            margin-bottom: 6px;
+        }
+
+        .painel-mestre .subcard h4 {
+            color: var(--celeste);
+        }
+
+        .subcard p, .subcard li {
+            font-size: 0.83rem;
+            color: #ccc;
+        }
+
+        /* TABELAS COMPLETAS */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 14px 0;
+            border: 1px solid #332d3c;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.83rem;
+            background: #110f14;
+        }
+
+        th {
+            background: #1f1b26;
+            color: var(--ouro);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid #3a3345;
+        }
+
+        .painel-mestre th {
+            color: var(--celeste);
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #24202b;
+            color: #ddd;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* CARDS DOS 6 ESPECTROS DO ÍMPETO (REGRAS PURAMENTE NARRATIVAS DO LIVRO) */
+        .impeto-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .impeto-card {
+            background: #110f14;
+            border: 1px solid #2f2a38;
+            border-top: 4px solid var(--ouro);
+            border-radius: 8px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .impeto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid #282330;
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .impeto-header h3 {
+            font-size: 1.55rem;
+            margin: 0;
+        }
+
+        .impeto-tag {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.92rem;
+            letter-spacing: 1px;
+            padding: 2px 9px;
+            border-radius: 4px;
+            background: #1d1924;
+            border: 1px solid #3d3647;
+        }
+
+        .juramento-box {
+            font-style: italic;
+            font-size: 0.82rem;
+            color: #e4dccd;
+            background: #18151d;
+            padding: 7px 11px;
+            border-radius: 5px;
+            border-left: 2px solid #554c63;
+        }
+
+        .bloco-espectro-detalhe {
+            background: #16131b;
+            border: 1px solid #2a2433;
+            border-radius: 6px;
+            padding: 11px 12px;
+        }
+
+        .bloco-espectro-titulo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.06rem;
+            letter-spacing: 0.8px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .bloco-espectro-detalhe p {
+            font-size: 0.82rem;
+            color: #d4cdc0;
+            margin-bottom: 6px;
+        }
+
+        .bloco-espectro-detalhe p:last-child {
+            margin-bottom: 0;
+        }
+
+        .exemplos-livro {
+            list-style: none !important;
+            margin: 6px 0 0 0 !important;
+            padding: 0;
+        }
+
+        .exemplos-livro li {
+            font-style: italic;
+            font-size: 0.81rem;
+            color: #fff;
+            background: #1e1a26;
+            border: 1px dashed #3d354b;
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin-bottom: 6px !important;
+        }
+
+        .exemplos-livro li:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        /* BLOCO DE USOS EGOÍSTAS (CAPÍTULO 2) */
+        .secao-egoistas {
+            background: linear-gradient(180deg, rgba(34, 14, 18, 0.55) 0%, rgba(17, 13, 18, 0.95) 100%);
+            border: 1px solid rgba(230, 57, 70, 0.45);
+            border-left: 4px solid var(--igneo);
+            border-radius: 8px;
+            padding: 20px 18px;
+            margin-top: 22px;
+        }
+
+        .secao-egoistas h3 {
+            color: #ff6b78;
+            font-size: 1.6rem;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .egoistas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .egoista-card {
+            background: #120e13;
+            border: 1px solid #38232a;
+            border-radius: 6px;
+            padding: 13px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .egoista-card h4 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .exemplo-egoista-fala {
+            font-style: italic;
+            font-size: 0.81rem;
+            color: #fff;
+            background: #1d151b;
+            border-left: 2px solid var(--igneo);
+            padding: 6px 9px;
+            border-radius: 4px;
+        }
+
+        .registro-diario-linha {
+            font-size: 0.78rem;
+            color: #f3b8be;
+            background: rgba(230, 57, 70, 0.09);
+            padding: 5px 8px;
+            border-radius: 4px;
+        }
+
+        .diario-regra-tag {
+            font-size: 0.8rem;
+            color: #f0c6c9;
+            background: rgba(230, 57, 70, 0.08);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            padding: 7px 10px;
+            border-radius: 5px;
+        }
+
+        /* CARDS DOS USOS NARRATIVOS DO ÍMPETO (CAPÍTULO 10) */
+        .uso-narrativo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .uso-narrativo-card {
+            background: #110f14;
+            border: 1px solid #2f2a38;
+            border-left: 3px solid var(--ouro);
+            border-radius: 7px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .uso-narrativo-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .uso-narrativo-top h4 {
+            font-size: 1.32rem;
+            color: var(--ouro);
+            margin: 0;
+        }
+
+        .custo-pill {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.8px;
+            background: #25202e;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #473f57;
+        }
+
+        .frase-ativacao {
+            font-style: italic;
+            font-size: 0.83rem;
+            color: #fff;
+            background: #1b1722;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border-left: 2px solid var(--ouro);
+        }
+
+        .lista-manifestacoes {
+            list-style: none !important;
+            margin: 4px 0 0 0 !important;
+            padding: 0;
+            font-size: 0.81rem;
+        }
+
+        .lista-manifestacoes li {
+            margin-bottom: 4px !important;
+            color: #d6cfc2;
+        }
+
+        .alerta-diario {
+            background: rgba(230, 57, 70, 0.1);
+            border: 1px solid rgba(230, 57, 70, 0.45);
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin: 14px 0;
+            font-size: 0.86rem;
+            color: #f3d8da;
+        }
+
+        .alerta-diario strong {
+            color: #ff6b78;
+        }
+
+        /* BOTÕES FINAIS */
+        .cta-rodape {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid #2e2936;
+        }
+
+        .btn-cta {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.18rem;
+            letter-spacing: 1px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.15s, opacity 0.2s;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .btn-ouro {
+            background: var(--ouro);
+            color: #000;
+        }
+
+        .btn-celeste {
+            background: var(--celeste);
+            color: #000;
+        }
+
+        .btn-escuro {
+            background: var(--bg-slot);
+            color: var(--texto);
+            border: 1px solid #444;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 16px;
+            border-top: 1px solid #222;
+            color: #777;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .impeto-grid, .egoistas-grid, .uso-narrativo-grid, .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .btn-menu-mobile {
+                display: inline-flex;
+            }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: rgba(17, 15, 20, 0.98);
+                border-bottom: 2px solid var(--ouro);
+                padding: 14px 16px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
+            }
+            .nav-links.aberto {
+                display: grid;
+            }
+            .nav-links .nav-item {
+                background: #1f1b24;
+                border: 1px solid #333;
+                padding: 9px 12px;
+                border-radius: 6px;
+                font-size: 1.05rem;
+                text-align: center;
+            }
+            .hero-guia h1 {
+                font-size: 2.2rem;
+            }
+            .btn-papel {
+                width: 100%;
+                min-width: unset;
+            }
+            .bloco-regra {
+                padding: 18px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-brand">B5A RPG</a>
+            <button type="button" id="btn-menu-mobile" class="btn-menu-mobile" aria-expanded="false" aria-controls="nav-links-menu">
+                ☰ Menu
+            </button>
+        </div>
+
+        <div class="nav-links" id="nav-links-menu">
+            <a href="comece-aqui.html" class="nav-item ativo-nav">🧭 Comece Aqui</a>
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="armas.html" class="nav-item">⚔️ Armas</a>
+            <a href="monstros.html" class="nav-item">👁️ Monstros</a>
+            <a href="comunidade.html" class="nav-item">🌐 Comunidade</a>
+            <a href="regras.html" class="nav-item">⚖️ Regras</a>
+        </div>
+
+        <div class="nav-user">
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
+            <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
+        </div>
+    </nav>
+
+    <main class="page-wrapper">
+
+        <!-- CABEÇALHO & SELETOR DE PAPEL -->
+        <header class="hero-guia">
+            <span class="hero-badge">✦ GUIA OFICIAL DE ENTRADA • BIBLIOTECA DA 5ª AVENIDA</span>
+            <h1>COMECE AQUI</h1>
+            <p class="subtitulo">
+                Entenda todas as engrenagens de <strong>Biblioteca da 5ª Avenida (B5A)</strong> sem cortes: rolagens com d12 e Resultados Absolutos, Palavras de Afirmação, Clash e Dano Real, Pilha de Descartes de 12 horas, os 6 Espectros do Ímpeto, Usos Egoístas e o Diário do Arquivista.
+            </p>
+
+            <div class="pergunta-seletor">Você é?</div>
+
+            <div class="papel-tabs" role="tablist">
+                <button type="button" class="btn-papel ativo" data-papel="jogador" role="tab" aria-selected="true">
+                    📜 Sou Jogador (Arquivista)
+                    <span class="desc-btn">Rolagens, Palavras, Clash, Descartes, Ímpeto & Usos Egoístas</span>
+                </button>
+                <button type="button" class="btn-papel" data-papel="mestre" role="tab" aria-selected="false">
+                    👁️ Sou Mestre (Guardião)
+                    <span class="desc-btn">Arbitragem, Dano Real, Pilha de Descartes, TAs & Diário</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===================================================================== -->
+        <!-- ABA 1: GUIA COMPLETO PARA JOGADORES (ARQUIVISTAS)                     -->
+        <!-- ===================================================================== -->
+        <section id="painel-jogador" class="painel-papel painel-jogador ativo">
+
+            <nav class="indice-rapido" aria-label="Navegação do Guia do Jogador">
+                <strong>Ir para:</strong>
+                <a href="#j-rolagens" class="indice-link">1. Rolagens & Absolutos</a>
+                <a href="#j-palavras" class="indice-link">2. Palavras de Afirmação</a>
+                <a href="#j-combate" class="indice-link">3. Combate (Clash) & Dano Real</a>
+                <a href="#j-descartes" class="indice-link">4. Pilha de Descartes (12h)</a>
+                <a href="#j-espectros" class="indice-link">5. Os 6 Espectros & Usos Egoístas</a>
+                <a href="#j-usos-narrativos" class="indice-link">6. Todos os Usos Narrativos</a>
+            </nav>
+
+            <!-- 1. ROLAGENS E ABSOLUTOS -->
+            <article id="j-rolagens" class="bloco-regra">
+                <h2>1. Como Funcionam as Rolagens & Os Três Resultados Absolutos</h2>
+                <p class="lead">
+                    Sempre que o resultado de uma ação for incerto ou perigoso, você lança <strong>1d12</strong> (o Coração Narrativo do sistema), soma os dados do seu <strong>Atributo (em d4)</strong> ou da sua <strong>Perícia (em d6)</strong> e adiciona o seu <strong>Volume</strong>, comparando o total à <strong>TA (Taxa de Acerto)</strong> definida pelo Guardião.
+                </p>
+
+                <div class="grid-3">
+                    <div class="subcard">
+                        <h4>Teste de Atributo</h4>
+                        <p><strong>1d12 + [Dados do Atributo em d4] + Volume</strong></p>
+                        <p style="margin-top:6px;">Os 4 Atributos são: <em>Vigor</em> (força e resistência física), <em>Dinamismo</em> (agilidade e precisão), <em>Razão</em> (raciocínio, memória e Ímpeto) e <em>Determinação</em> (autocontrole e influência).</p>
+                    </div>
+                    <div class="subcard">
+                        <h4>Teste de Perícia</h4>
+                        <p><strong>1d12 + [Dados da Perícia em d6] + Volume</strong></p>
+                        <p style="margin-top:6px;">As 12 Perícias são: <em>Atletismo, Combate, Resistência, Acrobacia, Furtividade, Pontaria, Investigação, Conhecimento, Arcanismo, Medicina, Persuasão</em> e <em>Intuição</em>.</p>
+                    </div>
+                    <div class="subcard">
+                        <h4>Desafiar o Destino (0 dados)</h4>
+                        <p><strong>Role 2d12, fique com o maior e descarte o menor + Volume</strong></p>
+                        <p style="margin-top:6px;">Quando você possui <code>0d4</code> no Atributo ou não possui a Perícia exigida. Apenas o dado escolhido conta para os Absolutos. Se falhar, o Guardião pode criar uma complicação imediata ou ganhar <strong>+1 Dado de Descarte</strong>.</p>
+                    </div>
+                </div>
+
+                <h3>Os Três Resultados Absolutos do d12</h3>
+                <p>O d12 possui três faces especiais (<strong>1, 6 e 12</strong>). Elas não impedem a soma normal dos modificadores, mas acrescentam uma camada narrativa obrigatória à jogada:</p>
+                <ul>
+                    <li><strong>1 — Catástrofe Definitiva:</strong> A ação <strong>falha automaticamente</strong>, independentemente do total somado. Além disso, o Guardião ganha imediatamente <strong>1 Dado de Descartes</strong> para a própria Pilha dele.</li>
+                    <li><strong>6 — Falha Absoluta:</strong> A ação <strong>falha automaticamente</strong>, mesmo que o total supere a TA. Não gera consequência extra nem dado para o Guardião — é apenas a certeza de que aquele caminho foi fechado.</li>
+                    <li><strong>12 — Momento Lendário:</strong> O resultado ainda é somado normalmente e comparado à TA. Se você passar na TA, o sucesso ganha proporções extraordinárias. Se mesmo com 12 você ainda não alcançar a TA e falhar, algo positivo surge da tentativa (o inimigo recua, uma nova passagem se abre ou uma pista inesperada aparece).</li>
+                </ul>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">🎲 Exemplo Prático de Rolagem (Volume III, Investigação 2d6):</span>
+                    Você examina um registro rasurado na ala proibida antes que a tinta desapareça. O Guardião define <strong>TA 14</strong>.
+                    <span class="fala-personagem">"Passo a lupa sobre as marcas de pressão deixadas na página de baixo." → Rola 1d12 (tirou 8) + 2d6 de Investigação (tirou 4 e 3) + 3 do Volume = <strong>18 (Sucesso!)</strong>.</span>
+                </div>
+            </article>
+
+            <!-- 2. PALAVRAS DE AFIRMAÇÃO -->
+            <article id="j-palavras" class="bloco-regra">
+                <h2>2. Palavras de Afirmação: Verbos Conceituais</h2>
+                <p class="lead">
+                    As <strong>Palavras de Afirmação</strong> são a forma mais direta de manifestar o Ímpeto. Elas não são magias engessadas com efeito único: cada Palavra é um <strong>conceito</strong> (<em>Registrar, Ecoar, Revelar, Ancorar, Selar, Silenciar, Esquecer, Incendiar, Analisar, Regenerar, Purificar, Florescer, Blindar, Conter, Refletir, Impulsionar, Avançar, Disparar, Distorcer, Materializar, Duplicar, Ocultar, Enfraquecer, Fortalecer, Atrair, Repelir, Desfazer, Ampliar, Convergir, Fragmentar, Consumir, Mapear, Domesticar, Cultivar, Rastrear, Disfarçar, Destrancar, Fortificar, Despertar, Vincular, Apagar</em>).
+                </p>
+
+                <ol>
+                    <li><strong>Declare a Palavra e descreva o que deseja fazer:</strong> Diga como o seu Arquivista aplica o conceito daquela Palavra à cena atual.</li>
+                    <li><strong>O Guardião define a TA, o efeito e a duração:</strong> Com base no significado temático da Palavra e na sua criatividade.</li>
+                    <li><strong>Gaste o custo base em PI (Pontos de Ímpeto) e resolva:</strong> O efeito acontece na história.</li>
+                </ol>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">💬 Exemplo de Uso de Palavra de Afirmação:</span>
+                    Um guarda corre pelo corredor em direção ao sino de alarme. Você conhece <strong>Silenciar (2 PI)</strong>.
+                    <span class="fala-personagem">"Aponto para o sino de bronze no fim do corredor e pronuncio 'SILENCIAR', suprimindo qualquer vibração sonora do metal!"</span>
+                    O Guardião arbitra que, quando o guarda puxar a corda, o badalo bate no bronze sem emitir som algum, dando ao grupo tempo para agir sem alertar o prédio inteiro.
+                </div>
+            </article>
+
+            <!-- 3. COMBATE (CLASH) E DANO REAL -->
+            <article id="j-combate" class="bloco-regra">
+                <h2>3. Combate como Disputa (Clash), Dano Real e Frases de Efeito</h2>
+                <p class="lead">
+                    Em B5A não existe "Classe de Armadura" estática. Todo ataque direto é um <strong>Clash (Disputa)</strong>: dois lados rolam e quem obtiver o maior resultado vence.
+                </p>
+
+                <div class="grid-2">
+                    <div class="subcard">
+                        <h4>Como Funciona o Clash</h4>
+                        <ul>
+                            <li><strong>Atacante rola:</strong> <code>1d12 + Atributo da arma + Volume</code> (<em>Vigor</em> para corpo a corpo, <em>Dinamismo</em> para precisão/distância, <em>Razão</em> para Catalisadores).</li>
+                            <li><strong>Defensor rola:</strong> <code>1d12 + Dinamismo (ou Determinação) + Volume + Bônus de item defensivo</code>.</li>
+                            <li><strong>Vencedor:</strong> Se o atacante vencer, aplica o dano da arma. Se o defensor vencer, o golpe é bloqueado e nenhum dano ocorre.</li>
+                            <li><strong>Vida Temporária:</strong> Vestimentas defensivas concedem <em>Vida Temporária</em> no início da cena, absorvendo dano antes dos Pontos de Vida reais.</li>
+                        </ul>
+                    </div>
+
+                    <div class="subcard">
+                        <h4>Dano Real (Dano Verdadeiro / Acerto Garantido)</h4>
+                        <ul>
+                            <li><strong>Valor fixo de 1d6:</strong> O Dano Real nunca soma atributos e nunca empilha múltiplos dados. Mesmo se uma habilidade disser "sofra 3 PV para causar Dano Real", o dano causado é sempre <strong>1d6</strong>.</li>
+                            <li><strong>O que ele ignora:</strong> Ignora o Clash (acerta automaticamente mesmo se o defensor vencer a disputa), ignora Vida Temporária, ignora bônus de item e qualquer forma de bloqueio ou resistência.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Frases de Efeito</h3>
+                <p>
+                    A partir do <strong>Volume II</strong>, você equipa <strong>Frases de Efeito</strong> (ex: <em>"Que minha lâmina decida esta batalha!"</em> — <strong>Lâmina Definitiva</strong>; <em>"Que meu sangue se torne minha arma!"</em> — <strong>Sangue Traiçoeiro</strong>). Diferente das Palavras, as Frases têm efeito mecânico fixo, ativação curta e muitas delas podem ser potencializadas gastando dados da sua <strong>Pilha de Descartes</strong>.
+                </p>
+            </article>
+
+            <!-- 4. PILHA DE DESCARTES -->
+            <article id="j-descartes" class="bloco-regra">
+                <h2>4. Pilha de Descartes: Trocando Horas da Sua Vida por Poder</h2>
+                <p class="lead">
+                    Sempre que você julgar que o acaso não foi justo em uma rolagem, você pode gastar <strong>Pontos de Ímpeto antes do teste para adicionar +1d12 extra</strong>. Você escolhe o maior resultado e o dado descartado vai para a sua <strong>Pilha de Descartes</strong> (limite máximo de <strong>10 dados</strong>).
+                </p>
+
+                <h3>O Custo Narrativo das 12 Horas</h3>
+                <p>
+                    Dados na Pilha de Descartes não são meras fichas de mana: <strong>cada dado representa 12 horas da vida do seu personagem que ele está jogando fora</strong>. Quando você gasta dados da Pilha para potencializar uma Frase de Efeito ou item, <strong>o dado só é ativado depois que você declarar em voz alta para a mesa quais 12 horas da vida do seu Arquivista estão sendo apagadas</strong>.
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dados Gastos da Pilha</th>
+                                <th>Tempo Apagado da Vida</th>
+                                <th>O Que Precisa Ser Declarado na Mesa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1 Dado</strong></td>
+                                <td><strong>12 Horas</strong></td>
+                                <td>12 horas que passou estudando para uma prova, 12 horas dormindo, 12 horas treinando uma técnica ou uma viagem inteira.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2 Dados</strong></td>
+                                <td><strong>24 Horas (1 Dia)</strong></td>
+                                <td>Um dia inteiro completo da sua história antes ou depois de entrar na Biblioteca.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3 Dados</strong></td>
+                                <td><strong>36 Horas (1 Dia e meio)</strong></td>
+                                <td>Um período contínuo de 36 horas — memórias, rostos ou conversas desse intervalo deixam de existir para você.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4 a 10 Dados</strong></td>
+                                <td><strong>48h a 120 Horas (Até 5 Dias)</strong></td>
+                                <td>Blocos profundos da sua própria biografia apagados para sustentar o efeito em momentos extremos.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">⏳ Exemplo do Livro:</span>
+                    Um Arquivista precisa ativar uma Frase de Efeito que exige 2 dados descartados.
+                    <span class="fala-personagem">"Eu abro mão das 24 horas que passei estudando os mapas antigos da Biblioteca antes da minha primeira missão. Eu não me lembro mais de ter lido aqueles livros."</span>
+                    O Guardião aceita a declaração e o efeito da Frase é potencializado. (<strong>Nota:</strong> Ao tirar <strong>12 natural</strong> no d12, os dados extras não vão para a Pilha — o crítico já é sua recompensa, a menos que você abdique do crítico imediatamente antes de resolver o dano.)
+                </div>
+            </article>
+
+            <!-- 5. OS 6 ESPECTROS DO ÍMPETO, USOS EGOÍSTAS & O DIÁRIO -->
+            <article id="j-espectros" class="bloco-regra">
+                <h2>5. Os 6 Espectros do Ímpeto, Usos Egoístas & O Diário</h2>
+                <p class="lead">
+                    O Ímpeto não é bom nem mau: ele responde à convicção de quem o carrega e <strong>não julga — apenas registra</strong>. Cada um dos 6 Espectros possui um <strong>Efeito Passivo</strong> (sempre ativo) e um <strong>Efeito Ativo puramente narrativo</strong>, acionado por um gatilho descritivo aprovado pelo Guardião.
+                </p>
+
+                <div class="alerta-diario">
+                    <strong>📖 A REGRA DO DIÁRIO E AS MEMÓRIAS DO ÍMPETO (CAPÍTULO 2):</strong><br>
+                    • <strong>O que o Diário registra:</strong> Todo uso do Efeito Ativo do Ímpeto em <strong>benefício próprio (uso egoísta)</strong> — seja para o bem ou para o mal — é gravado <strong>permanentemente no Diário do Arquivista</strong> com tinta que jamais desbota.<br>
+                    • <strong>O que o Diário NÃO registra:</strong> Usos exclusivamente altruístas em benefício de outros sem ganho pessoal (ex.: curar um aliado, libertar um prisioneiro sem benefício próprio).<br>
+                    • <strong>Memórias do Ímpeto NUNCA podem ser descartadas:</strong> Você pode apagar 12 horas de sono ou estudo na Pilha de Descartes, mas <strong>jamais</strong> pode descartar as 12 horas em que usou o Ímpeto em benefício próprio. Elas ficam no seu Diário para sempre — e quando você morrer, seus companheiros que herdarem seu Diário poderão ler tudo o que você fez.
+                </div>
+
+                <div class="impeto-grid">
+
+                    <!-- 1. ÍMPETO ÍGNEO -->
+                    <div class="impeto-card" style="border-top-color: var(--igneo);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--igneo);">🔥 1. Ímpeto Ígneo (Vermelho)</h3>
+                            <span class="impeto-tag" style="color: var(--igneo);">Ofensiva, Sacrifício & Ambição</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "O que você está disposto a sacrificar?"<br>
+                            <strong>Juramento:</strong> "Toda conquista exige um sacrifício."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--igneo);">Efeito Passivo</span>
+                            <p>Aumente um Atributo em <strong>+1d4</strong> e reduza outro Atributo em <strong>-1d4</strong>.</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--igneo);">Efeito Ativo Narrativo: Troca Equivalente</span>
+                            <p>O Arquivista sacrifica algo — um item, uma informação, uma memória, um aliado — e recebe algo em troca. O Guardião define o que é equivalente.</p>
+                            <p><strong>Gatilho:</strong> O jogador declara o que está disposto a sacrificar. O Guardião aprova se o sacrifício tem peso real.</p>
+                            <ul class="exemplos-livro">
+                                <li>"Sacrifico minha aliança de casamento para que a porta se abra."</li>
+                                <li>"Entrego a localização do esconderijo para que o inimigo recue."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista sacrifica algo para ganho próprio, fica gravado permanentemente no Diário.
+                        </div>
+                    </div>
+
+                    <!-- 2. ÍMPETO CELESTE -->
+                    <div class="impeto-card" style="border-top-color: var(--celeste);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--celeste);">❄️ 2. Ímpeto Celeste (Azul)</h3>
+                            <span class="impeto-tag" style="color: var(--celeste);">Controle, Ordem & Precisão</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "Como você pretende alcançar seu objetivo?"<br>
+                            <strong>Juramento:</strong> "Conhecimento supera força."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--celeste);">Efeito Passivo</span>
+                            <p>Receba <strong>1 Perícia adicional (1d6)</strong>. <code>1x/cena</code>, ao realizar um teste usando essa Perícia, adicione <strong>+1d6</strong> à rolagem.</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--celeste);">Efeito Ativo Narrativo: Controle</span>
+                            <p>O Arquivista exerce controle sobre alguém — obriga um aliado a fazer o que não quer, força um guarda a atacar o chefe, impede que um inimigo morra para torturá-lo por mais tempo.</p>
+                            <p><strong>Gatilho:</strong> O jogador descreve como exerce controle. O Guardião aprova se o alvo pode ser controlado.</p>
+                            <ul class="exemplos-livro">
+                                <li>"Obrigo o guarda a atacar o próprio chefe."</li>
+                                <li>"Impeço que o inimigo morra — quero respostas."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista controla alguém para ganho próprio, fica gravado permanentemente no Diário.
+                        </div>
+                    </div>
+
+                    <!-- 3. ÍMPETO VIRIDIANO -->
+                    <div class="impeto-card" style="border-top-color: var(--viridiano);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--viridiano);">🌿 3. Ímpeto Viridiano (Verde)</h3>
+                            <span class="impeto-tag" style="color: var(--viridiano);">Vida, Perseverança & Crescimento</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "Por que continuar mesmo após cair?"<br>
+                            <strong>Juramento:</strong> "Enquanto houver vida, há esperança."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--viridiano);">Efeito Passivo</span>
+                            <p>Na primeira vez em cada cena que seus Pontos de Vida chegarem a <code>0</code>, você permanece consciente até o fim do turno.</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--viridiano);">Efeito Ativo Narrativo: Cura ou Resistência</span>
+                            <p>O Arquivista cura ferimentos que não deveriam ser curados, ou resiste a algo que deveria matá-lo. (<strong>Cura:</strong> <code>Xd6</code> onde <code>X = Volume</code>; <strong>Resistência:</strong> <code>+2d4</code> em testes defensivos).</p>
+                            <p><strong>Gatilho:</strong> <code>1x/cena</code>. O jogador descreve como cura ou resiste. O Guardião aprova se é coerente.</p>
+                            <ul class="exemplos-livro">
+                                <li>"Toco o ferido e as feridas se fecham."</li>
+                                <li>"Resisto ao veneno que deveria me matar."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para curar ou resistir em benefício próprio, anota no Diário. <em>Curar outros não é registrado.</em>
+                        </div>
+                    </div>
+
+                    <!-- 4. ÍMPETO SOLAR -->
+                    <div class="impeto-card" style="border-top-color: var(--solar);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--solar);">☀️ 4. Ímpeto Solar (Amarelo)</h3>
+                            <span class="impeto-tag" style="color: var(--solar);">Liberdade, Mobilidade & Adaptação</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "O que existe além do horizonte?"<br>
+                            <strong>Juramento:</strong> "Nenhum caminho é definitivo."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--solar);">Efeito Passivo</span>
+                            <p>Uma vez por rodada, após realizar uma rolagem, você pode substituir o dado escolhido por um de seus <strong>Ecos</strong> (dados descartados). Começa com 1 Eco no Volume I (+1 Eco por Volume).</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--solar);">Efeito Ativo Narrativo: Livre-Arbítrio Sem Limites</span>
+                            <p>O Arquivista concede a alguém — ou a si mesmo — a capacidade de agir sem restrições. Nenhuma corrente o prende. Nenhuma regra o limita.</p>
+                            <p><strong>Gatilho:</strong> O jogador descreve como quebra uma restrição. O Guardião aprova se é coerente.</p>
+                            <ul class="exemplos-livro">
+                                <li>"Concedo ao prisioneiro a liberdade de escapar."</li>
+                                <li>"Nenhuma parede me prende."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para se libertar para ganho próprio, fica gravado permanentemente no Diário.
+                        </div>
+                    </div>
+
+                    <!-- 5. ÍMPETO ÍNDIGO -->
+                    <div class="impeto-card" style="border-top-color: var(--indigo);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--indigo);">🌑 5. Ímpeto Índigo (Violeta)</h3>
+                            <span class="impeto-tag" style="color: var(--indigo);">Criatividade, Conhecimento & Imaginação</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "E se tudo pudesse ser diferente?"<br>
+                            <strong>Juramento:</strong> "Toda resposta gera uma nova pergunta."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--indigo);">Efeito Passivo</span>
+                            <p>Sempre que descartar um resultado <strong>9, 10, 11 ou 12</strong>, escolha um efeito: <strong>Informação</strong> (o Guardião responde uma pergunta verdadeira) ou <strong>Improviso</strong> (usa uma Palavra de Afirmação que não conhece uma vez). O dado é descartado normalmente.</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--indigo);">Efeito Ativo Narrativo: Dobrar a Realidade Criativamente</span>
+                            <p>O Arquivista reescreve um detalhe da realidade, inventa uma possibilidade, cria o que não existia.</p>
+                            <p><strong>Gatilho:</strong> O jogador descreve o que reescreve. O Guardião aprova se é coerente com a cena.</p>
+                            <ul class="exemplos-livro">
+                                <li>"A porta que estava trancada, na verdade, estava destrancada o tempo todo."</li>
+                                <li>"Havia uma corda ali o tempo todo — eu apenas não tinha visto."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista reescreve a realidade para ganho próprio, fica gravado permanentemente no Diário.
+                        </div>
+                    </div>
+
+                    <!-- 6. ÍMPETO ALABASTRO -->
+                    <div class="impeto-card" style="border-top-color: var(--alabastro);">
+                        <div class="impeto-header">
+                            <h3 style="color: var(--alabastro);">🤍 6. Ímpeto Alabastro (Branco)</h3>
+                            <span class="impeto-tag" style="color: var(--alabastro);">Equilíbrio, Proteção & União</span>
+                        </div>
+                        <div class="juramento-box">
+                            <strong>Pergunta:</strong> "Como impedir que um extremo destrua todos os outros?"<br>
+                            <strong>Juramento:</strong> "Ninguém deve prevalecer."
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--alabastro);">Efeito Passivo</span>
+                            <p>Seus testes defensivos têm <strong>-1d4</strong>, mas seus testes ofensivos ganham <strong>+1d4</strong>.</p>
+                        </div>
+                        <div class="bloco-espectro-detalhe">
+                            <span class="bloco-espectro-titulo" style="color: var(--alabastro);">Efeito Ativo Narrativo: Balancear, Julgar, Proteger</span>
+                            <p>O Arquivista restaura o equilíbrio — impede que um lado domine o outro, protege os indefesos, julga com imparcialidade.</p>
+                            <p><strong>Gatilho:</strong> O jogador descreve como restaura o equilíbrio. O Guardião aprova se é coerente.</p>
+                            <ul class="exemplos-livro">
+                                <li>"Divido o dano entre mim e o aliado — ninguém sofre sozinho."</li>
+                                <li>"Troco de lugar com um aliado em um teste defensivo. Se ele aceitar, ele rola no meu lugar — mas fica devendo o mesmo gesto em um teste futuro."</li>
+                            </ul>
+                        </div>
+                        <div class="diario-regra-tag">
+                            <strong>Registro no Diário:</strong> Toda vez que o Arquivista usa o Ímpeto para julgar ou proteger em benefício próprio, fica gravado permanentemente no Diário.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SUBSEÇÃO DEDICADA AOS USOS EGOÍSTAS (CAPÍTULO 2) -->
+                <div id="j-usos-egoistas" class="secao-egoistas">
+                    <h3>🩸 Usos Egoístas do Ímpeto (Quando Você Usa para Ganho Próprio)</h3>
+                    <p>
+                        No livro, <strong>não existe uma lista separada de "poderes malignos"</strong> — os <strong>Usos Egoístas</strong> são os mesmos Efeitos Ativos do seu Espectro usados em <strong>benefício próprio, autopreservação, manipulação ou ganho pessoal</strong> (mesmo quando você se convence de que "era necessário"). Eles não dão penalidade numérica na ficha, mas <strong>ficam gravados para sempre no seu Diário</strong> e não podem ser apagados na Pilha de Descartes:
+                    </p>
+
+                    <div class="egoistas-grid">
+                        <div class="egoista-card">
+                            <h4 style="color: var(--igneo);">🔥 Uso Egoísta — Ígneo (Troca Equivalente)</h4>
+                            <p style="font-size:0.81rem;">Sacrificar algo valioso de outra pessoa, um segredo do grupo ou um aliado para salvar a si mesmo ou obter poder pessoal.</p>
+                            <div class="exemplo-egoista-fala">"Entrego o segredo do meu companheiro (ou deixo o aliado para trás na armadilha) para que a passagem se abra só para mim."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Fica escrito para sempre o que — ou quem — você sacrificou para vencer.</div>
+                        </div>
+
+                        <div class="egoista-card">
+                            <h4 style="color: var(--celeste);">❄️ Uso Egoísta — Celeste (Controle)</h4>
+                            <p style="font-size:0.81rem;">Dobrar a vontade de um inocente, aliado ou prisioneiro para extrair respostas, usá-lo como escudo humano ou forçá-lo a agir contra sua vontade.</p>
+                            <div class="exemplo-egoista-fala">"Obrigo o aliado hesitante a entrar primeiro na sala armadilhada" ou "Impeço que o inimigo morra agora para torturá-lo por respostas."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Fica gravado cada mente que você violou e controlou em proveito próprio.</div>
+                        </div>
+
+                        <div class="egoista-card">
+                            <h4 style="color: var(--viridiano);">🌿 Uso Egoísta — Viridiano (Cura ou Resistência)</h4>
+                            <p style="font-size:0.81rem;">Enquanto curar um aliado caído não deixa marca alguma, usar o Ímpeto para fechar os próprios ferimentos mortais ou sobreviver sozinho a um golpe fatal é registrado como autopreservação.</p>
+                            <div class="exemplo-egoista-fala">"Canalizo o Ímpeto para fechar meus próprios ferimentos letais e resistir ao veneno enquanto meus aliados ainda sangram."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Fica anotado que você usou o Ímpeto para salvar a própria pele.</div>
+                        </div>
+
+                        <div class="egoista-card">
+                            <h4 style="color: var(--solar);">☀️ Uso Egoísta — Solar (Livre-Arbítrio Sem Limites)</h4>
+                            <p style="font-size:0.81rem;">Quebrar correntes, trancas ou juramentos para escapar sozinho de uma emboscada, abandonar um compromisso ou fugir deixando o grupo cercado.</p>
+                            <div class="exemplo-egoista-fala">"Nenhuma parede ou acordo me prende — atravesso a barreira e escapo da ala em colapso antes que os outros alcancem a saída."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Fica registrado cada restrição ou promessa que você quebrou em benefício próprio.</div>
+                        </div>
+
+                        <div class="egoista-card">
+                            <h4 style="color: var(--indigo);">🌑 Uso Egoísta — Índigo (Dobrar a Realidade)</h4>
+                            <p style="font-size:0.81rem;">Reescrever um detalhe da cena para encobrir um erro seu, sumir com uma prova incriminadora ou alterar o que realmente aconteceu para sair por cima.</p>
+                            <div class="exemplo-egoista-fala">"O documento que provava que a culpa do colapso foi minha, na verdade, nunca esteve sobre aquela mesa."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Mesmo que o mundo esqueça a realidade antiga, seu Diário guarda exatamente o que você reescreveu.</div>
+                        </div>
+
+                        <div class="egoista-card">
+                            <h4 style="color: var(--alabastro);">🤍 Uso Egoísta — Alabastro (Balancear, Julgar, Proteger)</h4>
+                            <p style="font-size:0.81rem;">Impor o "seu" julgamento sobre os outros, transferir um dano letal que seria seu para outra pessoa ou usar a balança para cobrar dívidas.</p>
+                            <div class="exemplo-egoista-fala">"Troco de lugar com o aliado no golpe letal para me manter de pé — ou decreto sozinho que este prisioneiro merece morrer."</div>
+                            <div class="registro-diario-linha"><strong>No Diário:</strong> Fica registrado sempre que você julgou ou protegeu alguém em benefício próprio.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 6. TODOS OS USOS NARRATIVOS DO ÍMPETO (CAPÍTULO 10) -->
+            <article id="j-usos-narrativos" class="bloco-regra">
+                <h2>6. Usos Narrativos do Ímpeto (Fora de Combate)</h2>
+                <p class="lead">
+                    Além do Efeito Ativo do seu Espectro, todo Arquivista tem acesso aos <strong>Usos Narrativos do Ímpeto</strong> (Capítulo 10). Eles <strong>não podem ser usados em cenas de combate</strong> e não ocupam espaço nas suas Frases Equipadas: servem para investigação, exploração e interação direta com a Biblioteca. A forma como se manifestam muda conforme o seu Espectro predominante no momento.
+                </p>
+
+                <div class="uso-narrativo-grid">
+
+                    <!-- 1. TRANSPORTAR EXISTÊNCIA -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>1. Transportar Existência</h4>
+                            <span class="custo-pill">Sem Custo (0 PI)</span>
+                        </div>
+                        <p>Você pode utilizar cada livro encontrado no cenário uma única vez como meio de transporte, rota de fuga ou esconderijo. Após ser utilizado, aquele livro passa a fazer parte da sua história e não pode ser reutilizado por esta habilidade.</p>
+                        <ul class="lista-manifestacoes">
+                            <li>• O livro deve estar presente no ambiente no momento da ativação (não pode ter sido trazido de fora pelo Arquivista).</li>
+                            <li>• Seu próprio Diário <strong>não</strong> pode ser utilizado com esta habilidade. Não é registrado no Diário.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. MAPEAR LEGADO -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>2. Mapear Legado</h4>
+                            <span class="custo-pill">1 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"O que este lugar esconde?"</div>
+                        <p>O Guardião revela uma pista importante sobre o local onde você está, conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Percebe o ponto mais frágil do local, onde um golpe destruiria tudo.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Compreende a lógica do local, como as coisas se conectam e a ordem correta.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Sente a vida presente: plantas, animais, pessoas escondidas.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Enxerga os caminhos possíveis: saídas, atalhos, rotas alternativas.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Vislumbra o que poderia ter sido, versões alternativas do local.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Percebe o desequilíbrio, o que está fora do lugar ou não pertence ali.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. DESVENDAR ENTIDADE -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>3. Desvendar Entidade</h4>
+                            <span class="custo-pill">1 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Mostre-me o que não está dizendo."</div>
+                        <p>O Guardião revela algo sobre a pessoa com quem você está falando, conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Percebe o que ela deseja mais intensamente.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Sabe se ela está mentindo ou escondendo algo.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Sente o que ela teme perder.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Vislumbra para onde ela quer ir, seus planos futuros.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Descobre o que ela imagina ser verdade.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Percebe o que ela esconde para manter o equilíbrio.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 4. LER O ÍMPETO -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>4. Ler o Ímpeto</h4>
+                            <span class="custo-pill">1 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"O que o Ímpeto está dizendo agora?"</div>
+                        <p>Você sente onde o Ímpeto ao redor está concentrado ou fraco, conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Sente onde o Ímpeto está mais quente, pontos de conflito iminente.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Percebe onde está mais organizado, estruturas e selos.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Sente onde está mais vivo, pontos de crescimento e cura.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Percebe onde está mais móvel, fluxos e movimentos.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Sente onde está mais criativo, possibilidades e mudanças.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Percebe onde está mais equilibrado, estabilidade e ordem.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 5. REGISTRAR PRESENÇA -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>5. Registrar Presença</h4>
+                            <span class="custo-pill">2 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Aqui fica minha lembrança."</div>
+                        <p>Deixa uma marca de Ímpeto em um local por 24 horas (você sabe onde o local está ou usa a marca como âncora à distância):</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> A marca queima quem a tocar, causando 1d4 de dano.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> A marca é invisível para qualquer pessoa além de você.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> A marca cura quem a tocar, restaurando 1d4 PV.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> A marca se move com o local — se a sala mudar de posição, ela segue.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> A marca pode mudar de aparência, fingindo ser outra coisa.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> A marca equilibra o local, impedindo que ele se deteriore.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 6. LOCALIZAÇÃO GEOGRÁFICA -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>6. Localização Geográfica</h4>
+                            <span class="custo-pill">2 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Onde você foi, eu vou encontrar."</div>
+                        <p>Permite seguir um rastro invisível deixado por alguém ou algo, conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Sente o calor residual deixado pela passagem do alvo.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Enxerga os padrões deixados: pegadas, marcas, a lógica do trajeto.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Sente a vida que passou: plantas dobradas, ar deslocado.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Sente a direção como se o vento soprasse do alvo até você.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Vislumbra possibilidades e caminhos alternativos que o alvo poderia tomar.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Sente o desequilíbrio deixado onde algo foi alterado na passagem.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 7. IMPOR PRESENÇA -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>7. Impor Presença</h4>
+                            <span class="custo-pill">2 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Sinta o peso da minha história."</div>
+                        <p>Projeta sua presença sobre uma criatura, fazendo-a hesitar e abrindo uma brecha narrativa:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Sente medo, como se você fosse uma chama incontrolável.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Sente respeito, como se você soubesse de tudo.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Sente calma, como se você não fosse uma ameaça.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Sente curiosidade, como se você fosse um caminho novo.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Sente confusão, como se você não fizesse sentido.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Sente peso, como se você fosse uma lei imutável.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 8. RECORDAR UMA MEMÓRIA -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>8. Recordar uma Memória</h4>
+                            <span class="custo-pill">2 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Eu me lembro do que aconteceu aqui."</div>
+                        <p>Acessa uma lembrança gravada no Ímpeto do local ou situação, conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Recorda o momento mais intenso que aconteceu ali.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Percebe a ordem dos eventos, o que veio antes e depois.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Recorda quem sobreviveu ou floresceu naquele lugar.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Vislumbra como as pessoas chegaram e partiram daquele lugar.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Vislumbra o que poderia ter acontecido, mas não aconteceu.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Recorda o que foi perdido ou esquecido para manter o equilíbrio.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 9. PROJETAR SENTIMENTO -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>9. Projetar Sentimento</h4>
+                            <span class="custo-pill">2 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Sinta o que eu sinto."</div>
+                        <p>Inunda o ambiente por 1 cena, afetando todos os aliados próximos conforme seu Espectro:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo (Determinação):</strong> Todos ganham +1 em testes enquanto durar.</li>
+                            <li><strong style="color:var(--celeste);">Celeste (Clareza):</strong> Todos enxergam melhor, recebendo +2 em Percepção.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano (Esperança):</strong> Todos recuperam 1d4 PV.</li>
+                            <li><strong style="color:var(--solar);">Solar (Liberdade):</strong> Todos ganham +3m de deslocamento enquanto durar.</li>
+                            <li><strong style="color:var(--indigo);">Índigo (Curiosidade):</strong> Todos podem fazer uma pergunta ao Guardião.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro (Paz):</strong> Todos ganham +1d4 de Vida Temporária enquanto durar.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 10. ANCORAR UMA VERDADE -->
+                    <div class="uso-narrativo-card">
+                        <div class="uso-narrativo-top">
+                            <h4>10. Ancorar uma Verdade</h4>
+                            <span class="custo-pill">3 PI</span>
+                        </div>
+                        <div class="frase-ativacao">"Que isso seja verdade, enquanto o Ímpeto lembrar."</div>
+                        <p>Grava uma afirmação no Ímpeto do local para que quem passar por ali a reconheça como inegável:</p>
+                        <ul class="lista-manifestacoes">
+                            <li><strong style="color:var(--igneo);">Ígneo:</strong> Manifesta-se como uma chama que queima mentiras.</li>
+                            <li><strong style="color:var(--celeste);">Celeste:</strong> Manifesta-se como um padrão que não pode ser negado.</li>
+                            <li><strong style="color:var(--viridiano);">Viridiano:</strong> Manifesta-se como uma raiz que cresce e se firma.</li>
+                            <li><strong style="color:var(--solar);">Solar:</strong> Manifesta-se como uma luz que ilumina o óbvio.</li>
+                            <li><strong style="color:var(--indigo);">Índigo:</strong> Manifesta-se como uma pergunta que não pode ser ignorada.</li>
+                            <li><strong style="color:var(--alabastro);">Alabastro:</strong> Manifesta-se como um peso que equilibra a balança.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </article>
+
+            <div class="cta-rodape">
+                <a href="ficha.html" class="btn-cta btn-ouro">📜 Criar Meu Arquivista Agora</a>
+                <a href="estante.html" class="btn-cta btn-escuro">📚 Ir para Minha Estante</a>
+                <a href="regras.html" class="btn-cta btn-escuro">⚖️ Consultar Livro de Regras Completo</a>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- ABA 2: GUIA COMPLETO PARA MESTRES (GUARDIÕES)                         -->
+        <!-- ===================================================================== -->
+        <section id="painel-mestre" class="painel-papel painel-mestre">
+
+            <nav class="indice-rapido" aria-label="Navegação do Guia do Mestre">
+                <strong>Ir para:</strong>
+                <a href="#m-descartes" class="indice-link">1. Conduzindo Descartes (12h)</a>
+                <a href="#m-danoreal" class="indice-link">2. Quando Usar Dano Real (1d6)</a>
+                <a href="#m-tas" class="indice-link">3. Tabela de TAs & As 3 Perguntas</a>
+                <a href="#m-diario" class="indice-link">4. Arbitrando Usos Egoístas & Diário</a>
+                <a href="#m-ritmo" class="indice-link">5. Prepare Problemas, Não Soluções</a>
+            </nav>
+
+            <!-- 1. CONDUZINDO DESCARTES -->
+            <article id="m-descartes" class="bloco-regra">
+                <h2>1. Como Ensinar e Cobrar a Pilha de Descartes na Mesa</h2>
+                <p class="lead">
+                    No sistema B5A, cada dado na <strong>Pilha de Descartes</strong> de um jogador (até o limite de 10 dados) representa <strong>12 horas da vida do personagem</strong>. O dado só pode ser gasto para potencializar uma Frase de Efeito ou item <strong>após o jogador declarar para a mesa quais 12 horas estão sendo apagadas</strong>.
+                </p>
+
+                <div class="grid-2">
+                    <div class="subcard">
+                        <h4>Passo 1: Incentive o Gasto de PI para Rolar d12 Extra</h4>
+                        <p>Lembre aos jogadores novatos que gastar Pontos de Ímpeto antes de uma rolagem importante para adicionar +1d12 extra não serve apenas para garantir o acerto: o dado menor descartado alimenta a Pilha de Descartes para ativar o potencial máximo das Frases de Efeito depois.</p>
+                    </div>
+                    <div class="subcard">
+                        <h4>Passo 2: Cobre Memórias Reais (e Bloqueie Usos Egoístas)</h4>
+                        <p>Peça declarações concretas da vida do Arquivista (12h de treino, 24h de estudo antes da Biblioteca, 12h de vigília). E lembre-se da regra de ferro do Capítulo 2: <strong>memórias geradas pelo uso egoísta do Ímpeto (em benefício próprio) NUNCA podem ser descartadas</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">🎙️ Exemplo de Condução do Guardião:</span>
+                    Um jogador com 2 dados na Pilha de Descartes quer potencializar uma Frase de Efeito em um momento crítico.
+                    <span class="fala-personagem">Guardião: "Para usar esses 2 dados da sua Pilha de Descartes, você precisa me dizer quais 24 horas reais da vida do seu personagem estão sendo jogadas fora para sempre — e não pode ser um momento em que você usou seu Ímpeto para benefício próprio."</span>
+                    <em>Regra opcional do livro (Evitando a fadiga):</em> No início de cada cena, você pode permitir que o jogador declare um bloco de 12 horas que cobre até 3 dados usados naquela cena, pedindo declarações extras apenas se ultrapassar 3 dados.
+                </div>
+            </article>
+
+            <!-- 2. DANO REAL -->
+            <article id="m-danoreal" class="bloco-regra">
+                <h2>2. Quando e Como Usar Dano Real (Sempre Fixo em 1d6)</h2>
+                <p class="lead">
+                    O <strong>Dano Real</strong> (também chamado de <em>Dano Verdadeiro</em> ou <em>Acerto Garantido</em>) é uma ferramenta narrativa e mecânica rara: ele ignora o Clash, ignora Vida Temporária, ignora bônus de item e qualquer bloqueio ou resistência — e <strong>seu valor é sempre fixo em 1d6</strong> (nunca soma atributos e nunca empilha múltiplos dados).
+                </p>
+
+                <h3>Use Dano Real Apenas Nestas Situações:</h3>
+                <ol>
+                    <li><strong>Custos de Sacrifício do Próprio Arquivista:</strong> Quando o jogador ativa Frases de Efeito que cobram Pontos de Vida em troca de Dano Real (ex.: <em>"Que meu sangue se torne minha arma"</em> — sofre 2 PV para causar 1d6 de Dano Real).</li>
+                    <li><strong>Habilidades de Assinatura de Chefes & Anomalias:</strong> Quando uma criatura do Bestiário possui um golpe inevitável que ataca diretamente a existência do Arquivista (como <em>Chama Devoradora</em> do Tirano de Cinzas ou o efeito final de <em>Selo Definitivo</em>).</li>
+                    <li><strong>Momentos Sem Escapatória na Narrativa:</strong> Quando a história exige que um fenômeno aconteça sem disputa, sem defesa e sem esquiva.</li>
+                </ol>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">🩸 O Que NÃO Fazer com Dano Real:</span>
+                    Não coloque Dano Real em ataques básicos de criaturas comuns. O Clash e a Vida Temporária das vestimentas existem para criar disputa e tensão tática. Reserve o <strong>1d6 de Dano Real</strong> para marcar momentos em que a realidade é rasgada sem defesa possível.
+                </div>
+            </article>
+
+            <!-- 3. TABELA DE TAS E AS 3 PERGUNTAS -->
+            <article id="m-tas" class="bloco-regra">
+                <h2>3. Arbitragem: As Três Perguntas & Tabela Oficial de TAs</h2>
+                <p class="lead">
+                    Antes de pedir qualquer teste, faça mentalmente <strong>As Três Perguntas</strong> (Capítulo 13): <strong>1. Existe risco?</strong> <strong>2. Existe consequência para o fracasso?</strong> <strong>3. O resultado realmente importa?</strong> Se qualquer resposta for "não", não peça rolagem — narre o sucesso direto.
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dificuldade</th>
+                                <th>TA</th>
+                                <th>Exemplos Oficiais do Livro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Trivial</strong></td>
+                                <td><strong>12</strong></td>
+                                <td>Abrir uma porta destrancada, lembrar de algo óbvio.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fácil</strong></td>
+                                <td><strong>14</strong></td>
+                                <td>Escalar um muro baixo, convencer alguém de algo óbvio.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Médio</strong></td>
+                                <td><strong>18</strong></td>
+                                <td>Arrombar uma fechadura, investigar uma cena, acertar um inimigo comum.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Difícil</strong></td>
+                                <td><strong>26</strong></td>
+                                <td>Escalar uma parede lisa, decifrar um enigma antigo, acertar um alvo em movimento.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Épico</strong></td>
+                                <td><strong>32</strong></td>
+                                <td>Convencer um rei a abdicar, resistir a uma maldição poderosa, acertar um alvo à distância extrema.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lendário</strong></td>
+                                <td><strong>35+</strong></td>
+                                <td>Realizar um feito que muda o rumo da história, resistir ao próprio fim.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><strong>Ajustes Rápidos:</strong> Circunstâncias favoráveis (ferramentas adequadas, tempo, ajuda) reduzem a TA em <code>-2 a -4</code>; circunstâncias desfavoráveis (escuridão, pressa, falta de ferramentas) aumentam a TA em <code>+2 a +4</code>. Comunique a TA antes da rolagem.</p>
+            </article>
+
+            <!-- 4. ARBITRANDO USOS EGOÍSTAS & DIÁRIO -->
+            <article id="m-diario" class="bloco-regra">
+                <h2>4. Arbitrando Usos Egoístas do Ímpeto & O Espelho do Diário</h2>
+                <p class="lead">
+                    Tanto o <strong>Efeito Ativo dos 6 Espectros</strong> (incluindo seus <strong>Usos Egoístas</strong>) quanto os <strong>Usos Narrativos do Ímpeto</strong> dependem da descrição do jogador e da sua arbitragem. Antes de aprovar um Uso Narrativo (Capítulo 10), faça três perguntas:
+                </p>
+
+                <ol>
+                    <li><strong>Isso acrescenta algo à história?</strong> Se a resposta for apenas "sim, ele descobre a pista", talvez não seja preciso gastar PI. Se mudar a forma como o personagem vê o mundo ou destravar uma investigação empacada, permita.</li>
+                    <li><strong>O custo faz sentido?</strong> O PI é apenas o custo mecânico; o que é deixado para trás ou registrado no Diário é o que importa.</li>
+                    <li><strong>O jogador está descrevendo ou apenas pedindo?</strong> Se o jogador disser apenas <em>"uso Ler o Ímpeto"</em>, peça para ele descrever <em>o que</em> está lendo, <em>onde</em> e <em>por quê</em>.</li>
+                </ol>
+
+                <div class="cena-exemplo">
+                    <span class="cena-titulo">📖 Nota do Guardião sobre Usos Egoístas & O Diário (Capítulo 2):</span>
+                    "O Diário não é um registro de poder. É um registro de escolhas. Cada página virada é um espelho, e o reflexo nem sempre é bonito. O jogador vê o que está se tornando e decide se continua."<br>
+                    Nunca proíba um jogador de fazer um <strong>Uso Egoísta</strong> coerente com seu Espectro (como obrigar um guarda a atacar o chefe, impedir um inimigo de morrer para torturá-lo por respostas ou sacrificar o objeto amado de outra pessoa). Permita o ato — e faça-o escrever naquele instante no Diário, lembrando que aquelas 12 horas nunca poderão ser apagadas na Pilha de Descartes e serão lidas pelo grupo caso ele caia.
+                </div>
+            </article>
+
+            <!-- 5. PREPARE PROBLEMAS, NÃO SOLUÇÕES -->
+            <article id="m-ritmo" class="bloco-regra">
+                <h2>5. Filosofia do Guardião: Prepare Problemas, Não Soluções</h2>
+                <p class="lead">
+                    Com Palavras de Afirmação abertas e Usos Narrativos que dobram a realidade, os Arquivistas sempre encontrarão soluções que você não previu. O Guardião constrói o cenário e os problemas; a solução pertence aos jogadores.
+                </p>
+
+                <div class="grid-2">
+                    <div class="subcard">
+                        <h4>As 4 Peças de Qualquer Missão</h4>
+                        <ul>
+                            <li><strong>Objetivo:</strong> O livro a recuperar, o Arquivista sumido ou o ritual a interromper.</li>
+                            <li><strong>Obstáculo:</strong> Garras nas sombras, portas impossíveis ou um relógio correndo.</li>
+                            <li><strong>Conflito:</strong> A escolha difícil — pergunte-se <em>"O que acontece se eles falharem?"</em></li>
+                            <li><strong>Recompensa:</strong> Informações, aliados, novas Palavras, itens especiais ou Títulos (a partir do Volume V).</li>
+                        </ul>
+                    </div>
+                    <div class="subcard">
+                        <h4>Regra de Ouro da Investigação & Pilha do Guardião</h4>
+                        <ul>
+                            <li><strong>Nunca esconda pistas essenciais atrás de um único teste:</strong> Testes revelam vantagens, atalhos ou detalhes extras, nunca travam a história.</li>
+                            <li><strong>Sua Pilha de Descartes:</strong> Sempre que um jogador tirar <strong>1 Natural (Catástrofe Definitiva)</strong> ou falhar ao <strong>Desafiar o Destino</strong>, você ganha 1 Dado de Descartes para ativar habilidades de criaturas, intensificar ataques ou introduzir complicações narrativas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <div class="cta-rodape">
+                <a href="monstros.html" class="btn-cta btn-celeste">👁️ Abrir Bestiário & Criar Monstros</a>
+                <a href="mesa.html" class="btn-cta btn-escuro">🗺️ Abrir Grid Tático / Mesa</a>
+                <a href="regras.html" class="btn-cta btn-escuro">⚖️ Consultar Livro de Regras Completo</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        Biblioteca da 5ª Avenida (B5A) • DiceForge
+    </footer>
+
+    <script>
+        // MENU MOBILE
+        const btnMenuMobile = document.getElementById('btn-menu-mobile');
+        const navLinksMenu = document.getElementById('nav-links-menu');
+
+        if (btnMenuMobile && navLinksMenu) {
+            btnMenuMobile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const aberto = navLinksMenu.classList.toggle('aberto');
+                btnMenuMobile.setAttribute('aria-expanded', aberto);
+                btnMenuMobile.textContent = aberto ? '✕ Fechar' : '☰ Menu';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!navLinksMenu.contains(e.target) && !btnMenuMobile.contains(e.target)) {
+                    navLinksMenu.classList.remove('aberto');
+                    btnMenuMobile.setAttribute('aria-expanded', 'false');
+                    btnMenuMobile.textContent = '☰ Menu';
+                }
+            });
+        }
+
+        // TROCA ENTRE JOGADOR (ARQUIVISTA) E MESTRE (GUARDIÃO)
+        const botoesPapel = document.querySelectorAll('.btn-papel');
+        const paineisPapel = document.querySelectorAll('.painel-papel');
+
+        function ativarPapel(papel) {
+            botoesPapel.forEach(btn => {
+                const ativo = btn.dataset.papel === papel;
+                btn.classList.toggle('ativo', ativo);
+                btn.setAttribute('aria-selected', ativo ? 'true' : 'false');
+            });
+
+            paineisPapel.forEach(painel => {
+                painel.classList.toggle('ativo', painel.id === `painel-${papel}`);
+            });
+        }
+
+        botoesPapel.forEach(btn => {
+            btn.addEventListener('click', () => {
+                ativarPapel(btn.dataset.papel);
+            });
+        });
+
+        // Suporte a link direto via hash (?papel=mestre ou #mestre)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('papel') === 'mestre' || window.location.hash === '#mestre') {
+            ativarPapel('mestre');
+        }
+    </script>
+
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/notificacoes.js"></script>
+</body>
+</html>
