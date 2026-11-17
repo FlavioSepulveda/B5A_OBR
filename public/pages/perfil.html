@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Dossiê do Arquivista - B5A RPG</title>
+    <title>Credencial na Biblioteca - B5A RPG</title>
     <link rel="stylesheet" href="../css/perfil.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="papel-arquivista">
 
     <nav class="top-nav">
         <div class="nav-left">
@@ -34,18 +34,18 @@
     </nav>
 
     <main class="perfil-container" id="perfil-visitado">
-        <!-- COLUNA ESQUERDA: CREDENCIAL DO BESTIÁRIO DAS ALMAS -->
+        <!-- COLUNA ESQUERDA: CREDENCIAL DO JOGADOR / GUARDIÃO -->
         <aside class="perfil-identidade">
             <div class="credencial-topo">
-                <span class="credencial-org">BESTIÁRIO DAS ALMAS • ARQUIVO CENTRAL</span>
-                <span id="perfil-espectro-badge" class="espectro-pill">✦ Sem Espectro</span>
+                <span class="credencial-org">BESTIÁRIO DAS ALMAS • CREDENCIAL</span>
+                <span id="perfil-papel-badge" class="espectro-pill">📜 Arquivista (Jogador)</span>
             </div>
 
-            <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=200&q=80" alt="Avatar do Pesquisador" class="avatar">
+            <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=200&q=80" alt="Avatar do Usuário" class="avatar">
 
             <h1 id="perfil-nome">Carregando...</h1>
-            <span id="perfil-titulo" class="patente-texto">Pesquisador Iniciante</span>
-            <p id="perfil-juramento" class="juramento-espectro">"Qual história você veio escrever?"</p>
+            <span id="perfil-status-mesa" class="patente-texto">🟢 Procurando Mesa</span>
+            <p id="perfil-frase-papel" class="juramento-espectro">"Pronto para cruzar uma porta esquecida e registrar o desconhecido."</p>
             <p id="perfil-bio" class="bio-texto">"Sem registro pessoal no Diário."</p>
 
             <!-- MÉTRICAS DE PESQUISA -->
@@ -74,7 +74,7 @@
                 <span>🏆 Títulos: <strong id="qtd-titulos">0</strong></span>
             </div>
 
-            <!-- PRINCÍPIOS DO ARQUIVISTA (LIVRO DE REGRAS) -->
+            <!-- PRINCÍPIOS DO ARQUIVISTA -->
             <div class="principios-box">
                 <span class="principios-titulo">📜 Três Princípios da Ordem</span>
                 <ul>
@@ -85,9 +85,9 @@
             </div>
 
             <div id="area-botoes-perfil" class="botoes-perfil-wrapper">
-                <button id="btn-seguir" class="btn-primario" style="display: none;">+ Seguir Arquivista</button>
+                <button id="btn-seguir" class="btn-primario" style="display: none;">+ Seguir Usuário</button>
                 <button id="btn-editar-perfil" class="btn-primario" style="display: none;">✏️ Editar Credencial</button>
-                <button id="btn-copiar-link" class="btn-secundario">🔗 Compartilhar Dossiê</button>
+                <button id="btn-copiar-link" class="btn-secundario">🔗 Compartilhar Perfil</button>
             </div>
         </aside>
 
@@ -118,7 +118,7 @@
                 <div class="secao-header-inline">
                     <div>
                         <h2 class="titulo-secao">Registros de Campo & Anomalias (NFC)</h2>
-                        <p class="subtitulo-secao">Entidades, relíquias e rupturas catalogadas pelo pesquisador durante expedições.</p>
+                        <p class="subtitulo-secao">Entidades, relíquias e rupturas catalogadas durante expedições.</p>
                     </div>
                     <div id="controles-nfc-dono" class="nfc-acoes-topo" style="display: none;">
                         <button type="button" id="btn-escanear-nfc" class="btn-acao-pequeno btn-nfc">📡 Ler Tag NFC</button>
@@ -174,40 +174,43 @@
         </section>
     </main>
 
-    <!-- MODAL 1: EDITAR IDENTIDADE DO PESQUISADOR -->
+    <!-- MODAL 1: EDITAR CREDENCIAL DE JOGADOR / GUARDIÃO -->
     <div id="modal-editar-perfil" class="modal-leitura">
         <div class="modal-leitura-content">
             <span class="close-btn" data-close="modal-editar-perfil">&times;</span>
-            <h2>Credencial de Arquivista</h2>
-            <p class="modal-desc">Personalize sua identidade nos arquivos da 5ª Avenida.</p>
+            <h2>Credencial na Biblioteca</h2>
+            <p class="modal-desc">Defina como você participa das mesas para facilitar que mestres e jogadores encontrem você.</p>
 
             <div class="input-group">
                 <label>Foto de Perfil</label>
                 <input type="file" id="edit-foto-file" accept="image/*">
             </div>
             <div class="input-group">
-                <label>Nome / Codinome de Pesquisador</label>
-                <input type="text" id="edit-nome" placeholder="Ex: Hallsey, Arthur...">
+                <label>Nome / Apelido</label>
+                <input type="text" id="edit-nome" placeholder="Seu nome ou nickname">
+            </div>
+            <div class="form-row-modal">
+                <div class="input-group">
+                    <label>Função Principal</label>
+                    <select id="edit-papel">
+                        <option value="arquivista">📜 Arquivista (Jogador)</option>
+                        <option value="guardiao">👁️ Guardião do Arquivo (Mestre)</option>
+                        <option value="ambos">⚖️ Guardião & Arquivista</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Disponibilidade de Mesa</label>
+                    <select id="edit-status-mesa">
+                        <option value="🟢 Procurando Mesa">🟢 Procurando Mesa</option>
+                        <option value="🔥 Recrutando Jogadores">🔥 Recrutando Jogadores</option>
+                        <option value="📖 Em Campanha">📖 Em Campanha</option>
+                        <option value="⏸️ Pausa nas Expedições">⏸️ Pausa nas Expedições</option>
+                    </select>
+                </div>
             </div>
             <div class="input-group">
-                <label>Espectro Predominante (Define a cor do Dossiê)</label>
-                <select id="edit-espectro">
-                    <option value="padrao">✦ Sem Espectro (Ouro da Biblioteca)</option>
-                    <option value="igneo">🔥 Ígneo — "Toda conquista exige um sacrifício."</option>
-                    <option value="celeste">💧 Celeste — "Conhecimento supera força."</option>
-                    <option value="viridiano">🌿 Viridiano — "Enquanto houver vida, há esperança."</option>
-                    <option value="solar">☀️ Solar — "Nenhum caminho é definitivo."</option>
-                    <option value="indigo">🔮 Índigo — "Toda resposta gera uma nova pergunta."</option>
-                    <option value="alabastro">⚖️ Alabastro — "Ninguém deve prevalecer."</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Patente / Especialidade</label>
-                <input type="text" id="edit-titulo" placeholder="Ex: Pesquisador de Campo • Cronista">
-            </div>
-            <div class="input-group">
-                <label>Anotação Pessoal / Biografia</label>
-                <textarea id="edit-bio" rows="3" placeholder="Sua história antes de cruzar a porta da Biblioteca..."></textarea>
+                <label>Sobre você / Estilo de Jogo ou Mestria</label>
+                <textarea id="edit-bio" rows="3" placeholder="Ex: Curto campanhas de mistério e horror cósmico; disponível nos fins de semana..."></textarea>
             </div>
             <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 18px; width: 100%;">Salvar Credencial</button>
         </div>
@@ -332,7 +335,7 @@
         Biblioteca da 5ª Avenida (B5A) • Bestiário das Almas
     </footer>
 
-<script>
+    <script>
         // Menu Mobile
         const btnMenuMobile = document.getElementById('btn-menu-mobile');
         const navLinksMenu = document.getElementById('nav-links-menu');

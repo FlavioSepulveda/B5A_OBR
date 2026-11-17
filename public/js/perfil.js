@@ -12,14 +12,31 @@ let ehProprioPerfil = false;
 let filtroNaturezaAtual = 'todas';
 let listaAnomaliasCache = [];
 
+// PAPÉIS DO USUÁRIO NA MESA (JOGADOR VS MESTRE)
+const PAPEIS_INFO = {
+    arquivista: {
+        nome: "📜 Arquivista (Jogador)",
+        frase: '"Pronto para cruzar uma porta esquecida e registrar o desconhecido."'
+    },
+    guardiao: {
+        nome: "👁️ Guardião do Arquivo (Mestre)",
+        frase: '"Toda história precisa de alguém para revelar o que se esconde nas entrelinhas."'
+    },
+    ambos: {
+        nome: "⚖️ Guardião & Arquivista",
+        frase: '"Ora escrevendo o próprio Diário, ora guiando outros pelos corredores da 5ª Avenida."'
+    }
+};
+
+// ESPECTROS DOS PERSONAGENS E ANOMALIAS
 const ESPECTROS_INFO = {
-    padrao:    { nome: "Sem Espectro", cor: "#d4af37", juramento: '"Qual história você veio escrever?"' },
-    igneo:     { nome: "Ígneo",        cor: "#e63946", juramento: '"Toda conquista exige um sacrifício."' },
-    celeste:   { nome: "Celeste",      cor: "#4cc9f0", juramento: '"Conhecimento supera força."' },
-    viridiano: { nome: "Viridiano",    cor: "#2ec4b6", juramento: '"Enquanto houver vida, há esperança."' },
-    solar:     { nome: "Solar",        cor: "#ffbe0b", juramento: '"Nenhum caminho é definitivo."' },
-    indigo:    { nome: "Índigo",       cor: "#9b5de5", juramento: '"Toda resposta gera uma nova pergunta."' },
-    alabastro: { nome: "Alabastro",    cor: "#f8f9fa", juramento: '"Ninguém deve prevalecer."' }
+    padrao:    { nome: "Sem Espectro", cor: "#d4af37" },
+    igneo:     { nome: "Ígneo",        cor: "#e63946" },
+    celeste:   { nome: "Celeste",      cor: "#4cc9f0" },
+    viridiano: { nome: "Viridiano",    cor: "#2ec4b6" },
+    solar:     { nome: "Solar",        cor: "#ffbe0b" },
+    indigo:    { nome: "Índigo",       cor: "#9b5de5" },
+    alabastro: { nome: "Alabastro",    cor: "#f8f9fa" }
 };
 
 const TITULOS_LIVRO = [
@@ -49,14 +66,18 @@ function escaparHtml(str) {
         .replace(/"/g, "&quot;");
 }
 
-function aplicarTemaEspectro(espectroKey) {
-    const key = ESPECTROS_INFO[espectroKey] ? espectroKey : 'padrao';
-    document.body.className = `espectro-${key}`;
-    const info = ESPECTROS_INFO[key];
-    const badge = document.getElementById('perfil-espectro-badge');
-    const juramento = document.getElementById('perfil-juramento');
-    if (badge) badge.textContent = `✦ Espectro ${info.nome}`;
-    if (juramento) juramento.textContent = info.juramento;
+function aplicarPapelUsuario(papelKey, statusMesa) {
+    const key = PAPEIS_INFO[papelKey] ? papelKey : 'arquivista';
+    document.body.className = `papel-${key}`;
+    const info = PAPEIS_INFO[key];
+
+    const badge = document.getElementById('perfil-papel-badge');
+    const frase = document.getElementById('perfil-frase-papel');
+    const statusEl = document.getElementById('perfil-status-mesa');
+
+    if (badge) badge.textContent = info.nome;
+    if (frase) frase.textContent = info.frase;
+    if (statusEl) statusEl.textContent = statusMesa || "🟢 Procurando Mesa";
 }
 
 // INICIALIZAÇÃO VIA AUTH
@@ -68,7 +89,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     if (!perfilUid) {
-        document.getElementById('perfil-nome').textContent = "Pesquisador não identificado";
+        document.getElementById('perfil-nome').textContent = "Usuário não identificado";
         document.getElementById('perfil-bio').textContent = "Clique em 'Entrar com Google' no topo ou acesse com ?uid=ID_DO_USUARIO.";
         return;
     }
@@ -91,24 +112,24 @@ async function inicializarPerfil(uid) {
     if (!dadosPerfil && ehProprioPerfil) {
         dadosPerfil = {
             nome: usuarioLogado.displayName || usuarioLogado.email.split('@')[0],
-            espectro: "indigo",
-            titulo: "Pesquisador de Campo • Bestiário das Almas",
-            bio: "Atravessou uma porta esquecida e agora cataloga anomalias na 5ª Avenida.",
+            papel: "arquivista",
+            statusMesa: "🟢 Procurando Mesa",
+            bio: "Atravessou uma porta esquecida e agora explora os arquivos da 5ª Avenida.",
             fotoUrl: usuarioLogado.photoURL || ""
         };
         await set(userRef, dadosPerfil);
     }
 
-    const nomeExibir = dadosPerfil?.nome || dadosPerfil?.displayName || (ehProprioPerfil ? usuarioLogado?.displayName : null) || "Arquivista";
-    const tituloExibir = dadosPerfil?.titulo || "Pesquisador";
+    const nomeExibir = dadosPerfil?.nome || dadosPerfil?.displayName || (ehProprioPerfil ? usuarioLogado?.displayName : null) || "Usuário";
+    const papelAtual = dadosPerfil?.papel || "arquivista";
+    const statusMesaAtual = dadosPerfil?.statusMesa || "🟢 Procurando Mesa";
     const bioExibir = dadosPerfil?.bio || "Sem anotação pessoal.";
     const fotoExibir = dadosPerfil?.fotoUrl || dadosPerfil?.photoURL || dadosPerfil?.avatar || (ehProprioPerfil ? usuarioLogado?.photoURL : null) || `https://ui-avatars.com/api/?name=${encodeURIComponent(nomeExibir)}&background=1f1b24&color=d4af37`;
 
     document.getElementById('perfil-nome').textContent = nomeExibir;
-    document.getElementById('perfil-titulo').textContent = tituloExibir;
     document.getElementById('perfil-bio').textContent = `"${bioExibir}"`;
     document.getElementById('perfil-avatar').src = fotoExibir;
-    aplicarTemaEspectro(dadosPerfil?.espectro || 'padrao');
+    aplicarPapelUsuario(papelAtual, statusMesaAtual);
 
     // Permissões de Dono vs Visitante
     const btnEditar = document.getElementById('btn-editar-perfil');
@@ -123,8 +144,8 @@ async function inicializarPerfil(uid) {
 
         btnEditar.onclick = () => {
             document.getElementById('edit-nome').value = nomeExibir;
-            document.getElementById('edit-espectro').value = dadosPerfil?.espectro || "padrao";
-            document.getElementById('edit-titulo').value = tituloExibir;
+            document.getElementById('edit-papel').value = dadosPerfil?.papel || "arquivista";
+            document.getElementById('edit-status-mesa').value = dadosPerfil?.statusMesa || "🟢 Procurando Mesa";
             document.getElementById('edit-bio').value = dadosPerfil?.bio || "";
             document.getElementById('modal-editar-perfil').style.display = 'flex';
         };
@@ -137,8 +158,8 @@ async function inicializarPerfil(uid) {
         const url = `${window.location.origin}${window.location.pathname}?uid=${uid}`;
         navigator.clipboard.writeText(url);
         const btn = document.getElementById('btn-copiar-link');
-        btn.textContent = "✓ Link do Dossiê Copiado!";
-        setTimeout(() => btn.textContent = "🔗 Compartilhar Dossiê", 2500);
+        btn.textContent = "✓ Link do Perfil Copiado!";
+        setTimeout(() => btn.textContent = "🔗 Compartilhar Perfil", 2500);
     };
 
     escutarContadoresSeguidores(uid);
@@ -180,16 +201,16 @@ function converterImagemBase64(file) {
     });
 }
 
-// SALVAR CREDENCIAL DO PESQUISADOR
+// SALVAR CREDENCIAL NA BIBLIOTECA
 document.getElementById('btn-salvar-identidade')?.addEventListener('click', async () => {
     if (!usuarioLogado) return;
     const novoNome = document.getElementById('edit-nome').value.trim();
-    const novoEspectro = document.getElementById('edit-espectro').value;
-    const novoTitulo = document.getElementById('edit-titulo').value.trim() || "Pesquisador";
+    const novoPapel = document.getElementById('edit-papel').value;
+    const novoStatusMesa = document.getElementById('edit-status-mesa').value;
     const novaBio = document.getElementById('edit-bio').value.trim();
     const inputFoto = document.getElementById('edit-foto-file');
 
-    if (!novoNome) return alert("O codinome não pode ficar em branco.");
+    if (!novoNome) return alert("O nome não pode ficar em branco.");
 
     const btn = document.getElementById('btn-salvar-identidade');
     btn.disabled = true;
@@ -209,8 +230,8 @@ document.getElementById('btn-salvar-identidade')?.addEventListener('click', asyn
 
         await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
             nome: novoNome,
-            espectro: novoEspectro,
-            titulo: novoTitulo,
+            papel: novoPapel,
+            statusMesa: novoStatusMesa,
             bio: novaBio,
             fotoUrl
         });
@@ -220,10 +241,9 @@ document.getElementById('btn-salvar-identidade')?.addEventListener('click', asyn
         }
 
         document.getElementById('perfil-nome').textContent = novoNome;
-        document.getElementById('perfil-titulo').textContent = novoTitulo;
         document.getElementById('perfil-bio').textContent = `"${novaBio}"`;
         document.getElementById('perfil-avatar').src = fotoUrl;
-        aplicarTemaEspectro(novoEspectro);
+        aplicarPapelUsuario(novoPapel, novoStatusMesa);
         document.getElementById('modal-editar-perfil').style.display = 'none';
     } catch (e) {
         alert("Erro ao salvar credencial: " + e.message);
@@ -250,7 +270,7 @@ function configurarBotaoSeguir(alvoUid) {
 
     onValue(segRef, snap => {
         const segue = snap.exists();
-        btnSeguir.textContent = segue ? "✓ Seguindo Pesquisador" : "+ Seguir Arquivista";
+        btnSeguir.textContent = segue ? "✓ Seguindo" : "+ Seguir Usuário";
         btnSeguir.className = segue ? "btn-secundario" : "btn-primario";
     });
 
@@ -267,7 +287,7 @@ function configurarBotaoSeguir(alvoUid) {
                 if (mod.registrarNotificacao) {
                     await mod.registrarNotificacao(
                         alvoUid,
-                        `<strong>${usuarioLogado.displayName || 'Um Arquivista'}</strong> começou a acompanhar seu dossiê.`,
+                        `<strong>${usuarioLogado.displayName || 'Um usuário'}</strong> começou a seguir seu perfil.`,
                         `pages/perfil.html?uid=${usuarioLogado.uid}`
                     );
                 }
@@ -318,7 +338,7 @@ async function carregarEstantePersonagens(uid) {
     document.getElementById('qtd-personagens').textContent = personagens.length;
 
     if (personagens.length === 0) {
-        elEstante.innerHTML = `<div class="estado-vazio">Nenhum Arquivista registrado na estante deste pesquisador ainda.</div>`;
+        elEstante.innerHTML = `<div class="estado-vazio">Nenhum Arquivista registrado na estante deste usuário ainda.</div>`;
         return;
     }
 
@@ -488,7 +508,7 @@ function escutarCampanhas(uid) {
         document.getElementById('qtd-campanhas').textContent = campanhas.length;
 
         if (campanhas.length === 0) {
-            elCamp.innerHTML = `<div class="estado-vazio">Nenhuma campanha registrada no histórico deste pesquisador.</div>`;
+            elCamp.innerHTML = `<div class="estado-vazio">Nenhuma campanha registrada no histórico deste usuário.</div>`;
             return;
         }
 

@@ -8,14 +8,10 @@
     --cor-destaque: var(--ouro);
 }
 
-/* TEMAS DINÂMICOS POR ESPECTRO DO ÍMPETO */
-body.espectro-padrao    { --cor-destaque: #d4af37; }
-body.espectro-igneo     { --cor-destaque: #e63946; }
-body.espectro-celeste   { --cor-destaque: #4cc9f0; }
-body.espectro-viridiano { --cor-destaque: #2ec4b6; }
-body.espectro-solar     { --cor-destaque: #ffbe0b; }
-body.espectro-indigo    { --cor-destaque: #9b5de5; }
-body.espectro-alabastro { --cor-destaque: #f8f9fa; }
+/* TEMAS DINÂMICOS POR PAPEL NA MESA */
+body.papel-arquivista { --cor-destaque: #d4af37; } /* Ouro da Biblioteca */
+body.papel-guardiao   { --cor-destaque: #9b5de5; } /* Índigo do Guardião */
+body.papel-ambos      { --cor-destaque: #4cc9f0; } /* Celeste Versátil */
 
 * {
     box-sizing: border-box;
@@ -39,7 +35,7 @@ h1, h2, h3, .titulo-fonte {
     letter-spacing: 1.5px;
 }
 
-/* NAVBAR IDÊNTICA AO INDEX */
+/* NAVBAR */
 .top-nav {
     position: fixed;
     top: 0;
@@ -143,7 +139,7 @@ h1, h2, h3, .titulo-fonte {
     align-items: start;
 }
 
-/* CREDENCIAL LATERAL DO PESQUISADOR */
+/* CREDENCIAL LATERAL */
 .perfil-identidade {
     background: var(--bg-painel);
     border: 1px solid #2e2a35;
@@ -179,9 +175,9 @@ h1, h2, h3, .titulo-fonte {
     border: 1px solid var(--cor-destaque);
     color: var(--cor-destaque);
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.92rem;
+    font-size: 0.94rem;
     letter-spacing: 1px;
-    padding: 2px 12px;
+    padding: 3px 13px;
     border-radius: 20px;
 }
 
