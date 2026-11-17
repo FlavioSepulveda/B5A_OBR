@@ -1,9 +1,6 @@
-import { app, auth, db, salaAtual } from './firebase.js';
+import { auth, db, salaAtual } from './firebase.js';
 import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { ref as dbRef, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-
-const storage = getStorage(app);
 
 const params = new URLSearchParams(window.location.search);
 let perfilUid = params.get('uid');
@@ -143,7 +140,7 @@ async function inicializarPerfil(uid) {
         document.getElementById('btn-abrir-modal-titulo').style.display = 'inline-block';
 
         btnEditar.onclick = () => {
-            document.getElementById('edit-nome').value = nomeExibir;
+            document.getElementById('edit-nome').value = document.getElementById('perfil-nome').textContent;
             document.getElementById('edit-papel').value = dadosPerfil?.papel || "arquivista";
             document.getElementById('edit-status-mesa').value = dadosPerfil?.statusMesa || "🟢 Procurando Mesa";
             document.getElementById('edit-bio').value = dadosPerfil?.bio || "";
@@ -178,7 +175,7 @@ async function inicializarPerfil(uid) {
     }
 }
 
-// Helper para redimensionar imagem caso Firebase Storage não esteja ativo
+// Converte e comprime a foto para ~15KB (salva direto no Realtime Database sem precisar do Storage)
 function converterImagemBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -186,72 +183,79 @@ function converterImagemBase64(file) {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const max = 256;
+                const max = 220;
                 const scale = Math.min(1, max / Math.max(img.width, img.height));
-                canvas.width = img.width * scale;
-                canvas.height = img.height * scale;
-                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.82));
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
             };
-            img.onerror = reject;
+            img.onerror = () => reject(new Error("Não foi possível processar a imagem."));
             img.src = e.target.result;
         };
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error("Falha ao ler o arquivo selecionado."));
         reader.readAsDataURL(file);
     });
 }
 
 // SALVAR CREDENCIAL NA BIBLIOTECA
-document.getElementById('btn-salvar-identidade')?.addEventListener('click', async () => {
-    if (!usuarioLogado) return;
-    const novoNome = document.getElementById('edit-nome').value.trim();
-    const novoPapel = document.getElementById('edit-papel').value;
-    const novoStatusMesa = document.getElementById('edit-status-mesa').value;
-    const novaBio = document.getElementById('edit-bio').value.trim();
-    const inputFoto = document.getElementById('edit-foto-file');
+const btnSalvarCredencial = document.getElementById('btn-salvar-identidade');
+if (btnSalvarCredencial) {
+    btnSalvarCredencial.onclick = async (e) => {
+        e.preventDefault();
+        if (!usuarioLogado) {
+            alert("Você precisa estar logado para salvar.");
+            return;
+        }
 
-    if (!novoNome) return alert("O nome não pode ficar em branco.");
+        const novoNome = document.getElementById('edit-nome').value.trim();
+        const novoPapel = document.getElementById('edit-papel').value;
+        const novoStatusMesa = document.getElementById('edit-status-mesa').value;
+        const novaBio = document.getElementById('edit-bio').value.trim();
+        const inputFoto = document.getElementById('edit-foto-file');
 
-    const btn = document.getElementById('btn-salvar-identidade');
-    btn.disabled = true;
-    btn.textContent = "Gravando no Arquivo...";
+        if (!novoNome) {
+            alert("O nome não pode ficar em branco.");
+            return;
+        }
 
-    try {
-        let fotoUrl = document.getElementById('perfil-avatar').src;
-        if (inputFoto.files && inputFoto.files[0]) {
-            try {
-                const fotoRef = storageRef(storage, `avatares/${usuarioLogado.uid}_${Date.now()}`);
-                await uploadBytes(fotoRef, inputFoto.files[0]);
-                fotoUrl = await getDownloadURL(fotoRef);
-            } catch (_) {
+        btnSalvarCredencial.disabled = true;
+        btnSalvarCredencial.textContent = "Gravando no Arquivo...";
+
+        try {
+            let fotoUrl = document.getElementById('perfil-avatar').src;
+
+            if (inputFoto.files && inputFoto.files[0]) {
                 fotoUrl = await converterImagemBase64(inputFoto.files[0]);
             }
+
+            await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
+                nome: novoNome,
+                papel: novoPapel,
+                statusMesa: novoStatusMesa,
+                bio: novaBio,
+                fotoUrl: fotoUrl
+            });
+
+            await updateProfile(usuarioLogado, { displayName: novoNome }).catch(() => {});
+
+            document.getElementById('perfil-nome').textContent = novoNome;
+            document.getElementById('perfil-bio').textContent = `"${novaBio || 'Sem anotação pessoal.'}"`;
+            document.getElementById('perfil-avatar').src = fotoUrl;
+            aplicarPapelUsuario(novoPapel, novoStatusMesa);
+
+            inputFoto.value = "";
+            document.getElementById('modal-editar-perfil').style.display = 'none';
+        } catch (erro) {
+            console.error("Erro ao salvar credencial:", erro);
+            alert("Erro ao salvar credencial: " + erro.message);
+        } finally {
+            btnSalvarCredencial.disabled = false;
+            btnSalvarCredencial.textContent = "Salvar Credencial";
         }
-
-        await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
-            nome: novoNome,
-            papel: novoPapel,
-            statusMesa: novoStatusMesa,
-            bio: novaBio,
-            fotoUrl
-        });
-
-        if (!fotoUrl.startsWith('data:')) {
-            await updateProfile(usuarioLogado, { displayName: novoNome, photoURL: fotoUrl }).catch(() => {});
-        }
-
-        document.getElementById('perfil-nome').textContent = novoNome;
-        document.getElementById('perfil-bio').textContent = `"${novaBio}"`;
-        document.getElementById('perfil-avatar').src = fotoUrl;
-        aplicarPapelUsuario(novoPapel, novoStatusMesa);
-        document.getElementById('modal-editar-perfil').style.display = 'none';
-    } catch (e) {
-        alert("Erro ao salvar credencial: " + e.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "Salvar Credencial";
-    }
-});
+    };
+}
 
 // SEGUIDORES
 function escutarContadoresSeguidores(uid) {
