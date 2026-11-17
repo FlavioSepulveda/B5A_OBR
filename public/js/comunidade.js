@@ -2,50 +2,234 @@ import { auth, db, idJogadorAtual, salaAtual } from './firebase.js';
 import { ref, push, set, onValue, update, remove, get } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js';
 
 let todasCronicasCache = {};
+let ameacasCatalogo = {};
+let ameacasSelecionadasForm = [];
+
 let cronicaAbertaId = null;
 let cronicaAbertaObj = null;
 let deepLinkJaProcessado = false;
 
 const IMG_PADRAO = 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80';
 
+// Tipos que NÃO são crônicas quando lidos do feed geral
+const TIPOS_NAO_CRONICA = [
+    'criatura', 'chefe', 'bestiario', 'monstro',
+    'ficha', 'personagem', 'arquivista',
+    'item', 'arma', 'artefato', 'caminho', 'vocacao'
+];
+
 // =========================================================
-// SINCRONIZAÇÃO COM O FEED PRINCIPAL (index.html / home.js)
+// 1. CARREGAR CRIATURAS E CHEFES EXISTENTES NA COMUNIDADE
 // =========================================================
-async function sincronizarComFeed(cronicaId, payload, compartilharNoFeed) {
-    const feedItemRef = ref(db, `feed/cronica_${cronicaId}`);
+function iniciarCatalogoAmeacas() {
+    const selectEl = document.getElementById('select-ameaca-comunidade');
+    if (!selectEl) return;
 
-    if (!compartilharNoFeed) {
-        await remove(feedItemRef);
-        return;
-    }
+    let fontes = { criaturas: {}, bestiario: {}, chefes: {}, feed: {}, publicacoes: {} };
 
-    const resumoCurto = payload.texto.length > 180
-        ? payload.texto.slice(0, 177) + '...'
-        : payload.texto;
+    const atualizarSelect = () => {
+        ameacasCatalogo = {};
 
-    await set(feedItemRef, {
-        tipo: 'cronica',
-        cronicaId: cronicaId,
-        titulo: `📜 Crônica: ${payload.titulo}`,
-        conteudo: resumoCurto,
-        texto: resumoCurto,
-        imagem: payload.imagem || '',
-        espectro: payload.espectro || 'Índigo',
-        volume: payload.volume || 'Volume I',
-        genero: payload.genero || 'Mistério Clássico',
-        autor: payload.autor,
-        autorNome: payload.autor,
-        autorId: payload.autorId,
-        uid: payload.autorId,
-        link: `pages/comunidade.html?id=${cronicaId}`,
-        criadoEm: payload.criadoEm,
-        timestamp: payload.criadoEm
+        const registrar = (chave, item, categoriaPadrao) => {
+            if (!item || typeof item !== 'object') return;
+            const nome = item.nome || item.titulo || item.name;
+            if (!nome) return;
+
+            const ehChefe = categoriaPadrao === 'chefe'
+                || String(item.tipo || '').toLowerCase() === 'chefe'
+                || item.isChefe === true
+                || String(item.categoria || '').toLowerCase().includes('chefe');
+
+            ameacasCatalogo[chave] = {
+                id: chave,
+                nome: nome.replace(/^\[?(Criatura|Chefe)\]?:\s*/i, ''),
+                categoria: ehChefe ? 'chefe' : 'criatura',
+                pvMax: Number(item.pvMax ?? item.vidaMax ?? item.pv ?? item.vida ?? (ehChefe ? 80 : 18)),
+                ta: Number(item.ta ?? item.dificuldade ?? item.defesa ?? (ehChefe ? 17 : 13)),
+                dinamismo: Number(item.dinamismo ?? item.atributos?.dinamismo ?? (ehChefe ? 5 : 3)),
+                autor: item.autor || item.autorNome || 'Acervo'
+            };
+        };
+
+        Object.entries(fontes.criaturas).forEach(([k, v]) => registrar(`criatura_${k}`, v, 'criatura'));
+        Object.entries(fontes.bestiario).forEach(([k, v]) => registrar(`bestiario_${k}`, v, 'criatura'));
+        Object.entries(fontes.chefes).forEach(([k, v]) => registrar(`chefe_${k}`, v, 'chefe'));
+
+        const filtrarAmeacasDoFeed = (obj, prefixo) => {
+            Object.entries(obj).forEach(([k, v]) => {
+                if (!v || typeof v !== 'object') return;
+                const t = String(v.tipo || v.categoria || '').toLowerCase();
+                if (t === 'criatura' || t === 'chefe' || t === 'bestiario' || t === 'monstro') {
+                    registrar(`${prefixo}_${k}`, v, t === 'chefe' ? 'chefe' : 'criatura');
+                }
+            });
+        };
+
+        filtrarAmeacasDoFeed(fontes.feed, 'feed');
+        filtrarAmeacasDoFeed(fontes.publicacoes, 'pub');
+
+        const listaOrdenada = Object.values(ameacasCatalogo).sort((a, b) => a.nome.localeCompare(b.nome));
+        selectEl.innerHTML = '<option value="">-- Selecione uma Criatura ou Chefe --</option>';
+
+        listaOrdenada.forEach((am) => {
+            const opt = document.createElement('option');
+            opt.value = am.id;
+            const icone = am.categoria === 'chefe' ? '👑 [CHEFE]' : '👹 [Criatura]';
+            opt.textContent = `${icone} ${am.nome} (PV ${am.pvMax} | TA ${am.ta})`;
+            selectEl.appendChild(opt);
+        });
+    };
+
+    onValue(ref(db, 'criaturas'), (s) => { fontes.criaturas = s.val() || {}; atualizarSelect(); });
+    onValue(ref(db, 'bestiario'), (s) => { fontes.bestiario = s.val() || {}; atualizarSelect(); });
+    onValue(ref(db, 'chefes'), (s) => { fontes.chefes = s.val() || {}; atualizarSelect(); });
+    onValue(ref(db, 'feed'), (s) => { fontes.feed = s.val() || {}; atualizarSelect(); });
+    onValue(ref(db, 'publicacoes'), (s) => { fontes.publicacoes = s.val() || {}; atualizarSelect(); });
+
+    document.getElementById('btn-add-ameaca')?.addEventListener('click', () => {
+        const idSel = selectEl.value;
+        if (!idSel || !ameacasCatalogo[idSel]) return;
+        ameacasSelecionadasForm.push({ ...ameacasCatalogo[idSel] });
+        selectEl.value = '';
+        renderizarChipsAmeacasForm();
+    });
+}
+
+function renderizarChipsAmeacasForm() {
+    const container = document.getElementById('lista-ameacas-selecionadas');
+    if (!container) return;
+
+    container.innerHTML = '';
+    ameacasSelecionadasForm.forEach((am, index) => {
+        const chip = document.createElement('span');
+        chip.className = `chip-ameaca ${am.categoria === 'chefe' ? 'chefe' : ''}`;
+        chip.innerHTML = `
+            ${am.categoria === 'chefe' ? '👑' : '👹'} ${am.nome} (PV ${am.pvMax})
+            <button type="button" title="Remover">×</button>
+        `;
+        chip.querySelector('button').addEventListener('click', () => {
+            ameacasSelecionadasForm.splice(index, 1);
+            renderizarChipsAmeacasForm();
+        });
+        container.appendChild(chip);
     });
 }
 
 // =========================================================
-// CARREGAMENTO E FILTRAGEM DO FEED DE CRÔNICAS
+// 2. LEITURA UNIFICADA DE TODAS AS CRÔNICAS JÁ EXISTENTES
 // =========================================================
+function normalizarCronica(id, raw, origem, caminhoOriginal) {
+    if (!raw || typeof raw !== 'object') return null;
+
+    // Ignora registros que claramente são criaturas, itens ou fichas no feed geral
+    if (origem !== 'cronicas') {
+        const tipo = String(raw.tipo || raw.categoria || '').toLowerCase().trim();
+        if (TIPOS_NAO_CRONICA.includes(tipo)) return null;
+    }
+
+    const texto = raw.texto || raw.conteudo || raw.descricao || raw.historia || raw.resumo || '';
+    const tituloBruto = raw.titulo || raw.nome || 'Crônica sem Título';
+    const tituloLimpo = String(tituloBruto).replace(/^📜\s*(Crônica|Missão):\s*/i, '');
+
+    // Ignora objetos vazios sem título nem texto
+    if (!raw.titulo && !raw.nome && !texto) return null;
+
+    const idUnificado = raw.cronicaId || String(id).replace(/^cronica_/, '');
+
+    return {
+        id: idUnificado,
+        chaveNoBanco: id,
+        origem, // 'cronicas' | 'feed' | 'publicacoes' | 'posts' | 'sala'
+        caminhoOriginal,
+        titulo: tituloLimpo,
+        texto,
+        espectro: raw.espectro || 'Índigo',
+        volume: raw.volume || 'Volume I',
+        genero: raw.genero || 'Mistério Clássico',
+        jogadores: Number(raw.jogadores || 4),
+        imagem: raw.imagem || raw.capa || raw.img || '',
+        autor: raw.autor || raw.autorNome || raw.nomeAutor || 'Arquivista',
+        autorId: raw.autorId || raw.uid || raw.userId || raw.idAutor || '',
+        criadoEm: Number(raw.criadoEm || raw.timestamp || raw.data || 0),
+        curtidas: Array.isArray(raw.curtidas) ? raw.curtidas : [],
+        comentarios: raw.comentarios || {},
+        ameacas: Array.isArray(raw.ameacas) ? raw.ameacas : []
+    };
+}
+
+function iniciarListenersCronicas() {
+    let fontes = {
+        cronicas: {},
+        feed: {},
+        publicacoes: {},
+        posts: {},
+        salas: {}
+    };
+
+    const mesclarERenderizar = () => {
+        const mapaUnificado = {};
+
+        const processarFonte = (dados, origem, basePath) => {
+            Object.entries(dados || {}).forEach(([k, v]) => {
+                const norm = normalizarCronica(k, v, origem, `${basePath}/${k}`);
+                if (!norm) return;
+
+                const existente = mapaUnificado[norm.id];
+                if (!existente) {
+                    mapaUnificado[norm.id] = norm;
+                } else {
+                    // Mescla sem perder o texto completo nem o vínculo com o feed original
+                    mapaUnificado[norm.id] = {
+                        ...existente,
+                        ...norm,
+                        texto: norm.texto.length >= existente.texto.length ? norm.texto : existente.texto,
+                        ameacas: norm.ameacas.length > 0 ? norm.ameacas : existente.ameacas,
+                        curtidas: norm.curtidas.length >= existente.curtidas.length ? norm.curtidas : existente.curtidas,
+                        comentarios: Object.keys(norm.comentarios).length >= Object.keys(existente.comentarios).length
+                            ? norm.comentarios
+                            : existente.comentarios,
+                        // Preserva o caminho no feed caso o item tenha nascido lá
+                        caminhoFeedLegado: existente.caminhoFeedLegado || (origem !== 'cronicas' ? `${basePath}/${k}` : null)
+                    };
+                }
+            });
+        };
+
+        // 1. Varre posts antigos do feed / publicações / posts
+        processarFonte(fontes.feed, 'feed', 'feed');
+        processarFonte(fontes.publicacoes, 'publicacoes', 'publicacoes');
+        processarFonte(fontes.posts, 'posts', 'posts');
+
+        // 2. Varre crônicas salvas dentro das salas
+        Object.entries(fontes.salas || {}).forEach(([salaKey, salaObj]) => {
+            if (salaObj && salaObj.cronicas) {
+                processarFonte(salaObj.cronicas, 'sala', `salas/${salaKey}/cronicas`);
+            }
+        });
+
+        // 3. Por último, sobrepõe com o nó oficial cronicas/
+        processarFonte(fontes.cronicas, 'cronicas', 'cronicas');
+
+        todasCronicasCache = mapaUnificado;
+        renderizarListaCronicas();
+
+        if (cronicaAbertaId && todasCronicasCache[cronicaAbertaId]) {
+            cronicaAbertaObj = todasCronicasCache[cronicaAbertaId];
+            document.getElementById('qtd-likes').textContent = cronicaAbertaObj.curtidas.length;
+            renderizarComentarios(cronicaAbertaObj.comentarios);
+        }
+    };
+
+    onValue(ref(db, 'cronicas'), (s) => { fontes.cronicas = s.val() || {}; mesclarERenderizar(); });
+    onValue(ref(db, 'feed'), (s) => { fontes.feed = s.val() || {}; mesclarERenderizar(); });
+    onValue(ref(db, 'publicacoes'), (s) => { fontes.publicacoes = s.val() || {}; mesclarERenderizar(); });
+    onValue(ref(db, 'posts'), (s) => { fontes.posts = s.val() || {}; mesclarERenderizar(); });
+    onValue(ref(db, 'salas'), (s) => { fontes.salas = s.val() || {}; mesclarERenderizar(); });
+
+    document.getElementById('busca-cronica')?.addEventListener('input', renderizarListaCronicas);
+    document.getElementById('filtro-espectro')?.addEventListener('change', renderizarListaCronicas);
+}
+
 function renderizarListaCronicas() {
     const lista = document.getElementById('lista-cronicas');
     if (!lista) return;
@@ -58,14 +242,13 @@ function renderizarListaCronicas() {
     const idsFiltrados = Object.keys(todasCronicasCache)
         .filter((id) => {
             const c = todasCronicasCache[id];
-            if (!c || typeof c !== 'object') return false;
-
-            const espectroItem = c.espectro || 'Índigo';
-            if (espectroFiltro !== 'TODOS' && espectroItem !== espectroFiltro) return false;
+            if (!c) return false;
+            if (espectroFiltro !== 'TODOS' && c.espectro !== espectroFiltro) return false;
 
             if (termoBusca) {
-                const alvoBusca = `${c.titulo || ''} ${c.autor || ''} ${c.genero || ''} ${c.texto || ''}`.toLowerCase();
-                if (!alvoBusca.includes(termoBusca)) return false;
+                const nomesAmeacas = (c.ameacas || []).map((a) => a.nome).join(' ');
+                const alvo = `${c.titulo} ${c.autor} ${c.genero} ${c.texto} ${nomesAmeacas}`.toLowerCase();
+                if (!alvo.includes(termoBusca)) return false;
             }
             return true;
         })
@@ -78,31 +261,26 @@ function renderizarListaCronicas() {
 
     idsFiltrados.forEach((id) => {
         const c = todasCronicasCache[id];
-        const titulo = c.titulo || 'Crônica sem Título';
-        const autor = c.autor || 'Arquivista';
-        const texto = c.texto || '';
-        const espectro = c.espectro || 'Índigo';
-        const volume = c.volume || 'Volume I';
-        const genero = c.genero || 'Mistério Clássico';
-        const likes = Array.isArray(c.curtidas) ? c.curtidas.length : 0;
-        const qtdComentarios = c.comentarios ? Object.keys(c.comentarios).length : 0;
+        const likes = c.curtidas.length;
+        const qtdComentarios = Object.keys(c.comentarios || {}).length;
+        const qtdAmeacas = (c.ameacas || []).length;
         const imgUrl = c.imagem && c.imagem.trim() !== '' ? c.imagem : IMG_PADRAO;
 
         const card = document.createElement('article');
         card.className = 'cronica-card';
-        card.setAttribute('data-espectro', espectro);
+        card.setAttribute('data-espectro', c.espectro);
         card.innerHTML = `
-            <img src="${imgUrl}" alt="${titulo}" onerror="this.src='${IMG_PADRAO}'">
+            <img src="${imgUrl}" alt="${c.titulo}" onerror="this.src='${IMG_PADRAO}'">
             <div class="cronica-card-body">
                 <div class="card-tags">
-                    <span class="tag-badge">${espectro}</span>
-                    <span class="tag-badge">${volume}</span>
-                    <span class="tag-badge">${genero}</span>
+                    <span class="tag-badge">${c.espectro}</span>
+                    <span class="tag-badge">${c.volume}</span>
+                    ${qtdAmeacas > 0 ? `<span class="tag-badge" style="border-color:#a8324a; color:#ffb3c1;">👹 ${qtdAmeacas} Ameaça(s)</span>` : ''}
                 </div>
-                <h3>${titulo}</h3>
-                <p>${texto}</p>
+                <h3>${c.titulo}</h3>
+                <p>${c.texto}</p>
                 <div class="card-footer">
-                    <span>✍️ ${autor} • 👥 ${c.jogadores || 4}</span>
+                    <span>✍️ ${c.autor}</span>
                     <span>💬 ${qtdComentarios} • ❤️ ${likes}</span>
                 </div>
             </div>
@@ -111,7 +289,6 @@ function renderizarListaCronicas() {
         lista.appendChild(card);
     });
 
-    // Abre automaticamente se veio clicado do Feed Geral (?id=...)
     if (!deepLinkJaProcessado) {
         const urlId = new URLSearchParams(window.location.search).get('id');
         if (urlId && todasCronicasCache[urlId]) {
@@ -121,40 +298,43 @@ function renderizarListaCronicas() {
     }
 }
 
-function iniciarListenersCronicas() {
-    let dadosRaiz = {};
-    let dadosSala = {};
+// =========================================================
+// 3. SINCRONIZAÇÃO COM O FEED PRINCIPAL
+// =========================================================
+async function sincronizarComFeed(cronicaId, payload, compartilharNoFeed, caminhoFeedExistente = null) {
+    const caminhoAlvo = caminhoFeedExistente || `feed/cronica_${cronicaId}`;
+    const feedItemRef = ref(db, caminhoAlvo);
 
-    const atualizar = () => {
-        todasCronicasCache = { ...dadosSala, ...dadosRaiz };
-        renderizarListaCronicas();
+    if (!compartilharNoFeed) {
+        await remove(feedItemRef);
+        return;
+    }
 
-        // Se o modal estiver aberto, atualiza likes e comentários em tempo real
-        if (cronicaAbertaId && todasCronicasCache[cronicaAbertaId]) {
-            cronicaAbertaObj = todasCronicasCache[cronicaAbertaId];
-            const curtidas = Array.isArray(cronicaAbertaObj.curtidas) ? cronicaAbertaObj.curtidas : [];
-            const qtdLikesEl = document.getElementById('qtd-likes');
-            if (qtdLikesEl) qtdLikesEl.textContent = curtidas.length;
-            renderizarComentarios(cronicaAbertaObj.comentarios || {});
-        }
-    };
+    const resumoCurto = payload.texto.length > 180 ? payload.texto.slice(0, 177) + '...' : payload.texto;
 
-    onValue(ref(db, 'cronicas'), (snap) => {
-        dadosRaiz = snap.val() || {};
-        atualizar();
-    }, (err) => console.error('Erro ao ler crônicas:', err));
-
-    onValue(ref(db, `salas/${salaAtual}/cronicas`), (snap) => {
-        dadosSala = snap.val() || {};
-        atualizar();
+    await update(feedItemRef, {
+        tipo: 'cronica',
+        cronicaId: cronicaId,
+        titulo: `📜 Crônica: ${payload.titulo}`,
+        conteudo: resumoCurto,
+        texto: payload.texto,
+        imagem: payload.imagem || '',
+        espectro: payload.espectro,
+        volume: payload.volume,
+        genero: payload.genero,
+        ameacas: payload.ameacas || [],
+        autor: payload.autor,
+        autorNome: payload.autor,
+        autorId: payload.autorId,
+        uid: payload.autorId,
+        link: `pages/comunidade.html?id=${cronicaId}`,
+        criadoEm: payload.criadoEm,
+        timestamp: payload.criadoEm
     });
-
-    document.getElementById('busca-cronica')?.addEventListener('input', renderizarListaCronicas);
-    document.getElementById('filtro-espectro')?.addEventListener('change', renderizarListaCronicas);
 }
 
 // =========================================================
-// FORMULÁRIO: CRIAR E EDITAR CRÔNICA
+// 4. FORMULÁRIO: CRIAR E EDITAR QUALQUER CRÔNICA EXISTENTE
 // =========================================================
 function configurarFormularioCronica() {
     const btnSalvar = document.getElementById('btn-salvar-cronica');
@@ -165,7 +345,7 @@ function configurarFormularioCronica() {
 
     btnSalvar.addEventListener('click', () => {
         if (!idJogadorAtual) {
-            alert('Faça login com o Google para registrar uma crônica na Biblioteca!');
+            alert('Faça login com o Google para registrar ou editar uma crônica!');
             return;
         }
 
@@ -189,9 +369,8 @@ function configurarFormularioCronica() {
 
         const gravar = async (imgFinal) => {
             try {
-                const timestampAtual = editId && cronicaAbertaObj?.criadoEm
-                    ? cronicaAbertaObj.criadoEm
-                    : Date.now();
+                const registroAnterior = editId ? todasCronicasCache[editId] : null;
+                const timestampAtual = registroAnterior?.criadoEm || Date.now();
 
                 const payload = {
                     titulo,
@@ -201,8 +380,9 @@ function configurarFormularioCronica() {
                     genero,
                     jogadores,
                     imagem: imgFinal,
-                    autor: auth.currentUser?.displayName || 'Arquivista',
-                    autorId: idJogadorAtual,
+                    ameacas: ameacasSelecionadasForm,
+                    autor: registroAnterior?.autor || auth.currentUser?.displayName || 'Arquivista',
+                    autorId: registroAnterior?.autorId || idJogadorAtual,
                     criadoEm: timestampAtual,
                     atualizadoEm: Date.now()
                 };
@@ -210,24 +390,32 @@ function configurarFormularioCronica() {
                 let idFinal = editId;
 
                 if (editId) {
+                    // Salva/atualiza no nó oficial cronicas/
                     await update(ref(db, `cronicas/${editId}`), payload);
+
+                    // Se ela nasceu em outro nó (ex: feed/-Oxyz ou publicacoes/-Oxyz), atualiza lá também!
+                    const caminhoLegado = registroAnterior?.caminhoFeedLegado
+                        || (registroAnterior?.origem !== 'cronicas' ? registroAnterior?.caminhoOriginal : null);
+
+                    if (caminhoLegado && caminhoLegado.startsWith('salas/')) {
+                        await update(ref(db, caminhoLegado), payload);
+                        await sincronizarComFeed(editId, payload, compartilharNoFeed);
+                    } else {
+                        await sincronizarComFeed(editId, payload, compartilharNoFeed, caminhoLegado);
+                    }
                 } else {
                     payload.curtidas = [];
                     const novaRef = push(ref(db, 'cronicas'));
                     idFinal = novaRef.key;
                     await set(novaRef, payload);
+                    await sincronizarComFeed(idFinal, payload, compartilharNoFeed);
                 }
-
-                // Sincroniza automaticamente com o Feed Geral
-                await sincronizarComFeed(idFinal, payload, compartilharNoFeed);
 
                 resetarFormulario();
 
                 if (status) {
                     status.style.color = '#2ec4b6';
-                    status.textContent = editId
-                        ? '✅ Crônica atualizada no Acervo e no Feed!'
-                        : '✅ Crônica publicada e enviada ao Feed!';
+                    status.textContent = editId ? '✅ Crônica atualizada!' : '✅ Crônica publicada!';
                     setTimeout(() => (status.textContent = ''), 3500);
                 }
             } catch (e) {
@@ -258,9 +446,8 @@ function configurarFormularioCronica() {
             };
             reader.readAsDataURL(arquivoInput.files[0]);
         } else {
-            // Se estiver editando e o usuário não trocou a imagem base64 anterior, mantém ela
-            const imagemMantida = (!urlInput && editId && cronicaAbertaObj?.imagem?.startsWith('data:'))
-                ? cronicaAbertaObj.imagem
+            const imagemMantida = (!urlInput && editId && todasCronicasCache[editId]?.imagem?.startsWith('data:'))
+                ? todasCronicasCache[editId].imagem
                 : urlInput;
             gravar(imagemMantida);
         }
@@ -273,6 +460,9 @@ function resetarFormulario() {
     document.getElementById('cronica-texto').value = '';
     document.getElementById('cronica-imagem').value = '';
     document.getElementById('cronica-jogadores').value = 4;
+    ameacasSelecionadasForm = [];
+    renderizarChipsAmeacasForm();
+
     const arq = document.getElementById('cronica-arquivo');
     if (arq) arq.value = '';
 
@@ -283,7 +473,7 @@ function resetarFormulario() {
 }
 
 // =========================================================
-// MODAL DE LEITURA, CURTIDAS E NOTAS À MARGEM
+// 5. MODAL DE LEITURA, EDIÇÃO E ENVIO PARA O ESCUDO DO MESTRE
 // =========================================================
 function abrirModalCronica(id, cronica) {
     cronicaAbertaId = id;
@@ -296,26 +486,43 @@ function abrirModalCronica(id, cronica) {
     imgEl.src = cronica.imagem && cronica.imagem.trim() !== '' ? cronica.imagem : IMG_PADRAO;
     imgEl.onerror = () => (imgEl.src = IMG_PADRAO);
 
-    const badgesEl = document.getElementById('modal-badges');
-    if (badgesEl) {
-        badgesEl.innerHTML = `
-            <span class="tag-badge">Espectro: ${cronica.espectro || 'Índigo'}</span>
-            <span class="tag-badge">${cronica.volume || 'Volume I'}</span>
-            <span class="tag-badge">${cronica.genero || 'Mistério Clássico'}</span>
-        `;
+    document.getElementById('modal-badges').innerHTML = `
+        <span class="tag-badge">Espectro: ${cronica.espectro}</span>
+        <span class="tag-badge">${cronica.volume}</span>
+        <span class="tag-badge">${cronica.genero}</span>
+    `;
+
+    document.getElementById('modal-titulo').textContent = cronica.titulo;
+    document.getElementById('modal-autor').textContent =
+        `Registrado por ${cronica.autor} • Mesa para ${cronica.jogadores} Arquivistas`;
+    document.getElementById('modal-texto').textContent = cronica.texto;
+
+    const ameacasBox = document.getElementById('modal-ameacas-box');
+    const ameacasLista = document.getElementById('modal-ameacas-lista');
+    const ameacas = cronica.ameacas || [];
+
+    if (ameacas.length > 0) {
+        ameacasBox.style.display = 'block';
+        ameacasLista.innerHTML = ameacas.map((am) => `
+            <span class="chip-ameaca ${am.categoria === 'chefe' ? 'chefe' : ''}">
+                ${am.categoria === 'chefe' ? '👑' : '👹'} ${am.nome} (PV ${am.pvMax} | TA ${am.ta})
+            </span>
+        `).join('');
+    } else {
+        ameacasBox.style.display = 'none';
     }
 
-    document.getElementById('modal-titulo').textContent = cronica.titulo || 'Sem Título';
-    document.getElementById('modal-autor').textContent =
-        `Registrado por ${cronica.autor || 'Arquivista'} • Mesa para ${cronica.jogadores || 4} Arquivistas`;
-    document.getElementById('modal-texto').textContent = cronica.texto || '';
+    document.getElementById('qtd-likes').textContent = cronica.curtidas.length;
+    renderizarComentarios(cronica.comentarios);
 
-    const curtidas = Array.isArray(cronica.curtidas) ? cronica.curtidas : [];
-    document.getElementById('qtd-likes').textContent = curtidas.length;
+    // Libera edição se o usuário estiver logado e for o autor (ou se o registro antigo não tiver autorId)
+    const nomeUsuarioAtual = (auth.currentUser?.displayName || '').toLowerCase().trim();
+    const ehDono = Boolean(idJogadorAtual) && (
+        !cronica.autorId
+        || cronica.autorId === idJogadorAtual
+        || (nomeUsuarioAtual && cronica.autor.toLowerCase().trim() === nomeUsuarioAtual)
+    );
 
-    renderizarComentarios(cronica.comentarios || {});
-
-    const ehDono = cronica.autorId && cronica.autorId === idJogadorAtual;
     const btnEditar = document.getElementById('btn-editar');
     const btnDeletar = document.getElementById('btn-deletar');
 
@@ -323,15 +530,97 @@ function abrirModalCronica(id, cronica) {
     if (btnDeletar) {
         btnDeletar.style.display = ehDono ? 'inline-block' : 'none';
         btnDeletar.onclick = async () => {
-            if (!confirm('Deseja apagar permanentemente esta crônica do Acervo e do Feed?')) return;
+            if (!confirm('Deseja apagar permanentemente esta crônica?')) return;
             await remove(ref(db, `cronicas/${id}`));
             await remove(ref(db, `feed/cronica_${id}`));
+            if (cronica.caminhoOriginal) await remove(ref(db, cronica.caminhoOriginal));
+            if (cronica.caminhoFeedLegado) await remove(ref(db, cronica.caminhoFeedLegado));
             window.fecharModalCronica();
         };
     }
 
     modal.style.display = 'flex';
 }
+
+window.carregarNoEscudoMestre = async function () {
+    if (!cronicaAbertaObj) return;
+
+    const salaId = salaAtual || 'mesa-principal';
+    const combateRef = ref(db, `salas/${salaId}/mestre/combate`);
+    const notasRef = ref(db, `salas/${salaId}/mestre/notas`);
+
+    try {
+        const snap = await get(combateRef);
+        const atual = snap.val() || { turno: 1, indiceAtivo: 0, combatentes: [] };
+        const listaExistente = Array.isArray(atual.combatentes) ? atual.combatentes : [];
+
+        const novosCombatentes = (cronicaAbertaObj.ameacas || []).map((am) => {
+            const d12 = Math.floor(Math.random() * 12) + 1;
+            const din = Number(am.dinamismo || 3);
+            return {
+                nome: am.categoria === 'chefe' ? `👑 ${am.nome}` : am.nome,
+                pvAtual: Number(am.pvMax || 20),
+                pvMax: Number(am.pvMax || 20),
+                iniciativa: d12 + din,
+                detalhe: `TA ${am.ta || 12} • d12(${d12})+${din}`,
+                tipo: 'inimigo'
+            };
+        });
+
+        const listaFinal = [...listaExistente, ...novosCombatentes].sort((a, b) => b.iniciativa - a.iniciativa);
+
+        await set(combateRef, {
+            turno: atual.turno || 1,
+            indiceAtivo: 0,
+            combatentes: listaFinal
+        });
+
+        const snapNotas = await get(notasRef);
+        const notasAnteriores = snapNotas.val() || '';
+        const cabecalhoCronica = `=== CRÔNICA ATIVA: ${cronicaAbertaObj.titulo.toUpperCase()} (${cronicaAbertaObj.espectro} | ${cronicaAbertaObj.volume}) ===\n${cronicaAbertaObj.texto}\n\n`;
+        if (!notasAnteriores.includes(cronicaAbertaObj.titulo.toUpperCase())) {
+            await set(notasRef, cabecalhoCronica + notasAnteriores);
+        }
+
+        const irParaEscudo = confirm(
+            `✅ Crônica "${cronicaAbertaObj.titulo}" e ${novosCombatentes.length} criatura(s)/chefe(s) carregados no Escudo do Guardião!\n\nDeseja abrir o Escudo do Mestre agora?`
+        );
+        if (irParaEscudo) {
+            window.location.href = 'mestre.html';
+        }
+    } catch (err) {
+        console.error('Erro ao carregar no escudo:', err);
+        alert('Não foi possível enviar para o Escudo do Mestre: ' + err.message);
+    }
+};
+
+window.prepararEdicao = function () {
+    if (!cronicaAbertaId || !cronicaAbertaObj) return;
+
+    document.getElementById('edit-cronica-id').value = cronicaAbertaId;
+    document.getElementById('cronica-titulo').value = cronicaAbertaObj.titulo || '';
+    document.getElementById('cronica-espectro').value = cronicaAbertaObj.espectro || 'Índigo';
+    document.getElementById('cronica-volume').value = cronicaAbertaObj.volume || 'Volume I';
+    document.getElementById('cronica-genero').value = cronicaAbertaObj.genero || 'Mistério Clássico';
+    document.getElementById('cronica-jogadores').value = cronicaAbertaObj.jogadores || 4;
+    document.getElementById('cronica-imagem').value = (cronicaAbertaObj.imagem || '').startsWith('data:')
+        ? ''
+        : (cronicaAbertaObj.imagem || '');
+    document.getElementById('cronica-texto').value = cronicaAbertaObj.texto || '';
+
+    ameacasSelecionadasForm = Array.isArray(cronicaAbertaObj.ameacas)
+        ? cronicaAbertaObj.ameacas.map((a) => ({ ...a }))
+        : [];
+    renderizarChipsAmeacasForm();
+
+    document.getElementById('form-titulo-cabecalho').textContent = 'Editando Crônica';
+    document.getElementById('btn-salvar-cronica').textContent = 'Salvar Alterações';
+    const btnCancelar = document.getElementById('btn-cancelar-edicao');
+    if (btnCancelar) btnCancelar.style.display = 'block';
+
+    document.getElementById('modal-cronica').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 function renderizarComentarios(comentariosObj) {
     const listaEl = document.getElementById('lista-comentarios');
@@ -366,36 +655,27 @@ function configurarComentarios() {
     if (!btnEnviar || !input) return;
 
     const enviar = async () => {
-        if (!idJogadorAtual) {
-            alert('Faça login para deixar uma nota à margem.');
-            return;
-        }
+        if (!idJogadorAtual) return alert('Faça login para deixar uma nota à margem.');
         if (!cronicaAbertaId) return;
-
         const texto = input.value.trim();
         if (!texto) return;
 
         btnEnviar.disabled = true;
         try {
-            const novoComRef = push(ref(db, `cronicas/${cronicaAbertaId}/comentarios`));
-            await set(novoComRef, {
+            await set(push(ref(db, `cronicas/${cronicaAbertaId}/comentarios`)), {
                 autor: auth.currentUser?.displayName || 'Arquivista',
                 autorId: idJogadorAtual,
                 texto,
                 criadoEm: Date.now()
             });
             input.value = '';
-        } catch (err) {
-            console.error('Erro ao comentar:', err);
         } finally {
             btnEnviar.disabled = false;
         }
     };
 
     btnEnviar.addEventListener('click', enviar);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') enviar();
-    });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviar(); });
 }
 
 window.fecharModalCronica = function () {
@@ -403,26 +683,20 @@ window.fecharModalCronica = function () {
     if (modal) modal.style.display = 'none';
     cronicaAbertaId = null;
 
-    // Limpa o ?id= da URL sem recarregar a página
     const url = new URL(window.location);
     url.searchParams.delete('id');
     window.history.replaceState({}, '', url);
 };
 
 window.alternarLike = async function () {
-    if (!idJogadorAtual) {
-        alert('Faça login para registrar apoio!');
-        return;
-    }
+    if (!idJogadorAtual) return alert('Faça login para registrar apoio!');
     if (!cronicaAbertaId) return;
 
     const snap = await get(ref(db, `cronicas/${cronicaAbertaId}/curtidas`));
     let lista = Array.isArray(snap.val()) ? snap.val() : [];
-    if (lista.includes(idJogadorAtual)) {
-        lista = lista.filter((uid) => uid !== idJogadorAtual);
-    } else {
-        lista.push(idJogadorAtual);
-    }
+    lista = lista.includes(idJogadorAtual)
+        ? lista.filter((uid) => uid !== idJogadorAtual)
+        : [...lista, idJogadorAtual];
 
     await update(ref(db, `cronicas/${cronicaAbertaId}`), { curtidas: lista });
     document.getElementById('qtd-likes').textContent = lista.length;
@@ -431,36 +705,11 @@ window.alternarLike = async function () {
 window.copiarLinkCronica = function () {
     if (!cronicaAbertaId) return;
     const link = `${window.location.origin}${window.location.pathname}?id=${cronicaAbertaId}`;
-    navigator.clipboard.writeText(link).then(() => {
-        alert('🔗 Link da Crônica copiado para a área de transferência!');
-    });
-};
-
-window.prepararEdicao = function () {
-    if (!cronicaAbertaId || !cronicaAbertaObj) return;
-    const idParaEditar = cronicaAbertaId;
-
-    document.getElementById('edit-cronica-id').value = idParaEditar;
-    document.getElementById('cronica-titulo').value = cronicaAbertaObj.titulo || '';
-    document.getElementById('cronica-espectro').value = cronicaAbertaObj.espectro || 'Índigo';
-    document.getElementById('cronica-volume').value = cronicaAbertaObj.volume || 'Volume I';
-    document.getElementById('cronica-genero').value = cronicaAbertaObj.genero || 'Mistério Clássico';
-    document.getElementById('cronica-jogadores').value = cronicaAbertaObj.jogadores || 4;
-    document.getElementById('cronica-imagem').value = (cronicaAbertaObj.imagem || '').startsWith('data:')
-        ? ''
-        : (cronicaAbertaObj.imagem || '');
-    document.getElementById('cronica-texto').value = cronicaAbertaObj.texto || '';
-
-    document.getElementById('form-titulo-cabecalho').textContent = 'Editando Crônica';
-    document.getElementById('btn-salvar-cronica').textContent = 'Salvar Alterações';
-    document.getElementById('btn-cancelar-edicao').style.display = 'block';
-
-    const modal = document.getElementById('modal-cronica');
-    if (modal) modal.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigator.clipboard.writeText(link).then(() => alert('🔗 Link da Crônica copiado!'));
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    iniciarCatalogoAmeacas();
     configurarFormularioCronica();
     configurarComentarios();
     iniciarListenersCronicas();

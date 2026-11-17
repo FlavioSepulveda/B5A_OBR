@@ -1,0 +1,483 @@
+:root {
+    --bg-mesa: #0d0b0e;
+    --bg-painel: #161318;
+    --bg-slot: #1f1b24;
+    --gold: #d4af37;
+    --texto: #ece6d8;
+    --texto-suave: #9c9283;
+    --vermelho: #c93b3b;
+    --verde: #2ec4b6;
+    --azul: #4cc9f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: radial-gradient(circle at top, #1b1622 0%, var(--bg-mesa) 100%);
+    color: var(--texto);
+    font-family: 'Merriweather', serif;
+    min-height: 100vh;
+    padding: 76px 16px 20px;
+}
+
+/* NAVBAR */
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 58px;
+    background: #110f13;
+    border-bottom: 2px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    z-index: 1000;
+    gap: 12px;
+}
+
+.nav-left, .nav-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.sala-badge {
+    background: #231e29;
+    border: 1px solid #444;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+}
+
+.pilha-guardiao-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #23171b;
+    border: 1px solid var(--vermelho);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.pilha-guardiao-nav strong {
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* GRID PRINCIPAL DE 3 COLUNAS */
+.guardiao-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.15fr 0.9fr;
+    gap: 16px;
+    max-width: 1600px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.painel {
+    background: var(--bg-painel);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+}
+
+.painel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    gap: 8px;
+}
+
+h2, h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+}
+
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; margin-bottom: 6px; }
+
+/* BOTÕES */
+.btn-login-nav, .btn-primario-sm {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-secundario-sm {
+    background: #26212c;
+    color: var(--texto);
+    border: 1px solid #4a4254;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn-secundario-sm:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-perigo-sm {
+    background: #471c1c;
+    color: #ffb3b3;
+    border: 1px solid var(--vermelho);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn-mini {
+    background: #2a2430;
+    color: var(--texto);
+    border: 1px solid #555;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-mini:hover { border-color: var(--gold); color: var(--gold); }
+
+/* CARDS DOS ARQUIVISTAS */
+.lista-arquivistas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.arq-card {
+    background: var(--bg-slot);
+    border: 1px solid #383140;
+    border-left: 4px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.arq-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.arq-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+}
+
+.arq-sub {
+    font-size: 0.74rem;
+    color: var(--texto-suave);
+}
+
+.arq-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.stat-box {
+    background: #141117;
+    border: 1px solid #2e2936;
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.66rem;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+}
+
+.stat-controle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+.arq-meta-linha {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: #ccc;
+    background: #141117;
+    padding: 5px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.condicoes-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.chip-condicao {
+    background: #3b1c24;
+    border: 1px solid #a8324a;
+    color: #ffd6de;
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.select-condicao {
+    background: #141117;
+    color: var(--texto);
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    padding: 3px 6px;
+}
+
+/* COMBATE & INICIATIVA */
+.invocador-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.invocador-box select,
+.invocador-box input {
+    background: var(--bg-slot);
+    color: var(--texto);
+    border: 1px solid #444;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 110px;
+}
+
+.turno-banner {
+    display: flex;
+    justify-content: space-between;
+    background: #231d2b;
+    border: 1px solid var(--gold);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+}
+
+.lista-iniciativa {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comb-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-slot);
+    border: 1px solid #333;
+    padding: 8px 10px;
+    border-radius: 6px;
+    gap: 8px;
+}
+
+.comb-item.ativo {
+    border-color: var(--gold);
+    background: #282130;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+}
+
+.comb-item.inimigo { border-left: 4px solid var(--vermelho); }
+.comb-item.aliado { border-left: 4px solid var(--verde); }
+
+.comb-info strong { font-size: 0.9rem; display: block; }
+.comb-info small { font-size: 0.72rem; color: var(--texto-suave); }
+
+.comb-controles {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ESCUDO & ABAS */
+.tabs-escudo {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: var(--bg-slot);
+    color: var(--texto-suave);
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card-regra {
+    background: var(--bg-slot);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+
+.tabela-ta {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.tabela-ta td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #2c2633;
+}
+
+.tabela-ta strong { color: var(--gold); }
+
+.lista-regras {
+    padding-left: 16px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #ddd;
+}
+
+.lista-regras li { margin-bottom: 4px; }
+
+.nota-regra {
+    font-size: 0.72rem;
+    color: var(--texto-suave);
+    margin-top: 6px;
+}
+
+/* ORÁCULOS & NOTAS */
+.oraculo-botoes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.resultado-oraculo {
+    margin-top: 12px;
+    background: #110e14;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+#notas-guardiao {
+    width: 100%;
+    background: #110e14;
+    color: var(--texto);
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'Merriweather', serif;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* MODAL IMPORTAR FICHAS */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.modal-box {
+    background: var(--bg-painel);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 18px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.ficha-import-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-slot);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #333;
+}
+
+.texto-vazio {
+    color: var(--texto-suave);
+    font-size: 0.82rem;
+    text-align: center;
+    padding: 16px 0;
+}
+
+@media (max-width: 1150px) {
+    .guardiao-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 650px) {
+    .top-nav { flex-direction: column; padding: 8px 12px; }
+    body { padding-top: 115px; }
+}

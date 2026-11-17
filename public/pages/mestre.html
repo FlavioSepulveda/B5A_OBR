@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Escudo do Guardião - Biblioteca da 5ª Avenida</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/mestre.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-brand">← Biblioteca</a>
+            <span class="sala-badge" id="badge-sala">Sala: carregando...</span>
+        </div>
+
+        <div class="pilha-guardiao-nav" title="Dados acumulados por Catástrofes (1 no d12) ou falhas em Desafiar o Destino">
+            <span>🎲 Pilha do Guardião:</span>
+            <button id="btn-pilha-menos" class="btn-mini">-</button>
+            <strong id="contador-pilha-guardiao">0</strong>
+            <button id="btn-pilha-mais" class="btn-mini">+</button>
+        </div>
+
+        <div class="nav-user">
+            <span id="status-login" class="status-login-nav">🔴 Offline</span>
+            <button id="btn-login" class="btn-login-nav">Entrar</button>
+        </div>
+    </nav>
+
+    <main class="guardiao-grid">
+        <!-- COLUNA 1: MONITOR DE ARQUIVISTAS (FICHAS DA MESA) -->
+        <section class="painel painel-arquivistas">
+            <div class="painel-header">
+                <h2>📖 Arquivistas na Mesa</h2>
+                <button id="btn-importar-ficha" class="btn-secundario-sm">+ Puxar Ficha</button>
+            </div>
+            <div id="lista-arquivistas" class="lista-arquivistas">
+                <p class="texto-vazio">Aguardando conexão com os registros da sala...</p>
+            </div>
+        </section>
+
+        <!-- COLUNA 2: RASTREADOR DE COMBATE & BESTIÁRIO -->
+        <section class="painel painel-combate">
+            <div class="painel-header">
+                <h2>⚔️ Iniciativa & Combate</h2>
+                <div class="acoes-combate-header">
+                    <button id="btn-ordenar-iniciativa" class="btn-secundario-sm">Ordenar</button>
+                    <button id="btn-proximo-turno" class="btn-primario-sm">Próximo Turno →</button>
+                    <button id="btn-limpar-combate" class="btn-perigo-sm">Limpar</button>
+                </div>
+            </div>
+
+            <!-- INVOCADOR DO BESTIÁRIO / COMBATENTE -->
+            <div class="invocador-box">
+                <select id="select-bestiario">
+                    <option value="">-- Invocar do Bestiário --</option>
+                    <option value="furao">Furão de Fogo (PV 14 | TA 12 | Din 3)</option>
+                    <option value="espectro_errante">Espectro Errante (PV 22 | TA 14 | Din 4)</option>
+                    <option value="cacador_paginas">Caçador de Páginas (PV 35 | TA 16 | Din 5)</option>
+                    <option value="juiz_imparcial">Juiz Imparcial [Chefe] (PV 85 | TA 18 | Din 6)</option>
+                </select>
+                <input type="text" id="custom-nome" placeholder="Ou nome customizado...">
+                <input type="number" id="custom-pv" placeholder="PV" min="1" style="max-width: 72px;">
+                <input type="number" id="custom-init" placeholder="Init" style="max-width: 72px;">
+                <button id="btn-adicionar-combatente" class="btn-primario-sm">+ Inserir</button>
+            </div>
+
+            <div class="turno-banner">
+                <span>Turno Atual: <strong id="numero-turno">1</strong></span>
+                <span id="combatente-ativo-nome">Nenhum combatente ativo</span>
+            </div>
+
+            <div id="lista-iniciativa" class="lista-iniciativa"></div>
+        </section>
+
+        <!-- COLUNA 3: ESCUDO DE REGRAS & ORÁCULOS -->
+        <section class="painel painel-escudo">
+            <div class="tabs-escudo">
+                <button class="tab-btn active" data-tab="tab-regras">🛡️ Escudo</button>
+                <button class="tab-btn" data-tab="tab-oraculos">🔮 Oráculos</button>
+                <button class="tab-btn" data-tab="tab-notas">📝 Notas</button>
+            </div>
+
+            <!-- ABA 1: REGRAS RÁPIDAS -->
+            <div id="tab-regras" class="tab-content active">
+                <div class="card-regra">
+                    <h3>Tabela de Dificuldade (TA)</h3>
+                    <table class="tabela-ta">
+                        <tr><td>Trivial</td><td><strong>5</strong></td><td>Fácil</td><td><strong>8</strong></td></tr>
+                        <tr><td>Médio</td><td><strong>12</strong></td><td>Difícil</td><td><strong>16</strong></td></tr>
+                        <tr><td>Épico</td><td><strong>20</strong></td><td>Lendário</td><td><strong>25+</strong></td></tr>
+                    </table>
+                    <p class="nota-regra">Favorável: <strong>-2 a -4</strong> | Desfavorável: <strong>+2 a +4</strong></p>
+                </div>
+
+                <div class="card-regra">
+                    <h3>Resultados Absolutos (d12)</h3>
+                    <ul class="lista-regras">
+                        <li><strong>1 (Catástrofe):</strong> Falha crítica + <strong>1 Dado de Descartes</strong> para o Guardião.</li>
+                        <li><strong>6 (Falha Absoluta):</strong> Falha garantida sem consequência extra.</li>
+                        <li><strong>12 (Momento Lendário):</strong> Sucesso extraordinário / crítico.</li>
+                    </ul>
+                </div>
+
+                <div class="card-regra">
+                    <h3>Fórmulas de Combate & Suporte</h3>
+                    <ul class="lista-regras">
+                        <li><strong>Iniciativa:</strong> 1d12 + Máx. Dinamismo + Volume + Bônus.</li>
+                        <li><strong>Clash (Defesa):</strong> Atacante vs. Máx. Dinamismo + Volume do Defensor.</li>
+                        <li><strong>Dano Real:</strong> Fixo em <strong>1d6</strong> (ignora Clash e Vida Temporária).</li>
+                        <li><strong>Auxílio:</strong> 1d6 + 1d6 por Determinação (pares = +1 sucesso).</li>
+                        <li><strong>Incapacitado:</strong> 3 falhas = morte. Medicina <strong>TA 15</strong> estabiliza.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ABA 2: GERADOR DE ORÁCULOS (1d12) -->
+            <div id="tab-oraculos" class="tab-content">
+                <div class="oraculo-controles">
+                    <button id="btn-rolar-missao" class="btn-primario-sm" style="width: 100%;">🎲 Gerar Gancho de Missão Completo</button>
+                    <div class="oraculo-botoes-grid">
+                        <button class="btn-secundario-sm" data-oraculo="npc">👤 NPC</button>
+                        <button class="btn-secundario-sm" data-oraculo="vilao">👁️ Vilão</button>
+                        <button class="btn-secundario-sm" data-oraculo="item">🗝️ Item</button>
+                        <button class="btn-secundario-sm" data-oraculo="ambiente">🏛️ Ambiente</button>
+                        <button class="btn-secundario-sm" data-oraculo="genero">📚 Gênero</button>
+                        <button class="btn-secundario-sm" data-oraculo="reviravolta">⚡ Reviravolta</button>
+                    </div>
+                </div>
+                <div id="resultado-oraculo" class="resultado-oraculo">
+                    Clique em um botão acima para consultar os Oráculos da Biblioteca...
+                </div>
+            </div>
+
+            <!-- ABA 3: ANOTAÇÕES PRIVADAS DO GUARDIÃO -->
+            <div id="tab-notas" class="tab-content">
+                <textarea id="notas-guardiao" rows="16" placeholder="Segredos da sessão, pistas ocultas, falas de NPCs... (salvo automaticamente)"></textarea>
+                <span id="status-notas" class="nota-regra">Sincronizado com a sala.</span>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL PARA IMPORTAR FICHAS EXISTENTES -->
+    <div id="modal-fichas" class="modal-overlay">
+        <div class="modal-box">
+            <div class="painel-header">
+                <h3>Selecionar Ficha do Banco</h3>
+                <button id="btn-fechar-modal-fichas" class="btn-mini">✕</button>
+            </div>
+            <div id="lista-fichas-disponiveis" class="lista-fichas-modal"></div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/firebase.js"></script>
+    <script type="module" src="../js/mestre.js"></script>
+</body>
+</html>

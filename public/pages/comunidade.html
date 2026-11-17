@@ -11,6 +11,7 @@
     <nav class="top-nav">
         <a href="../index.html" class="nav-brand">← Voltar para a Biblioteca</a>
         <div class="nav-user">
+            <a href="mestre.html" class="btn-secundario" style="padding: 6px 12px; font-size: 0.95rem; text-decoration: none;">🛡️ Escudo do Guardião</a>
             <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
@@ -21,6 +22,7 @@
         <aside class="painel-escrita">
             <h2 id="form-titulo-cabecalho">Registrar Nova Crônica</h2>
             <input type="hidden" id="edit-cronica-id" value="">
+            <input type="hidden" id="edit-cronica-origem" value="cronicas">
 
             <div class="form-card">
                 <div class="input-group">
@@ -74,6 +76,18 @@
                     </div>
                 </div>
 
+                <!-- VINCULAR CRIATURAS E CHEFES DA COMUNIDADE -->
+                <div class="input-group">
+                    <label for="select-ameaca-comunidade">Criaturas & Chefes do Acervo (Bestiário)</label>
+                    <div class="row-inputs">
+                        <select id="select-ameaca-comunidade">
+                            <option value="">Carregando criaturas e chefes...</option>
+                        </select>
+                        <button type="button" id="btn-add-ameaca" class="btn-secundario" style="padding: 6px 12px;">+ Add</button>
+                    </div>
+                    <div id="lista-ameacas-selecionadas" class="chips-ameacas"></div>
+                </div>
+
                 <div class="input-group">
                     <label for="cronica-arquivo">Capa da Crônica (Opcional)</label>
                     <input type="file" id="cronica-arquivo" accept="image/*">
@@ -82,7 +96,7 @@
 
                 <div class="input-group">
                     <label for="cronica-texto">Prólogo / Relato do Arquivo</label>
-                    <textarea id="cronica-texto" rows="7" placeholder="Quando a porta surgiu no fim do corredor, o Diário começou a vibrar..."></textarea>
+                    <textarea id="cronica-texto" rows="6" placeholder="Quando a porta surgiu no fim do corredor, o Diário começou a vibrar..."></textarea>
                 </div>
 
                 <div class="checkbox-feed">
@@ -103,7 +117,7 @@
             <div class="feed-header">
                 <h2>Relatos dos Arquivistas</h2>
                 <div class="feed-filtros">
-                    <input type="text" id="busca-cronica" placeholder="🔍 Buscar título, autor ou gênero...">
+                    <input type="text" id="busca-cronica" placeholder="🔍 Buscar título, autor, criatura ou gênero...">
                     <select id="filtro-espectro">
                         <option value="TODOS">Todos os Espectros</option>
                         <option value="Índigo">Índigo</option>
@@ -130,17 +144,26 @@
             <h2 id="modal-titulo">Título</h2>
             <p id="modal-autor" class="modal-meta">Autor</p>
 
+            <!-- AMEAÇAS DA CRÔNICA -->
+            <div id="modal-ameacas-box" class="modal-ameacas-box" style="display: none;">
+                <strong>👹 Criaturas & Chefes desta Crônica:</strong>
+                <div id="modal-ameacas-lista" class="chips-ameacas" style="margin-top: 6px;"></div>
+            </div>
+
             <div id="modal-texto" class="modal-corpo-texto"></div>
 
             <div class="modal-acoes">
+                <button id="btn-carregar-escudo" class="btn-escudo-modal" onclick="carregarNoEscudoMestre()">
+                    🛡️ Carregar no Escudo do Mestre
+                </button>
                 <button id="btn-like" class="btn-curtir" onclick="alternarLike()">
-                    ❤️ Registrar Apoio (<span id="qtd-likes">0</span>)
+                    ❤️ Apoio (<span id="qtd-likes">0</span>)
                 </button>
                 <button id="btn-copiar-link" class="btn-secundario" onclick="copiarLinkCronica()">
-                    🔗 Compartilhar
+                    🔗 Link
                 </button>
-                <button id="btn-editar" class="btn-primario" style="display: none;" onclick="prepararEdicao()">Editar</button>
-                <button id="btn-deletar" class="btn-deletar-modal" style="display: none;">Apagar</button>
+                <button id="btn-editar" class="btn-primario" style="display: none; width: auto;" onclick="prepararEdicao()">✏️ Editar</button>
+                <button id="btn-deletar" class="btn-deletar-modal" style="display: none;">🗑️ Apagar</button>
             </div>
 
             <!-- ANOTAÇÕES / COMENTÁRIOS DOS ARQUIVISTAS -->

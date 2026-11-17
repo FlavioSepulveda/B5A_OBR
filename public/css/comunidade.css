@@ -476,6 +476,70 @@ input[type="file"] {
     gap: 8px;
 }
 
+/* CHIPS DE CRIATURAS E CHEFES NA CRÔNICA */
+.chips-ameacas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.chip-ameaca {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #2b1820;
+    border: 1px solid #a8324a;
+    color: #ffd6de;
+    font-size: 0.74rem;
+    padding: 4px 9px;
+    border-radius: 14px;
+}
+
+.chip-ameaca.chefe {
+    background: #332211;
+    border-color: var(--gold);
+    color: #ffe89e;
+}
+
+.chip-ameaca button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.modal-ameacas-box {
+    background: #141018;
+    border: 1px solid #3a2d45;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-size: 0.82rem;
+    color: var(--gold);
+}
+
+.btn-escudo-modal {
+    background: linear-gradient(135deg, #2b2138 0%, #1b1524 100%);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    flex: 1.4;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-escudo-modal:hover {
+    background: var(--gold);
+    color: #000;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 960px) {
     .comunidade-container { grid-template-columns: 1fr; }
