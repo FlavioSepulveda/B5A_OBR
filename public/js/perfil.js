@@ -1,43 +1,92 @@
 import { auth, db, storage } from './firebase.js';
 import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { ref as dbRef, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { ref as dbRef, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { registrarNotificacao } from './interacoes.js';
 
 const params = new URLSearchParams(window.location.search);
 let perfilUid = params.get('uid');
 let usuarioLogado = null;
+let ehProprioPerfil = false;
+let filtroNaturezaAtual = 'todas';
+let listaAnomaliasCache = [];
 
-// Elementos alinhados com pages/perfil.html
-const elAvatar = document.getElementById('perfil-avatar');
-const elNome = document.getElementById('perfil-nome');
-const elTitulo = document.getElementById('perfil-titulo');
-const elBio = document.getElementById('perfil-bio');
-const elSeguidores = document.getElementById('qtd-seguidores');
-const elSeguindo = document.getElementById('qtd-seguindo');
-const elQtdPersonagens = document.getElementById('qtd-personagens');
-const elEstante = document.getElementById('lista-estante-publica');
-const elFeedPessoal = document.getElementById('feed-pessoal');
-const btnSeguir = document.getElementById('btn-seguir');
-const btnEditarPerfil = document.getElementById('btn-editar-perfil');
+// DADOS CANÔNICOS DO LIVRO DE REGRAS B5A
+const ESPECTROS_INFO = {
+    padrao:    { nome: "Sem Espectro", cor: "#d4af37", juramento: '"Qual história você veio escrever?"' },
+    igneo:     { nome: "Ígneo",        cor: "#e63946", juramento: '"Toda conquista exige um sacrifício."' },
+    celeste:   { nome: "Celeste",      cor: "#4cc9f0", juramento: '"Conhecimento supera força."' },
+    viridiano: { nome: "Viridiano",    cor: "#2ec4b6", juramento: '"Enquanto houver vida, há esperança."' },
+    solar:     { nome: "Solar",        cor: "#ffbe0b", juramento: '"Nenhum caminho é definitivo."' },
+    indigo:    { nome: "Índigo",       cor: "#9b5de5", juramento: '"Toda resposta gera uma nova pergunta."' },
+    alabastro: { nome: "Alabastro",    cor: "#f8f9fa", juramento: '"Ninguém deve prevalecer."' }
+};
 
-// Elementos da Modal de Edição
-const modalEditar = document.getElementById('modal-editar-perfil');
-const inputEditNome = document.getElementById('edit-nome');
-const inputEditTitulo = document.getElementById('edit-titulo');
-const inputEditBio = document.getElementById('edit-bio');
-const inputEditFoto = document.getElementById('edit-foto-file');
-const btnSalvarIdentidade = document.getElementById('btn-salvar-identidade');
+const TITULOS_LIVRO = [
+    { nome: "Bibliotecário-Chefe", cat: "Investigação", req: "Ter resolvido um mistério usando apenas informação de um livro.", efeito: "Role um dado adicional e descarte o menor em testes de Conhecimento ou Investigação." },
+    { nome: "Aquele que Enxerga o Invisível", cat: "Investigação", req: "Ter encontrado algo que ninguém mais conseguia ver.", efeito: "+2 em Percepção e Investigação; identifica rastros de Ímpeto recentes." },
+    { nome: "Aquele que Conversa com Ecos", cat: "Investigação", req: "Ter ouvido o eco de uma criatura morta.", efeito: "+2 em Ataques e +1d4 Vida Temporária contra um alvo; 1x/cena pergunta ao Guardião sobre o passado dela." },
+    { nome: "Aquele que Conhece os Nomes Proibidos", cat: "Investigação", req: "Ter aprendido um nome que não deveria ser pronunciado.", efeito: "Descobre os efeitos de qualquer Palavra, Frase ou Título ao encontrá-lo pela primeira vez. +2 em Conhecimento." },
+    { nome: "Mestre da Biblioteca", cat: "Investigação", req: "Ter passado uma cena inteira estudando um registro antigo.", efeito: "Reduz em 1 PI o custo de uma Frase de Efeito conhecida." },
+    { nome: "O Cartógrafo", cat: "Investigação", req: "Ter mapeado um local desconhecido.", efeito: "Recebe a Palavra Mapear (1 PI: conhece saídas, armadilhas e passagens ocultas em 30m)." },
+    { nome: "Olhos da Verdade", cat: "Investigação", req: "Ter desmascarado uma ilusão ou mentira.", efeito: "Recebe a Palavra Revelar (1 PI: ignora Oculto, ilusões e disfarces simples até o fim da cena)." },
+    { nome: "Aquele que Nunca Cai", cat: "Combate", req: "Ter chegado a 0 PV em combate e continuado lutando.", efeito: "1x/cena, ao chegar a 0 PV, permanece com 1 PV." },
+    { nome: "Escudo da Cidade", cat: "Combate", req: "Ter protegido um grupo de aliados durante um combate inteiro.", efeito: "Aliados a até 6m recebem +1d4 de Vida Temporária no início de cada turno." },
+    { nome: "Senhor das Correntes", cat: "Combate", req: "Ter capturado uma criatura sem matá-la.", efeito: "Recebe a Frase 'Que as correntes julguem seus passos' com +2 na TA." },
+    { nome: "Amigo dos Monstros", cat: "Suporte", req: "Ter feito amizade com uma criatura que outros consideravam um monstro.", efeito: "Feras recebem -2 na TA para resistir às suas habilidades." },
+    { nome: "Médico de Guerra", cat: "Suporte", req: "Ter salvado um aliado que estava Caído.", efeito: "Ao curar criatura com menos da metade da Vida, cura +2d6." },
+    { nome: "Explorador Nato", cat: "Mobilidade", req: "Ter encontrado um caminho onde ninguém mais via.", efeito: "Recebe a Palavra Rastrear (1 PI: +2 em Percepção e Investigação para localizar rastros)." },
+    { nome: "Colecionador de Sonhos", cat: "Mobilidade", req: "Ter tido um sonho que revelou uma verdade importante.", efeito: "Ao concluir descanso, faz uma pergunta verdadeira ao Guardião sobre a missão." }
+];
 
+const ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+function escaparHtml(str) {
+    return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+function aplicarTemaEspectro(espectroKey) {
+    const key = ESPECTROS_INFO[espectroKey] ? espectroKey : 'padrao';
+    document.body.className = `espectro-${key}`;
+    const info = ESPECTROS_INFO[key];
+    const badge = document.getElementById('perfil-espectro-badge');
+    const juramento = document.getElementById('perfil-juramento');
+    if (badge) badge.textContent = `✦ Espectro ${info.nome}`;
+    if (juramento) juramento.textContent = info.juramento;
+}
+
+// CONTROLE DE ABAS E MODAIS
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-conteudo').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const alvo = document.getElementById(btn.dataset.tab);
+        if (alvo) alvo.classList.add('active');
+    });
+});
+
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const modal = document.getElementById(btn.dataset.close);
+        if (modal) modal.style.display = 'none';
+    });
+});
+
+// INICIALIZAÇÃO VIA AUTH
 onAuthStateChanged(auth, async (user) => {
     usuarioLogado = user;
-
     if (!perfilUid && user) {
         perfilUid = user.uid;
     }
 
     if (!perfilUid) {
-        if (elNome) elNome.textContent = "Perfil não encontrado (faça login)";
+        document.getElementById('perfil-nome').textContent = "Pesquisador não identificado";
+        document.getElementById('perfil-bio').textContent = "Faça login com Google para acessar seu Dossiê do Bestiário das Almas.";
         return;
     }
 
@@ -45,224 +94,576 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 async function inicializarPerfil(uid) {
-    const ehProprioPerfil = usuarioLogado && usuarioLogado.uid === uid;
+    ehProprioPerfil = Boolean(usuarioLogado && usuarioLogado.uid === uid);
     const userRef = dbRef(db, `usuarios/${uid}`);
     const snap = await get(userRef);
-
     let dadosPerfil = snap.exists() ? snap.val() : null;
 
     if (!dadosPerfil && ehProprioPerfil) {
         dadosPerfil = {
             nome: usuarioLogado.displayName || usuarioLogado.email.split('@')[0],
-            titulo: "Investigador Iniciante",
-            bio: "Explorando os mistérios da Biblioteca da 5ª Avenida.",
+            espectro: "indigo",
+            titulo: "Pesquisador de Campo • Bestiário das Almas",
+            bio: "Atravessou uma porta esquecida e agora cataloga anomalias na 5ª Avenida.",
             fotoUrl: usuarioLogado.photoURL || ""
         };
         await set(userRef, dadosPerfil);
     }
 
     if (dadosPerfil) {
-        if (elNome) elNome.textContent = dadosPerfil.nome || "Agente";
-        if (elTitulo) elTitulo.textContent = dadosPerfil.titulo || "Investigador";
-        if (elBio) elBio.textContent = dadosPerfil.bio || "Sem biografia registrada.";
-        if (elAvatar) {
-            elAvatar.src = dadosPerfil.fotoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dadosPerfil.nome || 'A')}&background=1e293b&color=c5a059`;
-        }
+        document.getElementById('perfil-nome').textContent = dadosPerfil.nome || "Arquivista";
+        document.getElementById('perfil-titulo').textContent = dadosPerfil.titulo || "Pesquisador";
+        document.getElementById('perfil-bio').textContent = `"${dadosPerfil.bio || 'Sem anotação pessoal.'}"`;
+        aplicarTemaEspectro(dadosPerfil.espectro || 'padrao');
+
+        const avatarEl = document.getElementById('perfil-avatar');
+        avatarEl.src = dadosPerfil.fotoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dadosPerfil.nome || 'A')}&background=1f1b24&color=d4af37`;
     }
 
-    // Controle de botões (Editar vs Seguir)
+    // Permissões de Dono vs Visitante
+    const btnEditar = document.getElementById('btn-editar-perfil');
+    const btnSeguir = document.getElementById('btn-seguir');
+
     if (ehProprioPerfil) {
-        if (btnEditarPerfil) {
-            btnEditarPerfil.style.display = 'inline-block';
-            btnEditarPerfil.onclick = () => {
-                if (inputEditNome) inputEditNome.value = dadosPerfil?.nome || "";
-                if (inputEditTitulo) inputEditTitulo.value = dadosPerfil?.titulo || "";
-                if (inputEditBio) inputEditBio.value = dadosPerfil?.bio || "";
-                if (modalEditar) modalEditar.style.display = 'flex';
-            };
-        }
-        if (btnSeguir) btnSeguir.style.display = 'none';
-    } else {
-        if (btnEditarPerfil) btnEditarPerfil.style.display = 'none';
-        if (btnSeguir && usuarioLogado) {
-            btnSeguir.style.display = 'inline-block';
-            configurarBotaoSeguir(uid);
-        }
+        btnEditar.style.display = 'block';
+        document.getElementById('btn-novo-personagem').style.display = 'inline-block';
+        document.getElementById('controles-nfc-dono').style.display = 'flex';
+        document.getElementById('btn-abrir-modal-campanha').style.display = 'inline-block';
+        document.getElementById('btn-abrir-modal-titulo').style.display = 'inline-block';
+
+        btnEditar.onclick = () => {
+            document.getElementById('edit-nome').value = dadosPerfil?.nome || "";
+            document.getElementById('edit-espectro').value = dadosPerfil?.espectro || "padrao";
+            document.getElementById('edit-titulo').value = dadosPerfil?.titulo || "";
+            document.getElementById('edit-bio').value = dadosPerfil?.bio || "";
+            document.getElementById('modal-editar-perfil').style.display = 'flex';
+        };
+    } else if (usuarioLogado) {
+        btnSeguir.style.display = 'block';
+        configurarBotaoSeguir(uid);
     }
+
+    // Compartilhar link direto do Dossiê
+    document.getElementById('btn-copiar-link').onclick = () => {
+        const url = `${window.location.origin}${window.location.pathname}?uid=${uid}`;
+        navigator.clipboard.writeText(url);
+        const btn = document.getElementById('btn-copiar-link');
+        btn.textContent = "✓ Link do Dossiê Copiado!";
+        setTimeout(() => btn.textContent = "🔗 Compartilhar Dossiê", 2500);
+    };
 
     escutarContadoresSeguidores(uid);
     carregarEstantePersonagens(uid);
+    escutarAnomalias(uid);
+    escutarCampanhas(uid);
     carregarCronicasDoUsuario(uid);
+    escutarTitulos(uid);
+    carregarForjaPessoal(uid);
 }
 
-// Salvar edição de perfil
-if (btnSalvarIdentidade) {
-    btnSalvarIdentidade.addEventListener('click', async () => {
-        if (!usuarioLogado) return;
+// SALVAR CREDENCIAL DO PESQUISADOR
+document.getElementById('btn-salvar-identidade')?.addEventListener('click', async () => {
+    if (!usuarioLogado) return;
+    const novoNome = document.getElementById('edit-nome').value.trim();
+    const novoEspectro = document.getElementById('edit-espectro').value;
+    const novoTitulo = document.getElementById('edit-titulo').value.trim() || "Pesquisador";
+    const novaBio = document.getElementById('edit-bio').value.trim();
+    const inputFoto = document.getElementById('edit-foto-file');
 
-        const novoNome = inputEditNome?.value.trim();
-        const novoTitulo = inputEditTitulo?.value.trim() || "Investigador";
-        const novaBio = inputEditBio?.value.trim() || "";
+    if (!novoNome) return alert("O codinome não pode ficar em branco.");
 
-        if (!novoNome) {
-            alert("O nome não pode ficar em branco.");
-            return;
+    const btn = document.getElementById('btn-salvar-identidade');
+    btn.disabled = true;
+    btn.textContent = "Gravando no Arquivo...";
+
+    try {
+        let fotoUrl = document.getElementById('perfil-avatar').src;
+        if (inputFoto.files && inputFoto.files[0]) {
+            const fotoRef = storageRef(storage, `avatares/${usuarioLogado.uid}_${Date.now()}`);
+            await uploadBytes(fotoRef, inputFoto.files[0]);
+            fotoUrl = await getDownloadURL(fotoRef);
         }
 
-        btnSalvarIdentidade.disabled = true;
-        btnSalvarIdentidade.textContent = "Salvando...";
+        await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
+            nome: novoNome,
+            espectro: novoEspectro,
+            titulo: novoTitulo,
+            bio: novaBio,
+            fotoUrl
+        });
 
-        try {
-            let novaFotoUrl = elAvatar?.src || "";
+        await updateProfile(usuarioLogado, { displayName: novoNome, photoURL: fotoUrl });
 
-            if (inputEditFoto && inputEditFoto.files && inputEditFoto.files[0]) {
-                const file = inputEditFoto.files[0];
-                const fotoRef = storageRef(storage, `avatares/${usuarioLogado.uid}_${Date.now()}`);
-                await uploadBytes(fotoRef, file);
-                novaFotoUrl = await getDownloadURL(fotoRef);
-            }
+        document.getElementById('perfil-nome').textContent = novoNome;
+        document.getElementById('perfil-titulo').textContent = novoTitulo;
+        document.getElementById('perfil-bio').textContent = `"${novaBio}"`;
+        document.getElementById('perfil-avatar').src = fotoUrl;
+        aplicarTemaEspectro(novoEspectro);
+        document.getElementById('modal-editar-perfil').style.display = 'none';
+    } catch (e) {
+        alert("Erro ao salvar credencial: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Salvar Credencial";
+    }
+});
 
-            await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
-                nome: novoNome,
-                titulo: novoTitulo,
-                bio: novaBio,
-                fotoUrl: novaFotoUrl
-            });
-
-            await updateProfile(usuarioLogado, {
-                displayName: novoNome,
-                photoURL: novaFotoUrl
-            });
-
-            if (elNome) elNome.textContent = novoNome;
-            if (elTitulo) elTitulo.textContent = novoTitulo;
-            if (elBio) elBio.textContent = novaBio;
-            if (elAvatar) elAvatar.src = novaFotoUrl;
-
-            if (modalEditar) modalEditar.style.display = 'none';
-        } catch (erro) {
-            console.error("Erro ao atualizar perfil:", erro);
-            alert("Erro ao salvar perfil: " + erro.message);
-        } finally {
-            btnSalvarIdentidade.disabled = false;
-            btnSalvarIdentidade.textContent = "Salvar Alterações";
-        }
-    });
-}
-
+// SEGUIDORES
 function escutarContadoresSeguidores(uid) {
-    onValue(dbRef(db, `seguidores/${uid}`), (snap) => {
-        if (elSeguidores) elSeguidores.textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
+    onValue(dbRef(db, `seguidores/${uid}`), snap => {
+        document.getElementById('qtd-seguidores').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
     });
-
-    onValue(dbRef(db, `seguindo/${uid}`), (snap) => {
-        if (elSeguindo) elSeguindo.textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
+    onValue(dbRef(db, `seguindo/${uid}`), snap => {
+        document.getElementById('qtd-seguindo').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
     });
 }
 
 function configurarBotaoSeguir(alvoUid) {
-    const seguidorRef = dbRef(db, `seguidores/${alvoUid}/${usuarioLogado.uid}`);
+    const btnSeguir = document.getElementById('btn-seguir');
+    const segRef = dbRef(db, `seguidores/${alvoUid}/${usuarioLogado.uid}`);
     const seguindoRef = dbRef(db, `seguindo/${usuarioLogado.uid}/${alvoUid}`);
 
-    onValue(seguidorRef, (snap) => {
-        const jaSegue = snap.exists();
-        btnSeguir.textContent = jaSegue ? "✓ Seguindo" : "+ Seguir";
-        btnSeguir.style.background = jaSegue ? "#1e293b" : "#c5a059";
-        btnSeguir.style.color = jaSegue ? "#e2e8f0" : "#0b0f17";
+    onValue(segRef, snap => {
+        const segue = snap.exists();
+        btnSeguir.textContent = segue ? "✓ Seguindo Pesquisador" : "+ Seguir Arquivista";
+        btnSeguir.className = segue ? "btn-secundario" : "btn-primario";
     });
 
     btnSeguir.onclick = async () => {
-        const snap = await get(seguidorRef);
+        const snap = await get(segRef);
         if (snap.exists()) {
-            await remove(seguidorRef);
+            await remove(segRef);
             await remove(seguindoRef);
         } else {
-            await set(seguidorRef, true);
+            await set(segRef, true);
             await set(seguindoRef, true);
-            const meuNome = usuarioLogado.displayName || usuarioLogado.email.split('@')[0];
             await registrarNotificacao(
                 alvoUid,
-                `<strong>${meuNome}</strong> começou a seguir você.`,
+                `<strong>${usuarioLogado.displayName || 'Um Arquivista'}</strong> começou a acompanhar seu dossiê.`,
                 `pages/perfil.html?uid=${usuarioLogado.uid}`
             );
         }
     };
 }
 
-// Lê os personagens salvos em salas/sala-padrao/jogadores/{uid} (e fichas/{uid} caso existam)
+// 1. ESTANTE DE PERSONAGENS & DIÁRIOS
 async function carregarEstantePersonagens(uid) {
-    if (!elEstante) return;
-
+    const elEstante = document.getElementById('lista-estante-publica');
     const personagens = [];
+    const ids = new Set();
 
-    // 1. Verifica ficha ativa na sala padrão
-    const salaSnap = await get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`));
-    if (salaSnap.exists()) {
-        const dados = salaSnap.val();
-        if (dados.ficha) {
-            personagens.push({ id: 'ativo', ...dados.ficha });
-        }
-    }
-
-    // 2. Verifica também estante multi-fichas caso exista
     const estanteSnap = await get(dbRef(db, `estante/${uid}`));
     if (estanteSnap.exists()) {
         estanteSnap.forEach(child => {
+            ids.add(child.key);
             personagens.push({ id: child.key, ...child.val() });
         });
     }
 
-    if (elQtdPersonagens) elQtdPersonagens.textContent = personagens.length;
+    const salaSnap = await get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`));
+    if (salaSnap.exists()) {
+        const val = salaSnap.val();
+        const f = val.ficha || (val.nome ? val : null);
+        if (f && !ids.has('ativo')) {
+            personagens.push({ id: 'ativo', ...f });
+        }
+    }
+
+    document.getElementById('qtd-personagens').textContent = personagens.length;
 
     if (personagens.length === 0) {
-        elEstante.innerHTML = `<p style="color: #64748b; font-size: 0.9rem;">Nenhum personagem público encontrado.</p>`;
+        elEstante.innerHTML = `<div class="estado-vazio">Nenhum Arquivista registrado na estante deste pesquisador ainda.</div>`;
         return;
     }
 
-    elEstante.innerHTML = personagens.map(f => `
-        <div style="background: rgba(15, 20, 30, 0.9); border: 1px solid #2a3142; border-left: 3px solid #c5a059; border-radius: 8px; padding: 12px;">
-            <strong style="color: #f8fafc; display: block; font-size: 1rem;">${f.nome || 'Sem Nome'}</strong>
-            <span style="color: #c5a059; font-size: 0.8rem;">${f.caminho || 'Sem Caminho'}</span>
-            <div style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8;">
-                ❤️ PV: ${f.pvAtual ?? f.pvMax ?? '?'} | ✨ PE: ${f.peAtual ?? f.peMax ?? '?'}
-            </div>
-        </div>
-    `).join('');
+    elEstante.innerHTML = personagens.map(f => {
+        const esp = ESPECTROS_INFO[f.espectro] || ESPECTROS_INFO.padrao;
+        const vol = ROMANOS[(f.volume || 1) - 1] || "I";
+        const classe = f.vocacao && f.tipoClasse === 'vocacao'
+            ? `Vocação: ${f.vocacao}`
+            : `Caminho: ${f.caminho || 'Guerreiro'}`;
+        const morto = (f.pvAtual !== undefined && Number(f.pvAtual) <= 0 && f.status === 'morto');
+
+        return `
+            <article class="card-dossie" style="border-left-color: ${esp.cor};">
+                <div>
+                    <div class="card-dossie-topo">
+                        <span class="badge-tag" style="color: ${esp.cor};">✦ ${esp.nome} • Vol. ${vol}</span>
+                        <span class="badge-tag">${morto ? '📕 Diário no Acervo' : '🟢 Ativo'}</span>
+                    </div>
+                    <h3 style="margin-top: 6px;">${escaparHtml(f.nome || 'Arquivista sem Nome')}</h3>
+                    <div class="card-dossie-sub">${escaparHtml(classe)}</div>
+                    <div class="card-dossie-corpo" style="margin-top: 8px;">
+                        ❤️ PV: <strong>${f.pvAtual ?? f.pvMax ?? '?'}</strong>/${f.pvMax ?? '?'} &nbsp;|&nbsp;
+                        ✨ PI: <strong>${f.piAtual ?? f.piMax ?? '?'}</strong>/${f.piMax ?? '?'}
+                        ${f.arma?.nome ? `<br>⚔️ Arma Favorita: ${escaparHtml(f.arma.nome)}` : ''}
+                    </div>
+                </div>
+                <div class="card-dossie-rodape">
+                    <span>${f.diarioNotas ? '📓 Possui registros no Diário' : '📖 Prólogo registrado'}</span>
+                    <a href="ficha.html?id=${uid}" class="link-dossie">Abrir Ficha →</a>
+                </div>
+            </article>
+        `;
+    }).join('');
 }
 
-// Carrega as crônicas escritas por este usuário
-function carregarCronicasDoUsuario(uid) {
-    if (!elFeedPessoal) return;
+// 2. SISTEMA DE ANOMALIAS DESCOBERTAS & TAGS NFC
+function escutarAnomalias(uid) {
+    onValue(dbRef(db, `usuarios/${uid}/anomalias`), snap => {
+        listaAnomaliasCache = [];
+        if (snap.exists()) {
+            snap.forEach(child => {
+                listaAnomaliasCache.push({ id: child.key, ...child.val() });
+            });
+        }
+        listaAnomaliasCache.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        document.getElementById('qtd-anomalias').textContent = listaAnomaliasCache.length;
+        renderizarAnomalias();
+    });
+}
 
-    onValue(dbRef(db, 'cronicas'), (snap) => {
-        if (!snap.exists()) {
-            elFeedPessoal.innerHTML = `<p style="color: #64748b; text-align: center;">Nenhuma crônica publicada ainda.</p>`;
+function renderizarAnomalias() {
+    const elLista = document.getElementById('lista-anomalias');
+    const filtradas = filtroNaturezaAtual === 'todas'
+        ? listaAnomaliasCache
+        : listaAnomaliasCache.filter(a => a.natureza === filtroNaturezaAtual);
+
+    if (filtradas.length === 0) {
+        elLista.innerHTML = `<div class="estado-vazio">Nenhuma anomalia ou tag NFC catalogada nesta categoria.</div>`;
+        return;
+    }
+
+    elLista.innerHTML = filtradas.map(a => {
+        const esp = ESPECTROS_INFO[a.espectro] || ESPECTROS_INFO.indigo;
+        return `
+            <article class="card-dossie" style="border-left-color: ${esp.cor};">
+                <div>
+                    <div class="card-dossie-topo">
+                        <span class="badge-tag" style="color: ${esp.cor};">${escaparHtml(a.natureza || 'Anomalia')} • ${esp.nome}</span>
+                        <span class="badge-tag">${escaparHtml(a.codigo || 'ARQUIVO')}</span>
+                    </div>
+                    <h3 style="margin-top: 6px;">${escaparHtml(a.nome)}</h3>
+                    <div class="card-dossie-sub">${escaparHtml(a.status || 'Catalogada')}</div>
+                    <div class="card-dossie-corpo" style="margin-top: 8px;">
+                        ${escaparHtml(a.relato || 'Sem notas de campo adicionais.')}
+                    </div>
+                </div>
+                <div class="card-dossie-rodape">
+                    <span>📅 ${a.timestamp ? new Date(a.timestamp).toLocaleDateString('pt-BR') : 'Registrada'}</span>
+                    ${ehProprioPerfil ? `<button type="button" class="btn-remover-item" data-del-anomalia="${a.id}">Excluir</button>` : ''}
+                </div>
+            </article>
+        `;
+    }).join('');
+
+    if (ehProprioPerfil) {
+        elLista.querySelectorAll('[data-del-anomalia]').forEach(btn => {
+            btn.onclick = () => remove(dbRef(db, `usuarios/${perfilUid}/anomalias/${btn.dataset.delAnomalia}`));
+        });
+    }
+}
+
+// Filtros por Natureza do Bestiário
+document.querySelectorAll('#filtros-natureza .pill-filtro').forEach(pill => {
+    pill.addEventListener('click', () => {
+        document.querySelectorAll('#filtros-natureza .pill-filtro').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        filtroNaturezaAtual = pill.dataset.natureza;
+        renderizarAnomalias();
+    });
+});
+
+// Abrir Modal de Registro Manual
+document.getElementById('btn-abrir-modal-anomalia')?.addEventListener('click', () => {
+    document.getElementById('anomalia-codigo').value = '';
+    document.getElementById('anomalia-nome').value = '';
+    document.getElementById('anomalia-relato').value = '';
+    document.getElementById('modal-anomalia').style.display = 'flex';
+});
+
+// Leitura Real via Web NFC API (Chrome Android / Dispositivos NFC)
+document.getElementById('btn-escanear-nfc')?.addEventListener('click', async () => {
+    const banner = document.getElementById('banner-status-nfc');
+    banner.style.display = 'block';
+
+    if (!('NDEFReader' in window)) {
+        banner.innerHTML = `⚠️ Seu navegador/computador não possui leitor NFC físico ativo. Use o botão <strong>"+ Registrar Código"</strong> para digitar o código da tag da mesa.`;
+        return;
+    }
+
+    try {
+        const ndef = new NDEFReader();
+        await ndef.scan();
+        banner.innerHTML = `📡 <strong>Aproxime a tag NFC da Anomalia</strong> na traseira do celular para catalogar no Bestiário...`;
+
+        ndef.onreading = ({ serialNumber, message }) => {
+            let textoTag = '';
+            for (const record of message.records) {
+                if (record.recordType === 'text') {
+                    const decoder = new TextDecoder(record.encoding || 'utf-8');
+                    textoTag = decoder.decode(record.data);
+                }
+            }
+            const codigoLido = textoTag || `NFC-${serialNumber}`;
+            banner.innerHTML = `✅ Tag detectada: <strong>${escaparHtml(codigoLido)}</strong>! Preencha os detalhes da anomalia.`;
+            document.getElementById('anomalia-codigo').value = codigoLido;
+            document.getElementById('modal-anomalia').style.display = 'flex';
+        };
+    } catch (err) {
+        banner.innerHTML = `❌ Não foi possível iniciar o leitor NFC (${escaparHtml(err.message)}). Use "+ Registrar Código".`;
+    }
+});
+
+// Salvar Anomalia no Firebase
+document.getElementById('btn-salvar-anomalia')?.addEventListener('click', async () => {
+    if (!ehProprioPerfil) return;
+    const nome = document.getElementById('anomalia-nome').value.trim();
+    if (!nome) return alert("Informe o nome da anomalia descoberta.");
+
+    await push(dbRef(db, `usuarios/${perfilUid}/anomalias`), {
+        codigo: document.getElementById('anomalia-codigo').value.trim() || `B5A-${Math.floor(100 + Math.random() * 900)}`,
+        nome,
+        natureza: document.getElementById('anomalia-natureza').value,
+        espectro: document.getElementById('anomalia-espectro').value,
+        status: document.getElementById('anomalia-status').value,
+        relato: document.getElementById('anomalia-relato').value.trim(),
+        timestamp: Date.now()
+    });
+
+    document.getElementById('modal-anomalia').style.display = 'none';
+});
+
+// 3. CAMPANHAS JOGADAS & CRÔNICAS
+function escutarCampanhas(uid) {
+    const elCamp = document.getElementById('lista-campanhas');
+    onValue(dbRef(db, `usuarios/${uid}/campanhas`), snap => {
+        const campanhas = [];
+        if (snap.exists()) {
+            snap.forEach(c => campanhas.push({ id: c.key, ...c.val() }));
+        }
+        campanhas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        document.getElementById('qtd-campanhas').textContent = campanhas.length;
+
+        if (campanhas.length === 0) {
+            elCamp.innerHTML = `<div class="estado-vazio">Nenhuma campanha registrada no histórico deste pesquisador.</div>`;
             return;
         }
 
-        const posts = [];
-        snap.forEach(child => {
-            const val = child.val();
-            if (val.autorId === uid) {
-                posts.push({ id: child.key, ...val });
-            }
-        });
+        elCamp.innerHTML = campanhas.map(c => `
+            <article class="card-dossie">
+                <div>
+                    <div class="card-dossie-topo">
+                        <span class="badge-tag">${escaparHtml(c.papel || 'Arquivista')}</span>
+                        <span class="badge-tag">${escaparHtml(c.status || 'Em Andamento')}</span>
+                    </div>
+                    <h3 style="margin-top: 6px;">${escaparHtml(c.titulo)}</h3>
+                    <div class="card-dossie-sub">${escaparHtml(c.detalhe || '')}</div>
+                    <div class="card-dossie-corpo" style="margin-top: 8px;">
+                        ${escaparHtml(c.resumo || 'Crônica em desenvolvimento.')}
+                    </div>
+                </div>
+                <div class="card-dossie-rodape">
+                    <span>📅 Registrada em ${c.timestamp ? new Date(c.timestamp).toLocaleDateString('pt-BR') : 'Arquivo'}</span>
+                    ${ehProprioPerfil ? `<button type="button" class="btn-remover-item" data-del-camp="${c.id}">Remover</button>` : ''}
+                </div>
+            </article>
+        `).join('');
 
+        if (ehProprioPerfil) {
+            elCamp.querySelectorAll('[data-del-camp]').forEach(btn => {
+                btn.onclick = () => remove(dbRef(db, `usuarios/${perfilUid}/campanhas/${btn.dataset.delCamp}`));
+            });
+        }
+    });
+}
+
+document.getElementById('btn-abrir-modal-campanha')?.addEventListener('click', () => {
+    document.getElementById('modal-campanha').style.display = 'flex';
+});
+
+document.getElementById('btn-salvar-campanha')?.addEventListener('click', async () => {
+    if (!ehProprioPerfil) return;
+    const titulo = document.getElementById('camp-titulo').value.trim();
+    if (!titulo) return alert("Informe o nome da campanha.");
+
+    await push(dbRef(db, `usuarios/${perfilUid}/campanhas`), {
+        titulo,
+        papel: document.getElementById('camp-papel').value,
+        status: document.getElementById('camp-status').value,
+        detalhe: document.getElementById('camp-detalhe').value.trim(),
+        resumo: document.getElementById('camp-resumo').value.trim(),
+        timestamp: Date.now()
+    });
+
+    document.getElementById('modal-campanha').style.display = 'none';
+});
+
+function carregarCronicasDoUsuario(uid) {
+    const elFeed = document.getElementById('feed-pessoal');
+    onValue(dbRef(db, 'cronicas'), snap => {
+        const posts = [];
+        if (snap.exists()) {
+            snap.forEach(child => {
+                const val = child.val();
+                if (val.autorId === uid || val.uid === uid) {
+                    posts.push({ id: child.key, ...val });
+                }
+            });
+        }
         posts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
         if (posts.length === 0) {
-            elFeedPessoal.innerHTML = `<p style="color: #64748b; text-align: center;">Nenhuma crônica publicada por este agente.</p>`;
+            elFeed.innerHTML = `<div class="estado-vazio">Nenhuma crônica pública publicada na comunidade ainda.</div>`;
             return;
         }
 
-        elFeedPessoal.innerHTML = posts.map(p => `
-            <article style="background: rgba(19, 24, 35, 0.85); border: 1px solid #2a3142; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                    <strong style="color: #f8fafc; font-size: 1.05rem;">${p.titulo}</strong>
-                    <small style="color: #64748b;">${p.timestamp ? new Date(p.timestamp).toLocaleDateString('pt-BR') : ''}</small>
+        elFeed.innerHTML = posts.map(p => `
+            <article class="card-dossie" style="border-left-color: #4cc9f0;">
+                <div>
+                    <div class="card-dossie-topo">
+                        <span class="badge-tag" style="color: #4cc9f0;">📖 Crônica Publicada</span>
+                        <span>${p.timestamp ? new Date(p.timestamp).toLocaleDateString('pt-BR') : ''}</span>
+                    </div>
+                    <h3 style="margin-top: 6px;">${escaparHtml(p.titulo)}</h3>
+                    <div class="card-dossie-corpo" style="margin-top: 8px; white-space: pre-line;">${escaparHtml(p.conteudo || p.texto || '')}</div>
                 </div>
-                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; white-space: pre-line;">${p.conteudo}</p>
             </article>
         `).join('');
     });
+}
+
+// 4. TÍTULOS DO LIVRO DE REGRAS & ACERVO FORJADO
+function escutarTitulos(uid) {
+    const elTitulos = document.getElementById('lista-titulos');
+    onValue(dbRef(db, `usuarios/${uid}/titulos`), snap => {
+        const titulos = [];
+        if (snap.exists()) {
+            snap.forEach(c => titulos.push({ id: c.key, ...c.val() }));
+        }
+        document.getElementById('qtd-titulos').textContent = titulos.length;
+
+        if (titulos.length === 0) {
+            elTitulos.innerHTML = `<div class="estado-vazio">Nenhum Título conquistado registrado no Diário ainda (disponível a partir do Volume V ou feitos épicos).</div>`;
+            return;
+        }
+
+        elTitulos.innerHTML = titulos.map(t => `
+            <article class="card-dossie">
+                <div>
+                    <div class="card-dossie-topo">
+                        <span class="badge-tag">🏆 ${escaparHtml(t.cat || 'Feito')}</span>
+                        ${t.ativo ? '<span class="badge-tag" style="background: var(--cor-destaque); color: #000;">★ ATIVO</span>' : ''}
+                    </div>
+                    <h3 style="margin-top: 6px;">${escaparHtml(t.nome)}</h3>
+                    <div class="card-dossie-sub">Pré-requisito: ${escaparHtml(t.req)}</div>
+                    <div class="card-dossie-corpo" style="margin-top: 8px;">${escaparHtml(t.efeito)}</div>
+                </div>
+                ${ehProprioPerfil ? `
+                    <div class="card-dossie-rodape">
+                        <button type="button" class="btn-ativar-titulo ${t.ativo ? 'ativo' : ''}" data-ativar-titulo="${t.id}">
+                            ${t.ativo ? '★ Título Equipado' : 'Equipar Título'}
+                        </button>
+                        <button type="button" class="btn-remover-item" data-del-titulo="${t.id}">Remover</button>
+                    </div>
+                ` : ''}
+            </article>
+        `).join('');
+
+        if (ehProprioPerfil) {
+            elTitulos.querySelectorAll('[data-ativar-titulo]').forEach(btn => {
+                btn.onclick = async () => {
+                    const alvoId = btn.dataset.ativarTitulo;
+                    const updates = {};
+                    titulos.forEach(item => {
+                        updates[`usuarios/${uid}/titulos/${item.id}/ativo`] = (item.id === alvoId);
+                    });
+                    await update(dbRef(db), updates);
+                };
+            });
+            elTitulos.querySelectorAll('[data-del-titulo]').forEach(btn => {
+                btn.onclick = () => remove(dbRef(db, `usuarios/${uid}/titulos/${btn.dataset.delTitulo}`));
+            });
+        }
+    });
+}
+
+// Popular select de Títulos do Livro Básico
+const selectTitulo = document.getElementById('titulo-preset');
+const previewTitulo = document.getElementById('preview-titulo-info');
+if (selectTitulo && previewTitulo) {
+    selectTitulo.innerHTML = TITULOS_LIVRO.map((t, idx) => `<option value="${idx}">${t.nome} (${t.cat})</option>`).join('');
+    const atualizarPreviewTitulo = () => {
+        const t = TITULOS_LIVRO[selectTitulo.value];
+        previewTitulo.innerHTML = `<strong>Pré-requisito:</strong> ${t.req}<br><br><strong>Efeito Mecânico:</strong> ${t.efeito}`;
+    };
+    selectTitulo.addEventListener('change', atualizarPreviewTitulo);
+    atualizarPreviewTitulo();
+}
+
+document.getElementById('btn-abrir-modal-titulo')?.addEventListener('click', () => {
+    document.getElementById('modal-titulo').style.display = 'flex';
+});
+
+document.getElementById('btn-salvar-titulo')?.addEventListener('click', async () => {
+    if (!ehProprioPerfil) return;
+    const t = TITULOS_LIVRO[document.getElementById('titulo-preset').value];
+    await push(dbRef(db, `usuarios/${perfilUid}/titulos`), {
+        ...t,
+        ativo: false,
+        timestamp: Date.now()
+    });
+    document.getElementById('modal-titulo').style.display = 'none';
+});
+
+// CARREGAR ARMAS, ITENS E MONSTROS FORJADOS PELO USUÁRIO
+async function carregarForjaPessoal(uid) {
+    const elForja = document.getElementById('lista-forja-pessoal');
+    const criacoes = [];
+
+    const lerColecao = async (caminho, tipoLabel, cor, link) => {
+        const snap = await get(dbRef(db, caminho));
+        if (!snap.exists()) return;
+        snap.forEach(c => {
+            const v = c.val();
+            if (v && (v.uid === uid || v.autorId === uid || v.donoId === uid)) {
+                criacoes.push({
+                    tipo: tipoLabel,
+                    cor,
+                    link,
+                    nome: v.nome || v.titulo || 'Sem Nome',
+                    sub: v.categoria || v.tipo || '',
+                    desc: v.descricao || v.efeito || ''
+                });
+            }
+        });
+    };
+
+    await Promise.all([
+        lerColecao('armas', '⚔️ Arma', '#ffbe0b', 'armas.html'),
+        lerColecao('itens', '🎒 Item', '#f4a261', 'armas.html'),
+        lerColecao('monstros', '👁️ Criatura', '#e63946', 'monstros.html')
+    ]);
+
+    if (criacoes.length === 0) {
+        elForja.innerHTML = `<div class="estado-vazio">Nenhuma arma, relíquia ou criatura forjada nas oficinas ainda.</div>`;
+        return;
+    }
+
+    elForja.innerHTML = criacoes.map(item => `
+        <article class="card-dossie" style="border-left-color: ${item.cor};">
+            <div>
+                <div class="card-dossie-topo">
+                    <span class="badge-tag" style="color: ${item.cor};">${item.tipo}</span>
+                </div>
+                <h3 style="margin-top: 6px;">${escaparHtml(item.nome)}</h3>
+                <div class="card-dossie-sub">${escaparHtml(item.sub)}</div>
+                <div class="card-dossie-corpo" style="margin-top: 8px;">${escaparHtml(item.desc)}</div>
+            </div>
+            <div class="card-dossie-rodape">
+                <span>Acervo da Comunidade</span>
+                <a href="${item.link}" class="link-dossie">Abrir Oficina →</a>
+            </div>
+        </article>
+    `).join('');
 }

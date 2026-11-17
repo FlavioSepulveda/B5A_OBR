@@ -2,75 +2,355 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - B5A</title>
-    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Dossiê do Arquivista - B5A RPG</title>
     <link rel="stylesheet" href="../css/perfil.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <div class="nav-left">
+            <a href="../index.html" class="nav-brand">B5A RPG</a>
+            <button type="button" id="btn-menu-mobile" class="btn-menu-mobile" aria-expanded="false" aria-controls="nav-links-menu">
+                ☰ Menu
+            </button>
+        </div>
+
+        <div class="nav-links" id="nav-links-menu">
+            <a href="estante.html" class="nav-item">📚 Estante</a>
+            <a href="ficha.html" class="nav-item">📜 Ficha</a>
+            <a href="mesa.html" class="nav-item">🗺️ Mesa</a>
+            <a href="armas.html" class="nav-item">⚔️ Armas</a>
+            <a href="monstros.html" class="nav-item">👁️ Monstros</a>
+            <a href="comunidade.html" class="nav-item">🌐 Comunidade</a>
+            <a href="regras.html" class="nav-item">⚖️ Regras</a>
+        </div>
+
         <div class="nav-user">
-            <a href="perfil.html" id="status-login" class="status-login-nav" style="text-decoration: none; color: #888;">🔴 Offline</a>
+            <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
         </div>
     </nav>
 
-    <div class="perfil-container" id="perfil-visitado">
-        <div class="perfil-identidade">
-            <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="avatar">
-            <h2 id="perfil-nome">Carregando...</h2>
-            <span id="perfil-titulo" style="display: block; color: var(--gold); font-size: 0.85rem; margin-bottom: 8px;">Investigador</span>
-            <p id="perfil-bio" class="bio-texto">"Sem juramento registrado."</p>
-            
-            <div class="stats-seguidores" style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                <span>👥 <strong id="qtd-seguidores">0</strong> Seguidores</span>
-                <span>🧭 <strong id="qtd-seguindo">0</strong> Seguindo</span>
-                <span>📖 <strong id="qtd-personagens">0</strong> Fichas</span>
+    <main class="perfil-container" id="perfil-visitado">
+        <!-- COLUNA ESQUERDA: CREDENCIAL DO BESTIÁRIO DAS ALMAS -->
+        <aside class="perfil-identidade">
+            <div class="credencial-topo">
+                <span class="credencial-org">BESTIÁRIO DAS ALMAS • ARQUIVO CENTRAL</span>
+                <span id="perfil-espectro-badge" class="espectro-pill">✦ Sem Espectro</span>
+            </div>
+
+            <img id="perfil-avatar" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=200&q=80" alt="Avatar do Pesquisador" class="avatar">
+
+            <h1 id="perfil-nome">Carregando...</h1>
+            <span id="perfil-titulo" class="patente-texto">Pesquisador Iniciante</span>
+            <p id="perfil-juramento" class="juramento-espectro">"Qual história você veio escrever?"</p>
+            <p id="perfil-bio" class="bio-texto">"Sem registro pessoal no Diário."</p>
+
+            <!-- MÉTRICAS DE PESQUISA -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <strong id="qtd-personagens">0</strong>
+                    <span>Arquivistas</span>
+                </div>
+                <div class="stat-box">
+                    <strong id="qtd-campanhas">0</strong>
+                    <span>Campanhas</span>
+                </div>
+                <div class="stat-box">
+                    <strong id="qtd-anomalias">0</strong>
+                    <span>Anomalias</span>
+                </div>
+                <div class="stat-box">
+                    <strong id="qtd-seguidores">0</strong>
+                    <span>Seguidores</span>
+                </div>
+            </div>
+
+            <div class="stats-secundario">
+                <span>🧭 Seguindo: <strong id="qtd-seguindo">0</strong></span>
+                <span>•</span>
+                <span>🏆 Títulos: <strong id="qtd-titulos">0</strong></span>
+            </div>
+
+            <!-- PRINCÍPIOS DO ARQUIVISTA (LIVRO DE REGRAS) -->
+            <div class="principios-box">
+                <span class="principios-titulo">📜 Três Princípios da Ordem</span>
+                <ul>
+                    <li>Registrar, conter ou estudar o que encontrar;</li>
+                    <li>Jamais abandonar um companheiro;</li>
+                    <li>Preservar a continuidade da história.</li>
+                </ul>
             </div>
 
             <div id="area-botoes-perfil" class="botoes-perfil-wrapper">
-                <button id="btn-seguir" class="btn-primario" style="display: none;">Seguir Arquivista</button>
-                <button id="btn-editar-perfil" class="btn-primario btn-secundario" style="display: none;">Editar Meu Perfil</button>
+                <button id="btn-seguir" class="btn-primario" style="display: none;">+ Seguir Arquivista</button>
+                <button id="btn-editar-perfil" class="btn-primario" style="display: none;">✏️ Editar Credencial</button>
+                <button id="btn-copiar-link" class="btn-secundario">🔗 Compartilhar Dossiê</button>
             </div>
-        </div>
+        </aside>
 
-        <div class="perfil-conteudo">
-            <h3 class="titulo-secao">Estante Pública</h3>
-            <div id="lista-estante-publica" class="grid-mini-cards" style="margin-bottom: 24px;"></div>
+        <!-- COLUNA DIREITA: DOSSIÊ INTERATIVO -->
+        <section class="perfil-conteudo">
+            <!-- NAVEGAÇÃO POR ABAS -->
+            <div class="abas-perfil" role="tablist">
+                <button type="button" class="tab-btn active" data-tab="tab-arquivistas">📜 Arquivistas</button>
+                <button type="button" class="tab-btn" data-tab="tab-anomalias">📡 Anomalias & NFC</button>
+                <button type="button" class="tab-btn" data-tab="tab-campanhas">🗺️ Campanhas & Crônicas</button>
+                <button type="button" class="tab-btn" data-tab="tab-titulos">🏆 Títulos & Forja</button>
+            </div>
 
-            <h3 class="titulo-secao">Crônicas Publicadas</h3>
-            <div id="feed-pessoal"></div>
-        </div>
-    </div>
+            <!-- ABA 1: PERSONAGENS CRIADOS (ESTANTE & DIÁRIOS) -->
+            <div id="tab-arquivistas" class="tab-conteudo active">
+                <div class="secao-header-inline">
+                    <div>
+                        <h2 class="titulo-secao">Estante de Arquivistas</h2>
+                        <p class="subtitulo-secao">Personagens ativos e Diários preservados no acervo do Bestiário das Almas.</p>
+                    </div>
+                    <a href="ficha.html" id="btn-novo-personagem" class="btn-acao-pequeno" style="display: none;">+ Nova Ficha</a>
+                </div>
+                <div id="lista-estante-publica" class="grid-cards-perfil"></div>
+            </div>
 
-    <!-- Modal de Edição -->
-    <div id="modal-editar-perfil" class="modal-leitura" style="display:none;">
+            <!-- ABA 2: ANOMALIAS DESCOBERTAS & LEITOR NFC -->
+            <div id="tab-anomalias" class="tab-conteudo">
+                <div class="secao-header-inline">
+                    <div>
+                        <h2 class="titulo-secao">Registros de Campo & Anomalias (NFC)</h2>
+                        <p class="subtitulo-secao">Entidades, relíquias e rupturas catalogadas pelo pesquisador durante expedições.</p>
+                    </div>
+                    <div id="controles-nfc-dono" class="nfc-acoes-topo" style="display: none;">
+                        <button type="button" id="btn-escanear-nfc" class="btn-acao-pequeno btn-nfc">📡 Ler Tag NFC</button>
+                        <button type="button" id="btn-abrir-modal-anomalia" class="btn-acao-pequeno">+ Registrar Código</button>
+                    </div>
+                </div>
+
+                <div id="banner-status-nfc" class="banner-nfc" style="display: none;"></div>
+
+                <!-- FILTRO POR NATUREZA DO BESTIÁRIO -->
+                <div class="filtros-natureza" id="filtros-natureza">
+                    <button type="button" class="pill-filtro active" data-natureza="todas">Todas</button>
+                    <button type="button" class="pill-filtro" data-natureza="Anomalia">🌀 Anomalia</button>
+                    <button type="button" class="pill-filtro" data-natureza="Fera">🐺 Fera</button>
+                    <button type="button" class="pill-filtro" data-natureza="Manifestação">👻 Manifestação</button>
+                    <button type="button" class="pill-filtro" data-natureza="Relíquia Viva">🗡️ Relíquia Viva</button>
+                    <button type="button" class="pill-filtro" data-natureza="Construto">⚙️ Construto</button>
+                    <button type="button" class="pill-filtro" data-natureza="Entidade">👁️ Entidade</button>
+                </div>
+
+                <div id="lista-anomalias" class="grid-cards-perfil"></div>
+            </div>
+
+            <!-- ABA 3: CAMPANHAS JOGADAS & CRÔNICAS -->
+            <div id="tab-campanhas" class="tab-conteudo">
+                <div class="secao-header-inline">
+                    <div>
+                        <h2 class="titulo-secao">Campanhas & Missões Registradas</h2>
+                        <p class="subtitulo-secao">Histórico de mesas como Arquivista ou Guardião do Arquivo.</p>
+                    </div>
+                    <button type="button" id="btn-abrir-modal-campanha" class="btn-acao-pequeno" style="display: none;">+ Registrar Campanha</button>
+                </div>
+                <div id="lista-campanhas" class="lista-vertical-perfil" style="margin-bottom: 28px;"></div>
+
+                <h2 class="titulo-secao">Crônicas Publicadas na Comunidade</h2>
+                <div id="feed-pessoal" class="lista-vertical-perfil"></div>
+            </div>
+
+            <!-- ABA 4: TÍTULOS CONQUISTADOS & CRIAÇÕES NA FORJA -->
+            <div id="tab-titulos" class="tab-conteudo">
+                <div class="secao-header-inline">
+                    <div>
+                        <h2 class="titulo-secao">Títulos Reconhecidos pela Biblioteca</h2>
+                        <p class="subtitulo-secao">Feitos narrativos gravados no Diário (apenas um Título pode ficar ativo por vez).</p>
+                    </div>
+                    <button type="button" id="btn-abrir-modal-titulo" class="btn-acao-pequeno" style="display: none;">+ Reivindicar Título</button>
+                </div>
+                <div id="lista-titulos" class="grid-cards-perfil" style="margin-bottom: 28px;"></div>
+
+                <h2 class="titulo-secao">Acervo Forjado (Armas, Itens & Criaturas)</h2>
+                <div id="lista-forja-pessoal" class="grid-cards-perfil"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL 1: EDITAR IDENTIDADE DO PESQUISADOR -->
+    <div id="modal-editar-perfil" class="modal-leitura">
         <div class="modal-leitura-content">
-            <span class="close-btn" onclick="document.getElementById('modal-editar-perfil').style.display='none'">&times;</span>
-            <h2>Editar Identidade</h2>
-            
+            <span class="close-btn" data-close="modal-editar-perfil">&times;</span>
+            <h2>Credencial de Arquivista</h2>
+            <p class="modal-desc">Personalize sua identidade nos arquivos da 5ª Avenida.</p>
+
             <div class="input-group">
-                <label>Foto de Perfil (Opcional)</label>
+                <label>Foto de Perfil</label>
                 <input type="file" id="edit-foto-file" accept="image/*">
             </div>
             <div class="input-group">
-                <label>Apelido de Arquivista</label>
-                <input type="text" id="edit-nome" placeholder="Como quer ser chamado?">
+                <label>Nome / Codinome de Pesquisador</label>
+                <input type="text" id="edit-nome" placeholder="Ex: Hallsey, Arthur...">
             </div>
             <div class="input-group">
-                <label>Título / Patente</label>
-                <input type="text" id="edit-titulo" placeholder="Ex: Investigador da 5ª Avenida">
+                <label>Espectro Predominante (Define a cor do Dossiê)</label>
+                <select id="edit-espectro">
+                    <option value="padrao">✦ Sem Espectro (Ouro da Biblioteca)</option>
+                    <option value="igneo">🔥 Ígneo — "Toda conquista exige um sacrifício."</option>
+                    <option value="celeste">💧 Celeste — "Conhecimento supera força."</option>
+                    <option value="viridiano">🌿 Viridiano — "Enquanto houver vida, há esperança."</option>
+                    <option value="solar">☀️ Solar — "Nenhum caminho é definitivo."</option>
+                    <option value="indigo">🔮 Índigo — "Toda resposta gera uma nova pergunta."</option>
+                    <option value="alabastro">⚖️ Alabastro — "Ninguém deve prevalecer."</option>
+                </select>
             </div>
             <div class="input-group">
-                <label>Juramento / Bio</label>
-                <textarea id="edit-bio" rows="3" placeholder="Sua frase de efeito..."></textarea>
+                <label>Patente / Especialidade</label>
+                <input type="text" id="edit-titulo" placeholder="Ex: Pesquisador de Campo • Cronista">
             </div>
-            <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 20px; width: 100%;">Salvar Alterações</button>
+            <div class="input-group">
+                <label>Anotação Pessoal / Biografia</label>
+                <textarea id="edit-bio" rows="3" placeholder="Sua história antes de cruzar a porta da Biblioteca..."></textarea>
+            </div>
+            <button id="btn-salvar-identidade" class="btn-primario" style="margin-top: 18px; width: 100%;">Salvar Credencial</button>
         </div>
     </div>
 
+    <!-- MODAL 2: REGISTRAR ANOMALIA / CÓDIGO NFC -->
+    <div id="modal-anomalia" class="modal-leitura">
+        <div class="modal-leitura-content">
+            <span class="close-btn" data-close="modal-anomalia">&times;</span>
+            <h2>Catalogar Anomalia (NFC / Arquivo)</h2>
+            <p class="modal-desc">Registre uma tag NFC escaneada em mesa ou um código de anomalia descoberta.</p>
+
+            <div class="input-group">
+                <label>Código NFC / Protocolo do Bestiário</label>
+                <input type="text" id="anomalia-codigo" placeholder="Ex: NFC-042 ou B5A-LABIRINTO">
+            </div>
+            <div class="input-group">
+                <label>Nome da Anomalia / Criatura</label>
+                <input type="text" id="anomalia-nome" placeholder="Ex: O Espelho Quebrado, Corredor Infinito..." required>
+            </div>
+            <div class="form-row-modal">
+                <div class="input-group">
+                    <label>Natureza (Bestiário)</label>
+                    <select id="anomalia-natureza">
+                        <option value="Anomalia">🌀 Anomalia</option>
+                        <option value="Fera">🐺 Fera</option>
+                        <option value="Manifestação">👻 Manifestação</option>
+                        <option value="Relíquia Viva">🗡️ Relíquia Viva</option>
+                        <option value="Construto">⚙️ Construto</option>
+                        <option value="Entidade">👁️ Entidade</option>
+                        <option value="Humanoide">🧑 Humanoide</option>
+                        <option value="Arquivista">📜 Arquivista</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Espectro Associado</label>
+                    <select id="anomalia-espectro">
+                        <option value="indigo">🔮 Índigo</option>
+                        <option value="igneo">🔥 Ígneo</option>
+                        <option value="celeste">💧 Celeste</option>
+                        <option value="viridiano">🌿 Viridiano</option>
+                        <option value="solar">☀️ Solar</option>
+                        <option value="alabastro">⚖️ Alabastro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Status de Contenção</label>
+                <select id="anomalia-status">
+                    <option value="Catalogada">📖 Catalogada no Bestiário</option>
+                    <option value="Contida / Selada">🔒 Contida / Selada</option>
+                    <option value="À Solta (Perigo)">⚠️ À Solta — Monitorando</option>
+                    <option value="Purificada">✨ Purificada / Encerrada</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Relatório de Campo / Observações</label>
+                <textarea id="anomalia-relato" rows="3" placeholder="Onde foi encontrada, comportamento, fraquezas ou memórias associadas..."></textarea>
+            </div>
+            <button id="btn-salvar-anomalia" class="btn-primario" style="margin-top: 18px; width: 100%;">Gravar no Bestiário</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: REGISTRAR CAMPANHA JOGADA -->
+    <div id="modal-campanha" class="modal-leitura">
+        <div class="modal-leitura-content">
+            <span class="close-btn" data-close="modal-campanha">&times;</span>
+            <h2>Registrar Campanha / Crônica</h2>
+            <p class="modal-desc">Adicione uma mesa que você jogou ou narrou ao seu histórico.</p>
+
+            <div class="input-group">
+                <label>Título da Campanha ou One-Shot</label>
+                <input type="text" id="camp-titulo" placeholder="Ex: Os Arquivos da Conjuradora" required>
+            </div>
+            <div class="form-row-modal">
+                <div class="input-group">
+                    <label>Seu Papel</label>
+                    <select id="camp-papel">
+                        <option value="Arquivista (Jogador)">📜 Arquivista (Jogador)</option>
+                        <option value="Guardião do Arquivo (Mestre)">👁️ Guardião do Arquivo (Mestre)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Situação</label>
+                    <select id="camp-status">
+                        <option value="Em Andamento">🟢 Em Andamento</option>
+                        <option value="Concluída">🏆 Concluída</option>
+                        <option value="Hiato">⏸️ Em Hiato</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Arquivista Utilizado / Gênero Literário</label>
+                <input type="text" id="camp-detalhe" placeholder="Ex: Kael (Cronista Índigo) • Mistério Clássico">
+            </div>
+            <div class="input-group">
+                <label>Resumo dos Acontecimentos</label>
+                <textarea id="camp-resumo" rows="3" placeholder="Principais descobertas, chefes enfrentados ou escolhas marcantes..."></textarea>
+            </div>
+            <button id="btn-salvar-campanha" class="btn-primario" style="margin-top: 18px; width: 100%;">Salvar no Histórico</button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: REIVINDICAR TÍTULO DO LIVRO DE REGRAS -->
+    <div id="modal-titulo" class="modal-leitura">
+        <div class="modal-leitura-content">
+            <span class="close-btn" data-close="modal-titulo">&times;</span>
+            <h2>Conquistar Título</h2>
+            <p class="modal-desc">Títulos são o reconhecimento da Biblioteca por feitos narrativos dignos de registro.</p>
+
+            <div class="input-group">
+                <label>Escolha um Título do Livro Básico</label>
+                <select id="titulo-preset"></select>
+            </div>
+            <div id="preview-titulo-info" class="preview-box-modal"></div>
+
+            <button id="btn-salvar-titulo" class="btn-primario" style="margin-top: 18px; width: 100%;">Registrar Título no Diário</button>
+        </div>
+    </div>
+
+    <footer>
+        Biblioteca da 5ª Avenida (B5A) • Bestiário das Almas
+    </footer>
+
+    <script>
+        const btnMenuMobile = document.getElementById('btn-menu-mobile');
+        const navLinksMenu = document.getElementById('nav-links-menu');
+        if (btnMenuMobile && navLinksMenu) {
+            btnMenuMobile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const aberto = navLinksMenu.classList.toggle('aberto');
+                btnMenuMobile.setAttribute('aria-expanded', aberto);
+                btnMenuMobile.textContent = aberto ? '✕ Fechar' : '☰ Menu';
+            });
+            document.addEventListener('click', (e) => {
+                if (!navLinksMenu.contains(e.target) && !btnMenuMobile.contains(e.target)) {
+                    navLinksMenu.classList.remove('aberto');
+                    btnMenuMobile.setAttribute('aria-expanded', 'false');
+                    btnMenuMobile.textContent = '☰ Menu';
+                }
+            });
+        }
+    </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/perfil.js"></script>
     <script type="module" src="../js/notificacoes.js"></script>
