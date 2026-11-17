@@ -60,6 +60,12 @@
             gap: 10px;
         }
 
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
         .nav-links {
             display: flex;
             align-items: center;
@@ -73,6 +79,7 @@
             text-decoration: none;
             font-family: 'Bebas Neue', sans-serif;
             letter-spacing: 2px;
+            white-space: nowrap;
         }
 
         .nav-item {
@@ -114,6 +121,25 @@
             font-weight: bold;
             letter-spacing: 1px;
             white-space: nowrap;
+        }
+
+        .btn-menu-mobile {
+            display: none;
+            background: #1f1b24;
+            color: var(--ouro);
+            border: 1px solid #444;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-menu-mobile:hover {
+            border-color: var(--ouro);
         }
 
         /* HERO COM LOGO SVG NA RAIZ E SUBTÍTULO BEM PRÓXIMO */
@@ -646,30 +672,53 @@
             }
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 768px) {
             body {
-                padding-top: 106px;
+                padding-top: 64px;
             }
             .top-nav {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 8px 12px;
-                gap: 6px;
+                padding: 8px 14px;
+                min-height: 56px;
+            }
+            .btn-menu-mobile {
+                display: inline-flex;
             }
             .nav-links {
-                justify-content: space-between;
-                gap: 6px;
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: rgba(17, 15, 20, 0.98);
+                border-bottom: 2px solid var(--ouro);
+                padding: 14px 16px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
+            }
+            .nav-links.aberto {
+                display: grid;
+            }
+            .nav-links .nav-item {
+                background: #1f1b24;
+                border: 1px solid #333;
+                padding: 9px 12px;
+                border-radius: 6px;
+                font-size: 1.05rem;
+                text-align: center;
             }
             .nav-brand {
-                font-size: 1.2rem;
-            }
-            .nav-item {
-                font-size: 0.92rem;
+                font-size: 1.3rem;
             }
             .nav-user {
-                justify-content: space-between;
-                border-top: 1px solid #222;
-                padding-top: 6px;
+                gap: 8px;
+            }
+            .status-login-nav {
+                font-size: 0.75rem;
+            }
+            .btn-login-nav {
+                padding: 6px 10px;
+                font-size: 0.84rem;
             }
             .hero-logo-area {
                 margin: 12px auto 16px auto;
@@ -702,10 +751,10 @@
         }
 
         @media (max-width: 380px) {
-            body {
-                padding-top: 118px;
-            }
             .hero-botoes {
+                grid-template-columns: 1fr;
+            }
+            .nav-links.aberto {
                 grid-template-columns: 1fr;
             }
         }
@@ -714,8 +763,14 @@
 <body>
 
     <nav class="top-nav">
-        <div class="nav-links">
+        <div class="nav-left">
             <a href="index.html" class="nav-brand">B5A RPG</a>
+            <button type="button" id="btn-menu-mobile" class="btn-menu-mobile" aria-expanded="false" aria-controls="nav-links-menu">
+                ☰ Menu
+            </button>
+        </div>
+
+        <div class="nav-links" id="nav-links-menu">
             <a href="pages/estante.html" class="nav-item">📚 Estante</a>
             <a href="pages/ficha.html" class="nav-item">📜 Ficha</a>
             <a href="pages/mesa.html" class="nav-item">🗺️ Mesa</a>
@@ -725,6 +780,7 @@
             <a href="pages/regras.html" class="nav-item">⚖️ Regras</a>
             <a href="pages/contato.html" class="nav-item">📬 Contate-nos</a>
         </div>
+
         <div class="nav-user">
             <a href="pages/perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
@@ -906,10 +962,34 @@
         Biblioteca da 5ª Avenida (B5A) • DiceForge
     </footer>
 
+    <!-- CONTROLE DO MENU MOBILE -->
+    <script>
+        const btnMenuMobile = document.getElementById('btn-menu-mobile');
+        const navLinksMenu = document.getElementById('nav-links-menu');
+
+        if (btnMenuMobile && navLinksMenu) {
+            btnMenuMobile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const aberto = navLinksMenu.classList.toggle('aberto');
+                btnMenuMobile.setAttribute('aria-expanded', aberto);
+                btnMenuMobile.textContent = aberto ? '✕ Fechar' : '☰ Menu';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!navLinksMenu.contains(e.target) && !btnMenuMobile.contains(e.target)) {
+                    navLinksMenu.classList.remove('aberto');
+                    btnMenuMobile.setAttribute('aria-expanded', 'false');
+                    btnMenuMobile.textContent = '☰ Menu';
+                }
+            });
+        }
+    </script>
+
     <!-- FEED SOCIAL COMPLETO DA COMUNIDADE E ENVIO DE FEEDBACK -->
     <script type="module">
-        import { db, idJogadorAtual } from './js/firebase.js';
+        import { app, db, idJogadorAtual } from './js/firebase.js';
         import { ref, onValue, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const CORES_ESPECTRO = {
             padrao: "#d4af37",
@@ -945,6 +1025,19 @@
         let dadosAcervo = {};
         let filtroAtivo = "todos";
 
+        // Fontes combinadas (Raiz RTDB + salas/sala-padrao + Firestore)
+        let armasRaiz = {}, armasSala = {}, armasFs = {};
+        let itensRaiz = {}, itensSala = {}, itensFs = {};
+        let monstrosRaiz = {}, monstrosSala = {}, monstrosFs = {};
+        let criaturasRaiz = {}, criaturasSala = {};
+        let cronicasRaiz = {}, cronicasSala = {}, cronicasFs = {};
+
+        const atualizarArmas = () => { dadosArmas = { ...armasFs, ...armasRaiz, ...armasSala }; renderizarFeedComunidade(); };
+        const atualizarItens = () => { dadosItens = { ...itensFs, ...itensRaiz, ...itensSala }; renderizarFeedComunidade(); };
+        const atualizarMonstros = () => { dadosMonstros = { ...monstrosFs, ...monstrosRaiz, ...monstrosSala }; renderizarFeedComunidade(); };
+        const atualizarCriaturas = () => { dadosCriaturas = { ...criaturasRaiz, ...criaturasSala }; renderizarFeedComunidade(); };
+        const atualizarCronicas = () => { dadosCronicas = { ...cronicasFs, ...cronicasRaiz, ...cronicasSala }; renderizarFeedComunidade(); };
+
         function escaparHtml(texto) {
             return String(texto || "")
                 .replace(/&/g, "&amp;")
@@ -958,6 +1051,8 @@
             let ms = 0;
             if (typeof valorTempo === 'number') {
                 ms = valorTempo;
+            } else if (valorTempo?.seconds) {
+                ms = valorTempo.seconds * 1000;
             } else {
                 const parsed = Date.parse(valorTempo);
                 if (!isNaN(parsed)) {
@@ -984,6 +1079,7 @@
             if (obj.autor) return obj.autor;
             if (obj.criador) return obj.criador;
             if (obj.nomeAutor) return obj.nomeAutor;
+            if (obj.autorNome) return obj.autorNome;
             if (obj.nomeUsuario) return obj.nomeUsuario;
             const uid = obj.donoId || obj.uid || obj.autorId || fallbackId;
             if (uid && mapaUsuarios[uid]) {
@@ -1014,13 +1110,11 @@
 
             Object.entries(noFirebase).forEach(([chave1, val1]) => {
                 if (!val1 || typeof val1 !== "object") return;
-                // Caso 1: Objeto direto (ex: armas/{idArma})
-                if (val1.nome || val1.titulo || val1.texto || val1.descricao) {
+                if (val1.nome || val1.titulo || val1.texto || val1.descricao || val1.conteudo) {
                     resultado.push({ id: chave1, ...val1 });
                 } else {
-                    // Caso 2: Agrupado por usuário/categoria (ex: armas/{uid}/{idArma})
                     Object.entries(val1).forEach(([chave2, val2]) => {
-                        if (val2 && typeof val2 === "object" && (val2.nome || val2.titulo || val2.texto || val2.descricao)) {
+                        if (val2 && typeof val2 === "object" && (val2.nome || val2.titulo || val2.texto || val2.descricao || val2.conteudo)) {
                             resultado.push({ id: `${chave1}_${chave2}`, uid: val2.uid || chave1, ...val2 });
                         }
                     });
@@ -1064,7 +1158,7 @@
                 });
             });
 
-            // 2. Crônicas & Publicações da Comunidade (incluindo subnós dentro de usuarios)
+            // 2. Crônicas & Publicações da Comunidade
             const listaCronicas = [
                 ...extrairColecaoFlexivel(dadosCronicas),
                 ...extrairColecaoFlexivel(dadosComunidade),
@@ -1103,7 +1197,7 @@
                         descricao: cr.descricao || cr.efeito || cr.texto || "Equipamento compartilhado pela comunidade.",
                         autor: resolverNomeUsuario(cr, cr.uid),
                         link: "pages/armas.html",
-                        tempoRaw: cr.criadoEm || cr.timestamp || (1500 + idx),
+                        tempoRaw: cr.criadoEm || cr.timestamp || cr.data || (1500 + idx),
                         tempoTexto: formatarTempoRelativo(cr.criadoEm || cr.timestamp || cr.data)
                     });
                     return;
@@ -1116,11 +1210,11 @@
                         badge: "👁️ Monstro",
                         cor: "#e63946",
                         titulo: titulo,
-                        subinfo: [cr.nivel ? `Nível ${cr.nivel}` : "", cr.pv ? `${cr.pv} PV` : ""].filter(Boolean).join(" • ") || "Ameaça do Bestiário",
+                        subinfo: [cr.nivel ? `Nível ${cr.nivel}` : "", (cr.pv || cr.vida) ? `${cr.pv || cr.vida} PV` : ""].filter(Boolean).join(" • ") || "Ameaça do Bestiário",
                         descricao: cr.descricao || cr.habilidades || cr.texto || "Criatura catalogada pela comunidade.",
                         autor: resolverNomeUsuario(cr, cr.uid),
                         link: "pages/monstros.html",
-                        tempoRaw: cr.criadoEm || cr.timestamp || (2500 + idx),
+                        tempoRaw: cr.criadoEm || cr.timestamp || cr.data || (2500 + idx),
                         tempoTexto: formatarTempoRelativo(cr.criadoEm || cr.timestamp || cr.data)
                     });
                     return;
@@ -1136,7 +1230,7 @@
                     descricao: cr.resumo || cr.sinopse || cr.texto || cr.descricao || cr.conteudo || "Nova crônica publicada nos arquivos.",
                     autor: resolverNomeUsuario(cr, cr.uid),
                     link: "pages/comunidade.html",
-                    tempoRaw: cr.criadoEm || cr.timestamp || (1000 + idx),
+                    tempoRaw: cr.criadoEm || cr.timestamp || cr.data || (1000 + idx),
                     tempoTexto: formatarTempoRelativo(cr.criadoEm || cr.timestamp || cr.data)
                 });
             });
@@ -1150,11 +1244,11 @@
                     badge: "⚔️ Arma",
                     cor: "#ffbe0b",
                     titulo: titulo,
-                    subinfo: [ar.tipo, ar.dano ? `Dano: ${ar.dano}` : "", ar.alcance].filter(Boolean).join(" • ") || "Forja de Armas",
-                    descricao: ar.descricao || ar.efeito || ar.propriedades || "Arma personalizada criada na Forja B5A.",
+                    subinfo: [ar.categoria || ar.tipo, ar.dano ? `Dano: ${ar.dano}` : "", ar.critico ? `Crít: ${ar.critico}` : ""].filter(Boolean).join(" • ") || "Forja de Armas",
+                    descricao: ar.descricao || ar.texto || ar.efeito || ar.propriedades || "Arma personalizada criada na Forja B5A.",
                     autor: resolverNomeUsuario(ar, ar.uid),
                     link: "pages/armas.html",
-                    tempoRaw: ar.criadoEm || ar.timestamp || (2000 + idx),
+                    tempoRaw: ar.criadoEm || ar.timestamp || ar.data || (2000 + idx),
                     tempoTexto: formatarTempoRelativo(ar.criadoEm || ar.timestamp || ar.data)
                 });
             });
@@ -1169,10 +1263,10 @@
                     cor: "#f4a261",
                     titulo: titulo,
                     subinfo: [it.categoria, it.raridade, it.custo].filter(Boolean).join(" • ") || "Item & Relíquia",
-                    descricao: it.descricao || it.efeito || "Item criado pela comunidade para equipar Arquivistas.",
+                    descricao: it.descricao || it.texto || it.efeito || "Item criado pela comunidade para equipar Arquivistas.",
                     autor: resolverNomeUsuario(it, it.uid),
                     link: "pages/armas.html",
-                    tempoRaw: it.criadoEm || it.timestamp || (2200 + idx),
+                    tempoRaw: it.criadoEm || it.timestamp || it.data || (2200 + idx),
                     tempoTexto: formatarTempoRelativo(it.criadoEm || it.timestamp || it.data)
                 });
             });
@@ -1184,24 +1278,25 @@
             ];
             listaMonstros.forEach((mob, idx) => {
                 const titulo = mob.nome || mob.titulo || "Entidade Sombria";
+                const vidaMob = mob.pv ?? mob.vida;
                 adicionarAoFeed({
                     postKey: `monstro_${mob.id}_${titulo}`,
                     tipo: "criatura",
                     badge: "👁️ Monstro",
                     cor: "#e63946",
                     titulo: titulo,
-                    subinfo: [mob.tipo, mob.nivel ? `Nível ${mob.nivel}` : "", mob.pv ? `${mob.pv} PV` : ""].filter(Boolean).join(" • ") || "Ameaça do Bestiário",
-                    descricao: mob.descricao || mob.habilidades || mob.comportamento || "Criatura catalogada no Bestiário da 5ª Avenida.",
+                    subinfo: [mob.tipo, mob.nivel ? `Nível ${mob.nivel}` : "", vidaMob ? `${vidaMob} PV` : ""].filter(Boolean).join(" • ") || "Ameaça do Bestiário",
+                    descricao: mob.descricao || mob.texto || mob.comportamento || "Criatura catalogada no Bestiário da 5ª Avenida.",
                     autor: resolverNomeUsuario(mob, mob.uid),
                     link: "pages/monstros.html",
-                    tempoRaw: mob.criadoEm || mob.timestamp || (3000 + idx),
+                    tempoRaw: mob.criadoEm || mob.timestamp || mob.data || (3000 + idx),
                     tempoTexto: formatarTempoRelativo(mob.criadoEm || mob.timestamp || mob.data)
                 });
             });
 
             feedUnificado.sort((a, b) => {
-                const ta = typeof a.tempoRaw === 'number' ? a.tempoRaw : Date.parse(a.tempoRaw) || 0;
-                const tb = typeof b.tempoRaw === 'number' ? b.tempoRaw : Date.parse(b.tempoRaw) || 0;
+                const ta = typeof a.tempoRaw === 'number' ? a.tempoRaw : (a.tempoRaw?.seconds ? a.tempoRaw.seconds * 1000 : Date.parse(a.tempoRaw) || 0);
+                const tb = typeof b.tempoRaw === 'number' ? b.tempoRaw : (b.tempoRaw?.seconds ? b.tempoRaw.seconds * 1000 : Date.parse(b.tempoRaw) || 0);
                 return tb - ta;
             });
 
@@ -1246,7 +1341,6 @@
                 `;
             }).join("");
 
-            // Eventos de curtida social no feed
             gridFeed.querySelectorAll('.btn-like-feed').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const key = btn.dataset.postkey;
@@ -1262,7 +1356,6 @@
             });
         }
 
-        // Filtros do Feed
         document.querySelectorAll('.btn-filtro-feed').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-filtro-feed').forEach(b => b.classList.remove('ativo'));
@@ -1272,19 +1365,58 @@
             });
         });
 
-        // Listeners em tempo real no Firebase para todas as coleções sociais
+        // Realtime Database (Raiz + salas/sala-padrao)
         onValue(ref(db, 'usuarios'), (snap) => { mapaUsuarios = snap.val() || {}; renderizarFeedComunidade(); });
         onValue(ref(db, 'feed_curtidas'), (snap) => { mapaCurtidas = snap.val() || {}; renderizarFeedComunidade(); });
         onValue(ref(db, 'salas/sala-padrao/jogadores'), (snap) => { dadosJogadores = snap.val() || {}; renderizarFeedComunidade(); });
-        onValue(ref(db, 'cronicas'), (snap) => { dadosCronicas = snap.val() || {}; renderizarFeedComunidade(); });
+
+        onValue(ref(db, 'cronicas'), (snap) => { cronicasRaiz = snap.val() || {}; atualizarCronicas(); });
+        onValue(ref(db, 'salas/sala-padrao/cronicas'), (snap) => { cronicasSala = snap.val() || {}; atualizarCronicas(); });
         onValue(ref(db, 'comunidade'), (snap) => { dadosComunidade = snap.val() || {}; renderizarFeedComunidade(); });
         onValue(ref(db, 'acervo'), (snap) => { dadosAcervo = snap.val() || {}; renderizarFeedComunidade(); });
-        onValue(ref(db, 'armas'), (snap) => { dadosArmas = snap.val() || {}; renderizarFeedComunidade(); });
-        onValue(ref(db, 'itens'), (snap) => { dadosItens = snap.val() || {}; renderizarFeedComunidade(); });
-        onValue(ref(db, 'monstros'), (snap) => { dadosMonstros = snap.val() || {}; renderizarFeedComunidade(); });
-        onValue(ref(db, 'criaturas'), (snap) => { dadosCriaturas = snap.val() || {}; renderizarFeedComunidade(); });
 
-        // Formulário de Feedback do Playtest -> diceforgecontato@gmail.com
+        onValue(ref(db, 'armas'), (snap) => { armasRaiz = snap.val() || {}; atualizarArmas(); });
+        onValue(ref(db, 'salas/sala-padrao/armas'), (snap) => { armasSala = snap.val() || {}; atualizarArmas(); });
+
+        onValue(ref(db, 'itens'), (snap) => { itensRaiz = snap.val() || {}; atualizarItens(); });
+        onValue(ref(db, 'salas/sala-padrao/itens'), (snap) => { itensSala = snap.val() || {}; atualizarItens(); });
+
+        onValue(ref(db, 'monstros'), (snap) => { monstrosRaiz = snap.val() || {}; atualizarMonstros(); });
+        onValue(ref(db, 'salas/sala-padrao/monstros'), (snap) => { monstrosSala = snap.val() || {}; atualizarMonstros(); });
+        onValue(ref(db, 'criaturas'), (snap) => { criaturasRaiz = snap.val() || {}; atualizarCriaturas(); });
+        onValue(ref(db, 'salas/sala-padrao/criaturas'), (snap) => { criaturasSala = snap.val() || {}; atualizarCriaturas(); });
+
+        // Firestore (para registros antigos salvos nas coleções Firestore)
+        try {
+            const fs = getFirestore(app);
+            onSnapshot(collection(fs, 'cronicas'), (snap) => {
+                const temp = {};
+                snap.forEach(d => { temp[`fs_${d.id}`] = d.data(); });
+                cronicasFs = temp;
+                atualizarCronicas();
+            }, () => {});
+            onSnapshot(collection(fs, 'armas'), (snap) => {
+                const temp = {};
+                snap.forEach(d => { temp[`fs_${d.id}`] = d.data(); });
+                armasFs = temp;
+                atualizarArmas();
+            }, () => {});
+            onSnapshot(collection(fs, 'itens'), (snap) => {
+                const temp = {};
+                snap.forEach(d => { temp[`fs_${d.id}`] = d.data(); });
+                itensFs = temp;
+                atualizarItens();
+            }, () => {});
+            onSnapshot(collection(fs, 'monstros'), (snap) => {
+                const temp = {};
+                snap.forEach(d => { temp[`fs_${d.id}`] = d.data(); });
+                monstrosFs = temp;
+                atualizarMonstros();
+            }, () => {});
+        } catch (fsErr) {
+            console.warn("Leitura complementar Firestore ignorada:", fsErr);
+        }
+
         const formFb = document.getElementById('form-feedback-playtest');
         if (formFb) {
             formFb.addEventListener('submit', async (e) => {
