@@ -1,7 +1,9 @@
-import { auth, db, storage } from './firebase.js';
-import { onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { app, auth, db, salaAtual } from './firebase.js';
+import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { ref as dbRef, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+const storage = getStorage(app);
 
 const params = new URLSearchParams(window.location.search);
 let perfilUid = params.get('uid');
@@ -57,29 +59,9 @@ function aplicarTemaEspectro(espectroKey) {
     if (juramento) juramento.textContent = info.juramento;
 }
 
-// Botão de Login na Navbar
-document.getElementById('btn-login')?.addEventListener('click', async () => {
-    try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-    } catch (e) {
-        console.error("Erro no login:", e);
-    }
-});
-
 // INICIALIZAÇÃO VIA AUTH
 onAuthStateChanged(auth, async (user) => {
     usuarioLogado = user;
-
-    const statusNav = document.getElementById('status-login');
-    const btnLoginNav = document.getElementById('btn-login');
-    if (user) {
-        if (statusNav) statusNav.textContent = `🟢 ${user.displayName || 'Online'}`;
-        if (btnLoginNav) btnLoginNav.style.display = 'none';
-    } else {
-        if (statusNav) statusNav.textContent = '🔴 Offline';
-        if (btnLoginNav) btnLoginNav.style.display = 'inline-block';
-    }
 
     if (!perfilUid && user) {
         perfilUid = user.uid;
@@ -175,6 +157,29 @@ async function inicializarPerfil(uid) {
     }
 }
 
+// Helper para redimensionar imagem caso Firebase Storage não esteja ativo
+function converterImagemBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const max = 256;
+                const scale = Math.min(1, max / Math.max(img.width, img.height));
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.82));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
 // SALVAR CREDENCIAL DO PESQUISADOR
 document.getElementById('btn-salvar-identidade')?.addEventListener('click', async () => {
     if (!usuarioLogado) return;
@@ -193,9 +198,13 @@ document.getElementById('btn-salvar-identidade')?.addEventListener('click', asyn
     try {
         let fotoUrl = document.getElementById('perfil-avatar').src;
         if (inputFoto.files && inputFoto.files[0]) {
-            const fotoRef = storageRef(storage, `avatares/${usuarioLogado.uid}_${Date.now()}`);
-            await uploadBytes(fotoRef, inputFoto.files[0]);
-            fotoUrl = await getDownloadURL(fotoRef);
+            try {
+                const fotoRef = storageRef(storage, `avatares/${usuarioLogado.uid}_${Date.now()}`);
+                await uploadBytes(fotoRef, inputFoto.files[0]);
+                fotoUrl = await getDownloadURL(fotoRef);
+            } catch (_) {
+                fotoUrl = await converterImagemBase64(inputFoto.files[0]);
+            }
         }
 
         await update(dbRef(db, `usuarios/${usuarioLogado.uid}`), {
@@ -206,7 +215,9 @@ document.getElementById('btn-salvar-identidade')?.addEventListener('click', asyn
             fotoUrl
         });
 
-        await updateProfile(usuarioLogado, { displayName: novoNome, photoURL: fotoUrl });
+        if (!fotoUrl.startsWith('data:')) {
+            await updateProfile(usuarioLogado, { displayName: novoNome, photoURL: fotoUrl }).catch(() => {});
+        }
 
         document.getElementById('perfil-nome').textContent = novoNome;
         document.getElementById('perfil-titulo').textContent = novoTitulo;
@@ -265,7 +276,7 @@ function configurarBotaoSeguir(alvoUid) {
     };
 }
 
-// 1. ESTANTE DE PERSONAGENS & DIÁRIOS (Lê estante/{uid}, usuarios/{uid}/estante e salas)
+// 1. ESTANTE DE PERSONAGENS & DIÁRIOS
 async function carregarEstantePersonagens(uid) {
     const elEstante = document.getElementById('lista-estante-publica');
     const personagens = [];
@@ -283,22 +294,26 @@ async function carregarEstantePersonagens(uid) {
         });
     };
 
-    const [estanteSnap1, estanteSnap2, salaSnap] = await Promise.all([
-        get(dbRef(db, `estante/${uid}`)),
-        get(dbRef(db, `usuarios/${uid}/estante`)),
-        get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`))
+    const [estanteSnap1, estanteSnap2, salaPadraoSnap, salaAtualSnap] = await Promise.all([
+        get(dbRef(db, `estante/${uid}`)).catch(() => ({ exists: () => false })),
+        get(dbRef(db, `usuarios/${uid}/estante`)).catch(() => ({ exists: () => false })),
+        get(dbRef(db, `salas/sala-padrao/jogadores/${uid}`)).catch(() => ({ exists: () => false })),
+        get(dbRef(db, `salas/${salaAtual}/jogadores/${uid}`)).catch(() => ({ exists: () => false }))
     ]);
 
     adicionarLista(estanteSnap1);
     adicionarLista(estanteSnap2);
 
-    if (salaSnap.exists()) {
-        const val = salaSnap.val();
-        const f = val.ficha || (val.nome ? val : null);
-        if (f && !ids.has('ativo')) {
-            personagens.push({ id: 'ativo', ...f });
+    [salaPadraoSnap, salaAtualSnap].forEach((sSnap, idx) => {
+        if (sSnap.exists()) {
+            const val = sSnap.val();
+            const f = val.ficha || (val.nome ? val : null);
+            const chave = `sala_${idx}`;
+            if (f && !personagens.some(p => p.nome === f.nome)) {
+                personagens.push({ id: chave, ...f });
+            }
         }
-    }
+    });
 
     document.getElementById('qtd-personagens').textContent = personagens.length;
 
@@ -648,7 +663,7 @@ async function carregarForjaPessoal(uid) {
     const criacoes = [];
 
     const lerColecao = async (caminho, tipoLabel, cor, link) => {
-        const snap = await get(dbRef(db, caminho));
+        const snap = await get(dbRef(db, caminho)).catch(() => ({ exists: () => false }));
         if (!snap.exists()) return;
         snap.forEach(c => {
             const v = c.val();
