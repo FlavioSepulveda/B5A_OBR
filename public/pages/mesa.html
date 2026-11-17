@@ -60,6 +60,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-wrap: wrap;
         }
 
         .nav-brand {
@@ -349,6 +350,7 @@
             <a href="../index.html" class="nav-brand">← Home</a>
             <a id="link-ficha-nav" href="ficha.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📜 Ficha</a>
             <a href="estante.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📚 Estante</a>
+            <a id="link-mestre-nav" href="mestre.html" class="nav-brand" style="color: var(--ouro); font-size: 1.15rem;">🛡️ Escudo</a>
         </div>
         <div class="nav-user">
             <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
@@ -554,10 +556,14 @@
             salaAtual = salaId;
             document.getElementById('lbl-sala-ativa').innerText = salaAtual;
 
-            // Atualiza o link da Ficha na navbar para abrir já na mesma sala
             const linkFicha = document.getElementById('link-ficha-nav');
             if (linkFicha) {
                 linkFicha.href = `ficha.html?sala=${encodeURIComponent(salaAtual)}`;
+            }
+
+            const linkMestre = document.getElementById('link-mestre-nav');
+            if (linkMestre) {
+                linkMestre.href = `mestre.html?sala=${encodeURIComponent(salaAtual)}`;
             }
 
             if (refTokensAtiva) off(refTokensAtiva);

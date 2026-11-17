@@ -11,6 +11,8 @@
     <nav class="top-nav">
         <div class="nav-left">
             <a href="../index.html" class="nav-brand">← Biblioteca</a>
+            <a id="link-mesa-mestre" href="mesa.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">🗺️ Mesa Tática</a>
+            <a href="estante.html" class="nav-brand" style="color: #ccc; font-size: 1.15rem;">📚 Estante</a>
             <span class="sala-badge" id="badge-sala">Sala: carregando...</span>
         </div>
 
@@ -144,13 +146,21 @@
     <div id="modal-fichas" class="modal-overlay">
         <div class="modal-box">
             <div class="painel-header">
-                <h3>Selecionar Ficha do Banco</h3>
+                <h3>Selecionar Ficha da Estante</h3>
                 <button id="btn-fechar-modal-fichas" class="btn-mini">✕</button>
             </div>
             <div id="lista-fichas-disponiveis" class="lista-fichas-modal"></div>
         </div>
     </div>
 
+    <script>
+        // Sincroniza o link da Mesa Tática na navbar com a sala atual da URL
+        const salaParam = new URLSearchParams(window.location.search).get('sala');
+        if (salaParam) {
+            const linkMesa = document.getElementById('link-mesa-mestre');
+            if (linkMesa) linkMesa.href = `mesa.html?sala=${encodeURIComponent(salaParam)}`;
+        }
+    </script>
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/mestre.js"></script>
 </body>

@@ -99,11 +99,16 @@ let estadoCombate = {
     combatentes: []
 };
 
+function obterSalaAtiva() {
+    const paramSala = new URLSearchParams(window.location.search).get('sala');
+    return paramSala || salaAtual || 'sala-padrao';
+}
+
 // =========================================================
 // INICIALIZAÇÃO E LISTENERS DA SALA
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const salaId = salaAtual || 'mesa-principal';
+    const salaId = obterSalaAtiva();
     const badgeSala = document.getElementById('badge-sala');
     if (badgeSala) badgeSala.textContent = `Sala: ${salaId}`;
 
@@ -136,35 +141,47 @@ function iniciarPilhaGuardiao(salaId) {
 }
 
 // =========================================================
-// 2. MONITOR DE ARQUIVISTAS NA MESA
+// 2. MONITOR DE ARQUIVISTAS NA MESA (NÃO APAGA DA ESTANTE!)
 // =========================================================
 function iniciarMonitorArquivistas(salaId) {
-    const jogadoresSalaRef = ref(db, `salas/${salaId}/jogadores`);
-    const listaEl = document.getElementById('lista-arquivistas');
+    // Nó isolado apenas para quem está sentado nesta mesa do Guardião
+    const mesaJogadoresRef = ref(db, `salas/${salaId}/mestre/mesaJogadores`);
+    // Repositório global da Estante (onde ficha.html salva os personagens)
+    const estanteGlobalRef = ref(db, 'salas/sala-padrao/jogadores');
 
-    onValue(jogadoresSalaRef, (snap) => {
-        const jogadores = snap.val() || {};
-        const ids = Object.keys(jogadores);
+    const listaEl = document.getElementById('lista-arquivistas');
+    let participantesMesa = {};
+    let fichasEstante = {};
+
+    const renderizarArquivistasMesa = () => {
+        const ids = Object.keys(participantesMesa);
 
         if (ids.length === 0) {
-            listaEl.innerHTML = '<p class="texto-vazio">Nenhum Arquivista vinculado à sala. Clique em "+ Puxar Ficha" para adicionar.</p>';
+            listaEl.innerHTML = '<p class="texto-vazio">Nenhum Arquivista vinculado à mesa. Clique em "+ Puxar Ficha" para adicionar.</p>';
             return;
         }
 
         listaEl.innerHTML = '';
         ids.forEach((id) => {
-            const p = jogadores[id];
-            const pvAtual = p.pvAtual ?? p.vidaAtual ?? p.pvMax ?? 20;
-            const pvMax = p.pvMax ?? p.vidaMax ?? 20;
-            const pvTemp = p.pvTemp ?? 0;
-            const impeto = p.impetoAtual ?? p.impeto ?? 0;
-            const impetoMax = p.impetoMax ?? 5;
-            const dinamismo = Number(p.dinamismo || 2);
+            // Mescla os dados locais da mesa com a ficha atualizada da Estante
+            const fichaBase = fichasEstante[id] || {};
+            const p = { ...fichaBase, ...participantesMesa[id] };
+
+            const dinamismo = Number(p.dadosPersonagem?.dinamismo ?? p.dinamismo ?? 2);
+            const determinacao = Number(p.dadosPersonagem?.determinacao ?? 0);
+            const razao = Number(p.dadosPersonagem?.razao ?? 0);
             const volume = Number(p.volume || 1);
-            const clash = dinamismo + volume;
-            const deslocamento = p.deslocamento || '9m';
-            const descartes = Number(p.descartes || 0);
+
+            const pvAtual = p.pvAtual ?? 10;
+            const pvMax = p.pvMax ?? (10 + (4 * volume) + (determinacao * 4));
+            const pvTemp = p.pvTemp ?? 0;
+            const impeto = p.piAtual ?? p.impetoAtual ?? 5;
+            const impetoMax = p.piMax ?? p.impetoMax ?? (5 + (4 * volume) + (razao * 4));
+
+            const clash = (dinamismo * 4) + volume;
+            const descartes = Array.isArray(p.pilha) ? p.pilha.length : Number(p.descartes || 0);
             const condicoes = Array.isArray(p.condicoes) ? p.condicoes : [];
+            const classeLabel = p.tipoClasse === 'vocacao' ? (p.vocacao || 'Vocação') : (p.caminho || 'Caminho');
 
             const card = document.createElement('div');
             card.className = 'arq-card';
@@ -172,11 +189,12 @@ function iniciarMonitorArquivistas(salaId) {
                 <div class="arq-topo">
                     <div>
                         <div class="arq-nome">${p.nome || 'Arquivista'}</div>
-                        <div class="arq-sub">${p.vocacao || 'Sem Vocação'} • Espectro ${p.espectro || 'Índigo'} (Vol. ${volume})</div>
+                        <div class="arq-sub">${classeLabel} • Espectro ${p.espectro || 'Padrão'} (Vol. ${volume})</div>
                     </div>
                     <div style="display:flex; gap:5px;">
+                        <a href="ficha.html?id=${encodeURIComponent(id)}&sala=${encodeURIComponent(salaId)}" target="_blank" class="btn-secundario-sm" style="text-decoration:none;" title="Abrir Ficha">📜</a>
                         <button class="btn-secundario-sm btn-add-init" title="Enviar para Iniciativa">⚔️ Init</button>
-                        <button class="btn-perigo-sm btn-remover-mesa" title="Remover da mesa">✕</button>
+                        <button class="btn-perigo-sm btn-remover-mesa" title="Tirar da mesa (mantém na Estante)">✕</button>
                     </div>
                 </div>
 
@@ -200,16 +218,15 @@ function iniciarMonitorArquivistas(salaId) {
                     <div class="stat-box">
                         <span class="stat-label">Ímpeto (PI)</span>
                         <div class="stat-controle">
-                            <button class="btn-mini" data-campo="impetoAtual" data-delta="-1">-</button>
+                            <button class="btn-mini" data-campo="piAtual" data-delta="-1">-</button>
                             <span style="color:var(--gold)">${impeto}/${impetoMax}</span>
-                            <button class="btn-mini" data-campo="impetoAtual" data-delta="1">+</button>
+                            <button class="btn-mini" data-campo="piAtual" data-delta="1">+</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="arq-meta-linha">
-                    <span>🛡️ Clash: <strong>${clash}</strong></span>
-                    <span>👟 Desloc.: <strong>${deslocamento}</strong></span>
+                    <span>🛡️ Clash Máx: <strong>${clash}</strong></span>
                     <span>⏳ Descartes: <strong>${descartes}/10</strong> (${descartes * 12}h)</span>
                 </div>
 
@@ -222,31 +239,39 @@ function iniciarMonitorArquivistas(salaId) {
                 </div>
             `;
 
+            // Atualiza PV, PV Temp e PI tanto na mesa quanto na ficha da Estante
             card.querySelectorAll('.btn-mini[data-campo]').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     const campo = btn.dataset.campo;
                     const delta = Number(btn.dataset.delta);
                     const base = campo === 'pvAtual' ? pvAtual : campo === 'pvTemp' ? pvTemp : impeto;
                     const novoValor = Math.max(0, base + delta);
-                    update(ref(db, `salas/${salaId}/jogadores/${id}`), { [campo]: novoValor });
+
+                    update(ref(db, `salas/${salaId}/mestre/mesaJogadores/${id}`), { [campo]: novoValor });
+                    if (fichasEstante[id]) {
+                        update(ref(db, `salas/sala-padrao/jogadores/${id}`), { [campo]: novoValor });
+                    }
                 });
             });
 
+            // Adicionar condição
             card.querySelector('.select-condicao').addEventListener('change', (e) => {
                 const nova = e.target.value;
                 if (!nova) return;
                 const atualizadas = [...condicoes, nova];
-                update(ref(db, `salas/${salaId}/jogadores/${id}`), { condicoes: atualizadas });
+                update(ref(db, `salas/${salaId}/mestre/mesaJogadores/${id}`), { condicoes: atualizadas });
             });
 
+            // Remover condição
             card.querySelectorAll('.chip-condicao').forEach((chip) => {
                 chip.addEventListener('click', () => {
                     const alvo = chip.dataset.cond;
                     const atualizadas = condicoes.filter((c) => c !== alvo);
-                    update(ref(db, `salas/${salaId}/jogadores/${id}`), { condicoes: atualizadas });
+                    update(ref(db, `salas/${salaId}/mestre/mesaJogadores/${id}`), { condicoes: atualizadas });
                 });
             });
 
+            // Enviar jogador para o rastreador de iniciativa
             card.querySelector('.btn-add-init').addEventListener('click', () => {
                 const rolagem = Math.floor(Math.random() * 12) + 1;
                 const initTotal = rolagem + clash;
@@ -260,58 +285,62 @@ function iniciarMonitorArquivistas(salaId) {
                 });
             });
 
+            // Remove APENAS da mesa do mestre (preserva a ficha na Estante!)
             card.querySelector('.btn-remover-mesa').addEventListener('click', () => {
-                if (confirm(`Remover ${p.nome || 'este Arquivista'} da mesa?`)) {
-                    remove(ref(db, `salas/${salaId}/jogadores/${id}`));
+                if (confirm(`Retirar ${p.nome || 'este Arquivista'} da visualização da mesa?\n(A ficha continuará salva na Estante do jogador)`)) {
+                    remove(ref(db, `salas/${salaId}/mestre/mesaJogadores/${id}`));
                 }
             });
 
             listaEl.appendChild(card);
         });
+    };
+
+    onValue(mesaJogadoresRef, (snap) => {
+        participantesMesa = snap.val() || {};
+        renderizarArquivistasMesa();
     });
 
+    onValue(estanteGlobalRef, (snap) => {
+        fichasEstante = snap.val() || {};
+        renderizarArquivistasMesa();
+    });
+
+    // Modal para puxar fichas da Estante (salas/sala-padrao/jogadores)
     const modal = document.getElementById('modal-fichas');
     const listaModal = document.getElementById('lista-fichas-disponiveis');
 
     document.getElementById('btn-importar-ficha')?.addEventListener('click', async () => {
         modal.style.display = 'flex';
-        listaModal.innerHTML = '<p class="texto-vazio">Buscando fichas no banco...</p>';
+        listaModal.innerHTML = '<p class="texto-vazio">Buscando Arquivistas na Estante...</p>';
 
-        const snap = await get(ref(db, 'fichas'));
-        const fichas = snap.val() || {};
-        const chaves = Object.keys(fichas);
+        const snapEstante = await get(estanteGlobalRef);
+        const todasFichas = snapEstante.val() || {};
+        const chaves = Object.keys(todasFichas);
 
         if (chaves.length === 0) {
-            listaModal.innerHTML = '<p class="texto-vazio">Nenhuma ficha encontrada em /fichas.</p>';
+            listaModal.innerHTML = '<p class="texto-vazio">Nenhum Arquivista encontrado na Estante.</p>';
             return;
         }
 
         listaModal.innerHTML = '';
         chaves.forEach((fid) => {
-            const f = fichas[fid];
+            const f = todasFichas[fid];
+            const jaNaMesa = Boolean(participantesMesa[fid]);
             const item = document.createElement('div');
             item.className = 'ficha-import-item';
             item.innerHTML = `
                 <div>
-                    <strong style="color:var(--gold)">${f.nome || 'Sem Nome'}</strong>
-                    <div style="font-size:0.75rem; color:#aaa">${f.vocacao || 'Arquivista'} • ${f.espectro || 'Índigo'}</div>
+                    <strong style="color:var(--gold)">${f.nome || 'Arquivista'}</strong>
+                    <div style="font-size:0.75rem; color:#aaa">Vol. ${f.volume || 1} • ${f.caminho || f.vocacao || 'Arquivista'} • ${f.espectro || 'Padrão'}</div>
                 </div>
-                <button class="btn-primario-sm">Adicionar</button>
+                <button class="btn-primario-sm" ${jaNaMesa ? 'disabled style="opacity:0.5"' : ''}>
+                    ${jaNaMesa ? 'Na Mesa' : 'Puxar'}
+                </button>
             `;
             item.querySelector('button').addEventListener('click', async () => {
-                await set(ref(db, `salas/${salaId}/jogadores/${fid}`), {
+                await set(ref(db, `salas/${salaId}/mestre/mesaJogadores/${fid}`), {
                     nome: f.nome || 'Arquivista',
-                    vocacao: f.vocacao || '',
-                    espectro: f.espectro || 'Índigo',
-                    volume: Number(f.volume || 1),
-                    dinamismo: Number(f.dinamismo || f.atributos?.dinamismo || 2),
-                    pvAtual: Number(f.pvAtual ?? f.pvMax ?? 20),
-                    pvMax: Number(f.pvMax ?? 20),
-                    pvTemp: 0,
-                    impetoAtual: Number(f.impetoAtual ?? f.impetoMax ?? 3),
-                    impetoMax: Number(f.impetoMax ?? 5),
-                    deslocamento: f.deslocamento || '9m',
-                    descartes: Number(f.descartes || 0),
                     condicoes: []
                 });
                 modal.style.display = 'none';
@@ -326,7 +355,7 @@ function iniciarMonitorArquivistas(salaId) {
 }
 
 // =========================================================
-// 3. RASTREADOR DE COMBATE & BESTIÁRIO (LIVRO + COMUNIDADE)
+// 3. RASTREADOR DE COMBATE & BESTIÁRIO
 // =========================================================
 function sincronizarBestiarioComunidade() {
     const selectBestiario = document.getElementById('select-bestiario');

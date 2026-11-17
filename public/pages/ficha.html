@@ -49,7 +49,7 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 8px 20px; z-index: 1000; gap: 10px;
         }
-        .top-nav-header-mobile { display: flex; align-items: center; gap: 14px; }
+        .top-nav-header-mobile { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
         .nav-brand { font-size: 1.4rem; color: var(--ouro); text-decoration: none; font-family: 'Bebas Neue'; white-space: nowrap; }
         .nav-user { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
         .btn-login-nav { background-color: var(--ouro); color: #000; border: none; padding: 8px 14px; border-radius: 4px; font-size: 0.95rem; cursor: pointer; font-family: 'Bebas Neue'; white-space: nowrap; }
@@ -292,6 +292,7 @@
             <a href="../index.html" class="nav-brand">← Home</a>
             <a href="estante.html" class="nav-brand" style="font-size: 1.15rem; color: #ccc;">📚 Estante</a>
             <a id="link-mesa-nav" href="mesa.html" class="nav-brand" style="font-size: 1.15rem; color: #ccc;">🗺️ Mesa</a>
+            <a id="link-mestre-nav" href="mestre.html" class="nav-brand" style="font-size: 1.15rem; color: var(--ouro);">🛡️ Escudo</a>
             <a href="perfil.html" id="status-login" class="status-login-nav" style="margin-left: auto;">🔴 Faça login</a>
         </div>
         <div class="nav-user">
@@ -882,7 +883,6 @@
             const lbl = document.getElementById('status-salvamento');
             lbl.innerText = "Salvando...";
             try {
-                // Salva sempre no repositório global da Estante para não perder o personagem ao trocar de mesa
                 await set(ref(db, `salas/sala-padrao/jogadores/${targetId}`), payload);
                 
                 const urlParams = new URLSearchParams(window.location.search);
@@ -1459,6 +1459,11 @@
             const linkMesa = document.getElementById('link-mesa-nav');
             if (linkMesa) {
                 linkMesa.href = `mesa.html?sala=${encodeURIComponent(sala)}`;
+            }
+
+            const linkMestre = document.getElementById('link-mestre-nav');
+            if (linkMestre) {
+                linkMestre.href = `mestre.html?sala=${encodeURIComponent(sala)}`;
             }
 
             onValue(ref(db, `salas/${sala}/rolagens`), (snapshot) => {
