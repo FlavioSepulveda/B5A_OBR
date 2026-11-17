@@ -3,437 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Crônicas - B5A</title>
+    <title>Crônicas do Acervo - Biblioteca da 5ª Avenida</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Merriweather:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-mesa: #0d0b0e;
-            --bg-painel: #161318;
-            --bg-slot: #1f1b24;
-            --gold: #d4af37;
-            --ouro: #d4af37;
-            --texto: #ece6d8;
-            --texto-suave: #9c9283;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
-        body {
-            background: radial-gradient(circle at center, #1a1520 0%, var(--bg-mesa) 100%);
-            color: var(--texto);
-            font-family: 'Merriweather', serif;
-            min-height: 100vh;
-            padding: 20px;
-            padding-top: 80px;
-        }
-
-        h1, h2, h3, .titulo-fonte {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1.5px;
-            color: var(--gold);
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
-        }
-
-        /* NAVBAR SUPERIOR */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            min-height: 60px;
-            background-color: #111;
-            border-bottom: 2px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 20px;
-            z-index: 1000;
-            gap: 10px;
-        }
-
-        .nav-brand {
-            font-size: 1.45rem;
-            color: var(--gold);
-            text-decoration: none;
-            font-family: 'Bebas Neue', sans-serif;
-            white-space: nowrap;
-        }
-
-        .nav-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .status-login-nav {
-            font-size: 0.85rem;
-            color: #888;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        .btn-login-nav {
-            background-color: var(--gold);
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-family: 'Bebas Neue', sans-serif;
-            font-weight: bold;
-            white-space: nowrap;
-            transition: opacity 0.2s;
-        }
-
-        .btn-login-nav:hover {
-            opacity: 0.9;
-        }
-
-        /* CONTAINER PRINCIPAL (ESCRITA + FEED) */
-        .comunidade-container {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 24px;
-            max-width: 1400px;
-            margin: 0 auto;
-            align-items: start;
-        }
-
-        .painel-escrita, .painel-feed {
-            background: var(--bg-painel);
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            width: 100%;
-            min-width: 0;
-        }
-
-        /* FORMULÁRIO DE CRÔNICA */
-        .form-card {
-            background: #111;
-            padding: 16px;
-            border-radius: 6px;
-            border: 1px solid var(--gold);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .input-group label {
-            font-size: 0.78rem;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="url"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            background: var(--bg-slot);
-            color: var(--texto);
-            border: 1px solid #444;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: 'Merriweather', serif;
-            font-size: 0.88rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, textarea:focus {
-            border-color: var(--gold);
-        }
-
-        input[type="file"] {
-            background: #111;
-            color: #ccc;
-            padding: 8px;
-            border: 1px dashed #444;
-            cursor: pointer;
-        }
-
-        .btn-primario {
-            background-color: var(--gold);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 4px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.25rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s, background-color 0.2s;
-        }
-
-        .btn-primario:hover {
-            background-color: #e5c14b;
-        }
-
-        .btn-primario:active {
-            transform: scale(0.98);
-        }
-
-        /* FEED DE CRÔNICAS (GRID DE CARDS) */
-        .grid-cronicas {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        /* Estilização compatível com os cards gerados pelo comunidade.js */
-        .cronica-card, .card-cronica {
-            background: var(--bg-slot);
-            border: 1px solid #333;
-            border-top: 3px solid var(--gold);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s;
-            cursor: pointer;
-        }
-
-        .cronica-card:hover, .card-cronica:hover {
-            transform: translateY(-3px);
-            border-color: var(--gold);
-        }
-
-        .cronica-card img, .card-cronica img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            background: #111;
-            border-bottom: 1px solid #333;
-        }
-
-        .cronica-card-body, .card-cronica-content {
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .cronica-card h3, .card-cronica h3 {
-            font-size: 1.4rem;
-            margin: 0;
-            color: var(--gold);
-        }
-
-        .cronica-card p, .card-cronica p {
-            font-size: 0.84rem;
-            color: #ccc;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* MODAL DE LEITURA */
-        .modal-leitura {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.88);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .modal-leitura-content {
-            background: var(--bg-painel);
-            border: 1px solid var(--gold);
-            border-radius: 10px;
-            padding: 24px;
-            width: 100%;
-            max-width: 680px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            font-size: 2rem;
-            color: #aaa;
-            cursor: pointer;
-            line-height: 1;
-            z-index: 10;
-            background: rgba(0,0,0,0.6);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-btn:hover {
-            color: var(--gold);
-        }
-
-        .modal-capa {
-            width: 100%;
-            max-height: 280px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            border: 1px solid #333;
-            background-color: #111;
-        }
-
-        .modal-acoes {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn-curtir {
-            background: #251d29;
-            color: var(--texto);
-            border: 1px solid var(--gold);
-            padding: 12px;
-            border-radius: 4px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.25rem;
-            cursor: pointer;
-            flex: 1;
-            min-width: 120px;
-            transition: background 0.2s;
-        }
-
-        .btn-curtir:hover {
-            background: #36283d;
-        }
-
-        .btn-deletar-modal {
-            background: #a83232;
-            color: white;
-            padding: 12px;
-            font-size: 1.25rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            flex: 1;
-            min-width: 120px;
-            font-family: 'Bebas Neue', sans-serif;
-        }
-
-        /* =========================================================
-           RESPONSIVIDADE MOBILE E TABLET
-           ========================================================= */
-        @media (max-width: 960px) {
-            .comunidade-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 650px) {
-            body {
-                padding: 12px;
-                padding-top: 105px;
-            }
-
-            .top-nav {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 8px 14px;
-                gap: 6px;
-            }
-
-            .nav-brand {
-                text-align: center;
-                font-size: 1.3rem;
-            }
-
-            .nav-user {
-                justify-content: space-between;
-                width: 100%;
-            }
-
-            .btn-login-nav {
-                padding: 6px 12px;
-                font-size: 0.92rem;
-            }
-
-            .painel-escrita, .painel-feed {
-                padding: 14px;
-            }
-
-            .grid-cronicas {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-leitura {
-                padding: 10px;
-                align-items: flex-start;
-            }
-
-            .modal-leitura-content {
-                padding: 16px;
-                margin-top: 10px;
-                max-height: 92vh;
-            }
-
-            .modal-capa {
-                max-height: 200px;
-            }
-
-            .modal-acoes {
-                flex-direction: column;
-            }
-
-            .btn-curtir, .btn-primario, .btn-deletar-modal {
-                width: 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../css/comunidade.css">
 </head>
 <body>
     <nav class="top-nav">
-        <a href="../index.html" class="nav-brand">← Voltar para a Home</a>
+        <a href="../index.html" class="nav-brand">← Voltar para a Biblioteca</a>
         <div class="nav-user">
             <a href="perfil.html" id="status-login" class="status-login-nav">🔴 Offline</a>
             <button id="btn-login" class="btn-login-nav">Entrar com Google</button>
@@ -441,66 +17,145 @@
     </nav>
 
     <div class="comunidade-container">
-        <div class="painel-escrita">
-            <h2>Escrever Crônica</h2>
+        <!-- PAINEL DE ESCRITA -->
+        <aside class="painel-escrita">
+            <h2 id="form-titulo-cabecalho">Registrar Nova Crônica</h2>
             <input type="hidden" id="edit-cronica-id" value="">
-            
+
             <div class="form-card">
                 <div class="input-group">
-                    <label>Título da Missão</label>
-                    <input type="text" id="cronica-titulo" placeholder="Ex: O Despertar do Tirano">
+                    <label for="cronica-titulo">Título da Missão / Crônica</label>
+                    <input type="text" id="cronica-titulo" placeholder="Ex: O Silêncio da Ala Oeste">
                 </div>
-                
-                <div class="input-group">
-                    <label>Qtd. de Jogadores</label>
-                    <input type="number" id="cronica-jogadores" min="1" max="10" value="4">
+
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label for="cronica-espectro">Espectro Dominante</label>
+                        <select id="cronica-espectro">
+                            <option value="Índigo">🟣 Índigo (Mistério/Criação)</option>
+                            <option value="Ígneo">🔴 Ígneo (Ação/Sacrifício)</option>
+                            <option value="Celeste">🔵 Celeste (Ordem/Investigação)</option>
+                            <option value="Viridiano">🟢 Viridiano (Vida/Exploração)</option>
+                            <option value="Solar">🟡 Solar (Liberdade/Viagem)</option>
+                            <option value="Alabastro">⚪ Alabastro (Equilíbrio/Drama)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cronica-volume">Volume Sugerido</label>
+                        <select id="cronica-volume">
+                            <option value="Volume I">Volume I (Iniciantes)</option>
+                            <option value="Volume II">Volume II</option>
+                            <option value="Volume III">Volume III</option>
+                            <option value="Volume IV">Volume IV</option>
+                            <option value="Volume V+">Volume V+ (Títulos)</option>
+                        </select>
+                    </div>
                 </div>
-                
+
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label for="cronica-genero">Gênero Literário</label>
+                        <select id="cronica-genero">
+                            <option value="Mistério Clássico">Mistério Clássico</option>
+                            <option value="Terror Gótico">Terror Gótico</option>
+                            <option value="Fantasia Sombria">Fantasia Sombria</option>
+                            <option value="Suspense">Suspense</option>
+                            <option value="Aventura Épica">Aventura Épica</option>
+                            <option value="Drama Psicológico">Drama Psicológico</option>
+                            <option value="Realismo Mágico">Realismo Mágico</option>
+                            <option value="Tragédia Grega">Tragédia Grega</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="max-width: 110px;">
+                        <label for="cronica-jogadores">Arquivistas</label>
+                        <input type="number" id="cronica-jogadores" min="1" max="10" value="4">
+                    </div>
+                </div>
+
                 <div class="input-group">
-                    <label>Imagem da Crônica (Opcional)</label>
+                    <label for="cronica-arquivo">Capa da Crônica (Opcional)</label>
                     <input type="file" id="cronica-arquivo" accept="image/*">
-                    <small style="color: #888; font-size: 0.75rem; margin-top: 2px;">Ou cole um link:</small>
-                    <input type="url" id="cronica-imagem" placeholder="Link da imagem (Opcional)">
+                    <input type="url" id="cronica-imagem" placeholder="Ou cole uma URL de imagem...">
                 </div>
 
                 <div class="input-group">
-                    <label>Breve Resumo / Prólogo</label>
-                    <textarea id="cronica-texto" rows="8" style="resize: vertical;" placeholder="A primeira vez que a Biblioteca chamou por mim..."></textarea>
+                    <label for="cronica-texto">Prólogo / Relato do Arquivo</label>
+                    <textarea id="cronica-texto" rows="7" placeholder="Quando a porta surgiu no fim do corredor, o Diário começou a vibrar..."></textarea>
                 </div>
-                
-                <button id="btn-salvar-cronica" class="btn-primario">Publicar Crônica</button>
-                <p id="status-cronica" style="font-size: 0.82rem; color: #888; text-align: center; margin: 0;"></p>
-            </div>
-        </div>
 
-        <div class="painel-feed">
-            <h2>Relatos dos Arquivistas</h2>
+                <div class="checkbox-feed">
+                    <input type="checkbox" id="publicar-no-feed" checked>
+                    <label for="publicar-no-feed">Compartilhar também no Feed Geral da Biblioteca</label>
+                </div>
+
+                <div class="form-botoes">
+                    <button id="btn-salvar-cronica" class="btn-primario">Publicar Crônica</button>
+                    <button id="btn-cancelar-edicao" class="btn-secundario" style="display: none;">Cancelar Edição</button>
+                </div>
+                <p id="status-cronica" class="status-msg"></p>
+            </div>
+        </aside>
+
+        <!-- FEED DE CRÔNICAS -->
+        <main class="painel-feed">
+            <div class="feed-header">
+                <h2>Relatos dos Arquivistas</h2>
+                <div class="feed-filtros">
+                    <input type="text" id="busca-cronica" placeholder="🔍 Buscar título, autor ou gênero...">
+                    <select id="filtro-espectro">
+                        <option value="TODOS">Todos os Espectros</option>
+                        <option value="Índigo">Índigo</option>
+                        <option value="Ígneo">Ígneo</option>
+                        <option value="Celeste">Celeste</option>
+                        <option value="Viridiano">Viridiano</option>
+                        <option value="Solar">Solar</option>
+                        <option value="Alabastro">Alabastro</option>
+                    </select>
+                </div>
+            </div>
+
             <div id="lista-cronicas" class="grid-cronicas"></div>
-        </div>
+        </main>
     </div>
 
+    <!-- MODAL DE LEITURA E INTERAÇÃO -->
     <div id="modal-cronica" class="modal-leitura">
         <div class="modal-leitura-content">
-            <span class="close-btn" onclick="fecharModalCronica()">&times;</span>
-            <img id="modal-img" src="" alt="Capa" class="modal-capa">
+            <button class="close-btn" onclick="fecharModalCronica()" aria-label="Fechar">&times;</button>
+            <img id="modal-img" src="" alt="Capa da Crônica" class="modal-capa">
+
+            <div class="modal-badges" id="modal-badges"></div>
             <h2 id="modal-titulo">Título</h2>
-            <p id="modal-autor" style="color: var(--gold); font-size: 0.9rem; margin-bottom: 12px;">Autor</p>
-            <div id="modal-texto" style="line-height: 1.65; margin-bottom: 20px; white-space: pre-wrap;"></div>
-            
+            <p id="modal-autor" class="modal-meta">Autor</p>
+
+            <div id="modal-texto" class="modal-corpo-texto"></div>
+
             <div class="modal-acoes">
                 <button id="btn-like" class="btn-curtir" onclick="alternarLike()">
-                    ❤️ Curtir (<span id="qtd-likes">0</span>)
+                    ❤️ Registrar Apoio (<span id="qtd-likes">0</span>)
                 </button>
-                <button id="btn-editar" class="btn-primario" style="display: none; flex: 1;" onclick="prepararEdicao()">Editar</button>
-                <button id="btn-deletar" class="btn-deletar-modal" style="display: none;">Deletar</button>
+                <button id="btn-copiar-link" class="btn-secundario" onclick="copiarLinkCronica()">
+                    🔗 Compartilhar
+                </button>
+                <button id="btn-editar" class="btn-primario" style="display: none;" onclick="prepararEdicao()">Editar</button>
+                <button id="btn-deletar" class="btn-deletar-modal" style="display: none;">Apagar</button>
+            </div>
+
+            <!-- ANOTAÇÕES / COMENTÁRIOS DOS ARQUIVISTAS -->
+            <div class="modal-comentarios">
+                <h3>Notas à Margem (<span id="qtd-comentarios">0</span>)</h3>
+                <div id="lista-comentarios" class="lista-comentarios"></div>
+                <div class="comentario-form">
+                    <input type="text" id="input-comentario" placeholder="Deixe uma anotação neste registro...">
+                    <button id="btn-enviar-comentario" class="btn-primario" style="width: auto; padding: 8px 16px;">Registrar</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module" src="../js/firebase.js"></script>
     <script type="module" src="../js/comunidade.js"></script>
-    <script type="module" src="js/notificacoes.js"></script>
-    <script type="module" src="js/home.js"></script>
-
 </body>
 </html>
